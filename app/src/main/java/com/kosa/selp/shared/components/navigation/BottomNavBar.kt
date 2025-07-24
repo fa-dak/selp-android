@@ -1,4 +1,4 @@
-package com.kosa.selp.shared.navigation
+package com.kosa.selp.shared.components.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange

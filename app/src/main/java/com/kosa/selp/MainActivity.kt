@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kosa.selp.features.gift.presentation.screen.SurveyResultScreen
 import com.kosa.selp.features.home.presentation.screen.HomeScreen
@@ -15,6 +14,7 @@ import com.kosa.selp.features.survey.presentation.screen.SurveyResultWaitingScre
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyIntroScreen
 import com.kosa.selp.features.survey.viewModel.SurveyViewModel
+import com.kosa.selp.shared.navigation.animatedComposable
 import com.kosa.selp.shared.theme.SelpTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     startDestination = "home"
                 ) {
-                    composable("home") {
+                    animatedComposable("home") {
                         HomeScreen(
                             onStartSurvey = { navController.navigate("surveyIntro") },
                             onViewHistory = {},
@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    composable("surveyIntro") {
+                    animatedComposable("surveyIntro") {
                         SurveyIntroScreen(
                             onStartSurvey = {
                                 navController.navigate("surveyFunnel")
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    composable("surveyFunnel") {
+                    animatedComposable("surveyFunnel") {
                         SurveyFunnelScreen(
                             navController = navController,
                             onExit = {
@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    composable("surveyResultLoading") { navBackStackEntry ->
+                    animatedComposable("surveyResultLoading") { navBackStackEntry ->
                         val parentEntry = remember(navBackStackEntry) {
                             navController.getBackStackEntry("surveyFunnel")
                         }
@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    composable("surveyResult") {
+                    animatedComposable("surveyResult") {
                         SurveyResultScreen(navController = navController)
                     }
                 }

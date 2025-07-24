@@ -24,9 +24,8 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.kosa.selp.R
-import com.kosa.selp.shared.navigation.BottomNavBar
+import com.kosa.selp.shared.components.navigation.BottomNavBar
 import com.kosa.selp.shared.theme.AppColor
-import com.kosa.selp.shared.theme.Background
 import com.kosa.selp.shared.theme.Primary
 import com.kosa.selp.shared.theme.Secondary
 import com.kosa.selp.shared.theme.TextPrimary
@@ -69,7 +68,7 @@ fun HomeScreen(
         containerColor = AppColor.white,
         bottomBar = {
             BottomNavBar(
-                selectedIndex = 1,
+                selectedIndex = 0,
                 onItemSelected = {}
             )
         }
