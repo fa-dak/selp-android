@@ -8,6 +8,8 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.kosa.selp.features.login.data.model.KakaoLoginRequest
+import com.kosa.selp.features.login.data.service.AuthApiService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -15,7 +17,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val authApiService: AuthApiService
+) : ViewModel() {
 
     private val _loginEvent = MutableSharedFlow<LoginEvent>()
     val loginEvent = _loginEvent.asSharedFlow()
@@ -52,10 +56,21 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun handleLoginSuccess(token: OAuthToken) {
-        Log.i("LoginViewModel", "카카오계정으로 로그인 성공, authCode: ${token.accessToken}")
-        // TODO: 백엔드에 authCode 전달 로직 추가
+        Log.i("LoginViewModel", "카카오 로그인 성공. 백엔드에 토큰 전송 시도: ${token.accessToken}")
         viewModelScope.launch {
-            _loginEvent.emit(LoginEvent.LoginSuccess)
+            try {
+                // 백엔드에 카카오 accessToken 전송
+                val request = KakaoLoginRequest(accessToken = token.accessToken)
+                val response = authApiService.loginWithKakao(request)
+
+                // TODO: 서버로부터 받은 accessToken, refreshToken 저장 로직 추가
+                Log.i("LoginViewModel", "백엔드 로그인 성공: accessToken=${response.accessToken}")
+
+                _loginEvent.emit(LoginEvent.LoginSuccess)
+            } catch (e: Exception) {
+                Log.e("LoginViewModel", "백엔드 로그인 실패", e)
+                _loginEvent.emit(LoginEvent.LoginFailure)
+            }
         }
     }
 
