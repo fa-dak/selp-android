@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -18,6 +20,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val envFile = rootProject.file(".env")
+        val properties = Properties()
+        if (envFile.exists()) {
+            properties.load(envFile.inputStream())
+        }
+
+        // BuildConfig에 추가
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${properties.getProperty("KAKAO_NATIVE_APP_KEY", "")}\"")
+
+        // AndroidManifest.xml에서 사용할 수 있도록 추가
+        manifestPlaceholders["kakaoAppKey"] = properties.getProperty("KAKAO_NATIVE_APP_KEY", "")
     }
 
     buildTypes {
@@ -40,6 +54,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -60,6 +75,8 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.lottie.compose)
+
+    implementation("com.kakao.sdk:v2-user:2.19.0")
 
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.hilt.compiler)
