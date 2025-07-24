@@ -1,4 +1,4 @@
-package com.kosa.selp.shared.components.calendar
+package com.kosa.selp.shared.composable.calendar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

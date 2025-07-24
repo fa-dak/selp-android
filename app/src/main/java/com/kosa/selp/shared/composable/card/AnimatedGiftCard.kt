@@ -1,4 +1,4 @@
-package com.kosa.selp.shared.components.card
+package com.kosa.selp.shared.composable.card
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween

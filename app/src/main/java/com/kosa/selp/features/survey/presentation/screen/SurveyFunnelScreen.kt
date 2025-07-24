@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -24,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.kosa.selp.features.survey.presentation.components.*
+import com.kosa.selp.features.survey.presentation.composable.*
 import com.kosa.selp.features.survey.presentation.funnel.*
 import com.kosa.selp.features.survey.viewModel.*
 import com.kosa.selp.shared.theme.AppColor

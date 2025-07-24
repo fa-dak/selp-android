@@ -1,4 +1,4 @@
-package com.kosa.selp.shared.components.input
+package com.kosa.selp.shared.composable.input
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

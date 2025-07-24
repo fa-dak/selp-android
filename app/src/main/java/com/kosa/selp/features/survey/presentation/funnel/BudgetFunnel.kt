@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kosa.selp.features.survey.viewModel.SurveyEvent
 import com.kosa.selp.features.survey.viewModel.SurveyViewModel
-import com.kosa.selp.shared.components.input.BudgetInputField
+import com.kosa.selp.shared.composable.input.BudgetInputField
 import com.kosa.selp.shared.theme.AppColor
 
 

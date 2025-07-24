@@ -1,4 +1,4 @@
-package com.kosa.selp.features.survey.presentation.components
+package com.kosa.selp.features.survey.presentation.composable
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

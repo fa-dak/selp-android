@@ -24,7 +24,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.kosa.selp.R
-import com.kosa.selp.shared.components.navigation.BottomNavBar
+import com.kosa.selp.shared.composable.navigation.BottomNavBar
 import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.Primary
 import com.kosa.selp.shared.theme.Secondary

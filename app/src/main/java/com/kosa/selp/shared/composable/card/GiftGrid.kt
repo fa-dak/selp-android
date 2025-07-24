@@ -1,4 +1,4 @@
-package com.kosa.selp.shared.components.card
+package com.kosa.selp.shared.composable.card
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
