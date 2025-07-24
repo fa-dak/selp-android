@@ -8,8 +8,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.*
 import com.kosa.selp.features.gift.repository.GiftRepository
 import com.kosa.selp.shared.theme.AppColor
@@ -100,6 +102,58 @@ fun SurveyResultScreen(navController: NavController) {
 
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun SurveyResultScreenMock() {
+    val navController = rememberNavController() // 여기서 직접 생성
+    val gifts = remember { GiftRepository.getRecommendedGifts() }
+    val visibleItems = remember { mutableStateListOf<Boolean>().apply {
+        repeat(gifts.size) { add(true) }
+    } }
+
+    val currentIndex by remember { mutableStateOf(0) }
+    val listState = rememberLazyListState()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {},
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "뒤로가기",
+                            tint = AppColor.textPrimary
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = AppColor.white)
+            )
+        },
+        containerColor = AppColor.white
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(
+                text = "추천 선물 리스트",
+                style = MaterialTheme.typography.headlineSmall,
+                color = AppColor.textPrimary
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
         }
     }
 }
