@@ -7,9 +7,9 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Check workspace') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-org/your-android-project.git'
+                sh 'pwd && ls -al'
             }
         }
 
