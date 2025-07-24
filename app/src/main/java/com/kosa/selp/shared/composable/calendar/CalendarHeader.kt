@@ -24,7 +24,7 @@ fun CalendarHeader(
     onNextMonth: () -> Unit
 ) {
     val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH)
+    val month = calendar.get(Calendar.MONTH) + 1
 
     Row(
         modifier = Modifier
