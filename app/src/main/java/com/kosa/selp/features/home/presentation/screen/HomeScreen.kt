@@ -46,6 +46,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.kosa.selp.R
+import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.Primary
 import com.kosa.selp.shared.theme.Secondary
 import com.kosa.selp.shared.theme.TextPrimary
@@ -83,6 +84,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(AppColor.white)
             .systemBarsPadding()
             .padding(horizontal = 24.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)

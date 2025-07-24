@@ -12,6 +12,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kosa.selp.shared.theme.AppColor
@@ -19,6 +20,7 @@ import com.kosa.selp.shared.theme.AppColor
 
 @Composable
 fun BottomNavBar(
+    modifier: Modifier = Modifier,
     selectedIndex: Int,
     onItemSelected: (Int) -> Unit,
 ) {
@@ -38,6 +40,7 @@ fun BottomNavBar(
             val isSelected = selectedIndex == index
 
             NavigationBarItem(
+                modifier = modifier,
                 selected = isSelected,
                 onClick = { onItemSelected(index) },
                 icon = {
