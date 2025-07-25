@@ -7,9 +7,9 @@ data class CalendarEvent(
     val eventId: String,
     val eventName: String,
     val eventType: String,
-    val receiverName: String,
+    val receiverNickname: String,
     val notificationDaysBefore: Int,
-    val date: java.util.Date // 날짜 필드 추가
+    val eventDate: java.util.Date // 날짜 필드 추가
 )
 
 data class CalendarConfig(

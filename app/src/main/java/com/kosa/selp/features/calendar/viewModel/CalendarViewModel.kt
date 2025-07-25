@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kosa.selp.BuildConfig
 import com.kosa.selp.shared.composable.calendar.model.CalendarEvent
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
@@ -17,7 +18,7 @@ import java.util.Locale
 
 // REST API 인터페이스 정의
 interface EventApiService {
-    @GET("/events?year=2025&month=7") // 실제 엔드포인트에 맞게 수정
+    @GET("events?year=2025&month=7") // 실제 엔드포인트에 맞게 수정
     suspend fun getEvents(): List<CalendarEvent>
 }
 
@@ -41,7 +42,7 @@ class CalendarViewModel : ViewModel() {
     // 선택된 날짜의 이벤트만 반환
     val selectedDayEvents: List<CalendarEvent>
         get() = _events.value.filter { event ->
-            val cal1 = Calendar.getInstance().apply { time = event.date }
+            val cal1 = Calendar.getInstance().apply { time = event.eventDate }
             val cal2 = Calendar.getInstance().apply { time = _selectedDate.value }
             cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                     cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH) &&
@@ -49,7 +50,7 @@ class CalendarViewModel : ViewModel() {
         }
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://selp-backend.jaeyoung2.duckdns.org") // 실제 API base url로 변경
+        .baseUrl(BuildConfig.BACKEND_BASE_URL) // 실제 API base url로 변경
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
@@ -75,17 +76,17 @@ class CalendarViewModel : ViewModel() {
                         eventId = "1",
                         eventName = "가족 여행",
                         eventType = "여행",
-                        receiverName = "세영이",
+                        receiverNickname = "세영이",
                         notificationDaysBefore = 1,
-                        date = SimpleDateFormat("yyyy-MM-dd").parse("2025-07-01")!!
+                        eventDate = SimpleDateFormat("yyyy-MM-dd").parse("2025-07-01")!!
                     ),
                     CalendarEvent(
                         eventId = "2",
                         eventName = "쇼핑",
                         eventType = "기념일",
-                        receiverName = "엄마아빠",
+                        receiverNickname = "엄마아빠",
                         notificationDaysBefore = 3,
-                        date = SimpleDateFormat("yyyy-MM-dd").parse("2025-07-10")!!
+                        eventDate = SimpleDateFormat("yyyy-MM-dd").parse("2025-07-10")!!
                     )
                 )
             }

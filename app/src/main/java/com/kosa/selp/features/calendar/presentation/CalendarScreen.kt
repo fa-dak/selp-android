@@ -124,7 +124,7 @@ fun CalendarScreen(
                                     maxLines = 1
                                 )
                                 Text(
-                                    text = "대상: ${event.receiverName}",
+                                    text = "대상: ${event.receiverNickname}",
                                     style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
                                     color = AppColor.textSecondary,
                                     maxLines = 1

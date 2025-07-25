@@ -118,7 +118,7 @@ fun CalendarMonthGrid(
                                     )
                                     // 해당 날짜의 이벤트가 있으면 아래에 표시
                                     val dayEvents = config.events.filter { event ->
-                                        isSameDay(event.date, date)
+                                        isSameDay(event.eventDate, date)
                                     }
                                     if (dayEvents.isNotEmpty()) {
                                         Text(
