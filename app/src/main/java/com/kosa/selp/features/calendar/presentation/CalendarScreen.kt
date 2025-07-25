@@ -18,7 +18,10 @@ import com.kosa.selp.shared.composable.calendar.model.CalendarConfig
 import com.kosa.selp.shared.theme.AppColor
 
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(
+    modifier: Modifier = Modifier
+
+) {
     val viewModel: CalendarViewModel = hiltViewModel()
 
     val calendar = viewModel.calendar.value
@@ -34,7 +37,7 @@ fun CalendarScreen() {
     )
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(AppColor.white)
             .systemBarsPadding()
