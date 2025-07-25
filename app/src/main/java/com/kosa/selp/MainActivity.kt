@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "login",
+                        startDestination = "home",
                     ) {
                         composable("login") {
                             val viewModel: LoginViewModel = hiltViewModel()
