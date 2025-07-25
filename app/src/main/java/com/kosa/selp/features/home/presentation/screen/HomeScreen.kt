@@ -62,7 +62,8 @@ data class GiftItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navController: NavController
+    navController: NavController,
+    modifier: Modifier = Modifier
 ) {
     val anniversaries = listOf(
         "지민생일" to "D-7",
@@ -82,7 +83,7 @@ fun HomeScreen(
         GiftItem("목욕 바스켓 세트", "https://picsum.photos/id/1020/200/300", "38,000원")
     )
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(AppColor.white)
             .systemBarsPadding()

@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kosa.selp.R
+import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.Primary
 import com.kosa.selp.shared.theme.TextPrimary
 import com.kosa.selp.shared.theme.TextSecondary
@@ -46,24 +47,25 @@ fun SurveyIntroScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "뒤로가기",
-                            tint = TextPrimary
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = White,
-                    navigationIconContentColor = TextPrimary
+            Column {
+                TopAppBar(
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "뒤로가기",
+                                tint = TextPrimary
+                            )
+                        }
+                    },
+                    title = {},
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = AppColor.white
+                    )
                 )
-            )
+            }
         },
-        containerColor = White
+        containerColor = AppColor.white
     ) { innerPadding ->
 
         Box(
