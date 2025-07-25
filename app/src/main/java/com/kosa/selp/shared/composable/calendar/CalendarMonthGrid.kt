@@ -4,10 +4,10 @@ package com.kosa.selp.shared.composable.calendar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,7 +28,8 @@ import java.util.Date
 @Composable
 fun CalendarMonthGrid(
     month: Date,
-    config: CalendarConfig
+    config: CalendarConfig,
+    modifier: Modifier = Modifier
 ) {
     val calendar = Calendar.getInstance().apply {
         time = month
@@ -50,11 +51,12 @@ fun CalendarMonthGrid(
         if (extra < 7) repeat(extra) { add(null) }
     }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxSize()) {
         for (week in cells.chunked(7)) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .weight(1f)
             ) {
                 week.forEach { date ->
                     val ts = date?.time ?: 0L
@@ -81,7 +83,6 @@ fun CalendarMonthGrid(
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .aspectRatio(1f)
                             .padding(4.dp)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
@@ -102,13 +103,33 @@ fun CalendarMonthGrid(
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = Calendar.getInstance().apply { time = date }
-                                        .get(Calendar.DAY_OF_MONTH).toString(),
-                                    color = textColor,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center
-                                )
+                                Column(
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.Top,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    Text(
+                                        text = Calendar.getInstance().apply { time = date }
+                                            .get(Calendar.DAY_OF_MONTH).toString(),
+                                        color = textColor,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                                    )
+                                    // 해당 날짜의 이벤트가 있으면 아래에 표시
+                                    val dayEvents = config.events.filter { event ->
+                                        isSameDay(event.date, date)
+                                    }
+                                    if (dayEvents.isNotEmpty()) {
+                                        Text(
+                                            text = dayEvents.first().eventName, // 하루 1개만 표시
+                                            color = AppColor.primary,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            maxLines = 1,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
