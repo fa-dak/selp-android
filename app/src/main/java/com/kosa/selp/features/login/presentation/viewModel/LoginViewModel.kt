@@ -4,21 +4,26 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.kosa.selp.features.fcm.model.FcmTokenRegisterRequestDto
+import com.kosa.selp.features.fcm.service.FcmTokenApiService
 import com.kosa.selp.features.login.data.model.KakaoLoginRequest
 import com.kosa.selp.features.login.data.service.AuthApiService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authApiService: AuthApiService
+    private val authApiService: AuthApiService,
+    private val fcmTokenApiService: FcmTokenApiService
 ) : ViewModel() {
 
     private val _loginEvent = MutableSharedFlow<LoginEvent>()
@@ -62,7 +67,11 @@ class LoginViewModel @Inject constructor(
                 // 백엔드에 카카오 accessToken 전송
                 val request = KakaoLoginRequest(accessToken = token.accessToken)
                 val response = authApiService.loginWithKakao(request)
-
+                val fcmToken = FirebaseMessaging.getInstance().token.await()
+                Log.i("LoginViewModel", "FCM 토큰: $fcmToken")
+                fcmTokenApiService.registerToken(FcmTokenRegisterRequestDto(token = fcmToken))
+                Log.i("LoginViewModel", "FCM 토큰 등록 완료")
+                
                 // TODO: 서버로부터 받은 accessToken, refreshToken 저장 로직 추가
                 Log.i("LoginViewModel", "백엔드 로그인 성공: accessToken=${response.accessToken}")
 
