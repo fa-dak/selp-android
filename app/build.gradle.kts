@@ -28,10 +28,11 @@ android {
         }
 
         // BuildConfig에 추가
-        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${properties.getProperty("KAKAO_NATIVE_APP_KEY", "")}\"")
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", properties.getProperty("KAKAO_NATIVE_APP_KEY", ""))
+        buildConfigField("String", "BACKEND_BASE_URL", properties.getProperty("BACKEND_BASE_URL", ""))
 
         // AndroidManifest.xml에서 사용할 수 있도록 추가
-        manifestPlaceholders["kakaoAppKey"] = properties.getProperty("KAKAO_NATIVE_APP_KEY", "")
+        manifestPlaceholders["kakaoAppKey"] = properties.getProperty("KAKAO_NATIVE_APP_KEY", "").removeSurrounding("\"")
     }
 
     buildTypes {
@@ -77,6 +78,11 @@ dependencies {
     implementation(libs.lottie.compose)
 
     implementation("com.kakao.sdk:v2-user:2.19.0")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.hilt.compiler)
