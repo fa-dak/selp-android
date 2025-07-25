@@ -10,6 +10,7 @@ import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.kosa.selp.features.login.data.model.KakaoLoginRequest
 import com.kosa.selp.features.login.data.service.AuthApiService
+import com.kosa.selp.shared.data.manager.AuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authApiService: AuthApiService
+    private val authApiService: AuthApiService,
+    private val authManager: AuthManager // AuthManager 주입
 ) : ViewModel() {
 
     private val _loginEvent = MutableSharedFlow<LoginEvent>()
@@ -63,8 +65,13 @@ class LoginViewModel @Inject constructor(
                 val request = KakaoLoginRequest(accessToken = token.accessToken)
                 val response = authApiService.loginWithKakao(request)
 
-                // TODO: 서버로부터 받은 accessToken, refreshToken 저장 로직 추가
-                Log.i("LoginViewModel", "백엔드 로그인 성공: accessToken=${response.accessToken}")
+                // 서버로부터 받은 accessToken, refreshToken 저장
+                authManager.accessToken = response.accessToken
+                authManager.refreshToken = response.refreshToken
+                Log.i("LoginViewModel", "백엔드 로그인 성공 및 토큰 저장 완료")
+                Log.d("LoginViewModel", "Access Token: ${authManager.accessToken}")
+                Log.d("LoginViewModel", "Refresh Token: ${authManager.refreshToken}")
+
 
                 _loginEvent.emit(LoginEvent.LoginSuccess)
             } catch (e: Exception) {

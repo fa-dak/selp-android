@@ -104,7 +104,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "home", // 최초 앱 로딩 시 화면 위치 설정
+                        startDestination = "login", // 최초 앱 로딩 시 화면 위치 설정
                         modifier = Modifier.padding(
                             bottom = innerPadding.calculateBottomPadding(),
                             top = innerPadding.calculateTopPadding(),
