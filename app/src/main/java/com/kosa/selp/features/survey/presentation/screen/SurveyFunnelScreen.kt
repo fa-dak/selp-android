@@ -6,7 +6,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -18,14 +21,27 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.kosa.selp.features.survey.presentation.composable.*
-import com.kosa.selp.features.survey.presentation.funnel.*
-import com.kosa.selp.features.survey.viewModel.*
+import com.kosa.selp.features.survey.presentation.composable.ExitConfirmBottomSheet
+import com.kosa.selp.features.survey.presentation.composable.FreeInputBottomSheet
+import com.kosa.selp.features.survey.presentation.funnel.AgeFunnel
+import com.kosa.selp.features.survey.presentation.funnel.BudgetFunnel
+import com.kosa.selp.features.survey.presentation.funnel.GenderFunnel
+import com.kosa.selp.features.survey.presentation.funnel.PreferenceFunnel
+import com.kosa.selp.features.survey.presentation.funnel.RelationshipFunnel
+import com.kosa.selp.features.survey.viewModel.SurveyEvent
+import com.kosa.selp.features.survey.viewModel.SurveyProgress
+import com.kosa.selp.features.survey.viewModel.SurveyStep
+import com.kosa.selp.features.survey.viewModel.SurveyViewModel
 import com.kosa.selp.shared.theme.AppColor
 import kotlinx.coroutines.launch
 
@@ -33,7 +49,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun SurveyFunnelScreen(
     navController: NavController,
-    onExit: () -> Unit,
     viewModel: SurveyViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -51,7 +66,7 @@ fun SurveyFunnelScreen(
             onDismiss = { showExitSheet = false },
             onConfirm = {
                 showExitSheet = false
-                onExit()
+                navController.popBackStack("home", inclusive = false)
             }
         )
     }

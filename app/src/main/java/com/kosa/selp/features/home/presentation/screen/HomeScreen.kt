@@ -2,13 +2,34 @@ package com.kosa.selp.features.home.presentation.screen
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,11 +41,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.kosa.selp.R
-import com.kosa.selp.shared.composable.navigation.BottomNavBar
 import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.Primary
 import com.kosa.selp.shared.theme.Secondary
@@ -41,10 +62,7 @@ data class GiftItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onStartSurvey: () -> Unit,
-    onViewHistory: () -> Unit,
-    onViewAnniversaries: () -> Unit,
-    onViewSettings: () -> Unit
+    navController: NavController
 ) {
     val anniversaries = listOf(
         "지민생일" to "D-7",
@@ -63,104 +81,96 @@ fun HomeScreen(
         GiftItem("커플 머그잔", "https://picsum.photos/id/109/200/300", "22,000원"),
         GiftItem("목욕 바스켓 세트", "https://picsum.photos/id/1020/200/300", "38,000원")
     )
-
-    Scaffold(
-        containerColor = AppColor.white,
-        bottomBar = {
-            BottomNavBar(
-                selectedIndex = 0,
-                onItemSelected = {}
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppColor.white)
+            .systemBarsPadding()
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "어떤 선물을 해야할지\n고민하시는 보라님을 위해 준비했어요!",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                IconButton(onClick = {}) {
-                    Icon(Icons.Default.Notifications, contentDescription = null)
-                }
+            Text(
+                text = "어떤 선물을 해야할지\n고민하시는 보라님을 위해 준비했어요!",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            IconButton(onClick = {}) {
+                Icon(Icons.Default.Notifications, contentDescription = null)
             }
+        }
 
-            Button(
-                onClick = onStartSurvey,
+        Button(
+            onClick = { navController.navigate("surveyIntro") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            shape = RoundedCornerShape(28.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+            contentPadding = PaddingValues()
+        ) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(28.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                contentPadding = PaddingValues()
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.horizontalGradient(listOf(Primary, Secondary)),
+                        shape = RoundedCornerShape(28.dp)
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            brush = Brush.horizontalGradient(listOf(Primary, Secondary)),
-                            shape = RoundedCornerShape(28.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("선물 추천받기", color = White, fontWeight = FontWeight.SemiBold)
-                }
+                Text("선물 추천받기", color = White, fontWeight = FontWeight.SemiBold)
             }
+        }
 
-            Column {
-                Text("곧 다가올 날, 선물 준비하세요!", fontWeight = FontWeight.Medium)
-                Spacer(Modifier.height(8.dp))
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(anniversaries) { (title, dday) ->
-                        Card(
-                            shape = RoundedCornerShape(8.dp),
-                            colors = CardDefaults.cardColors(containerColor = White),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                            modifier = Modifier.size(120.dp)
+        Column {
+            Text("곧 다가올 날, 선물 준비하세요!", fontWeight = FontWeight.Medium)
+            Spacer(Modifier.height(8.dp))
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(anniversaries) { (title, dday) ->
+                    Card(
+                        shape = RoundedCornerShape(8.dp),
+                        colors = CardDefaults.cardColors(containerColor = White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                        modifier = Modifier.size(120.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(12.dp),
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            horizontalAlignment = Alignment.Start
                         ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(12.dp),
-                                verticalArrangement = Arrangement.SpaceBetween,
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                Text(
-                                    text = dday,
-                                    style = MaterialTheme.typography.titleLarge.copy(
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = Secondary
-                                    )
+                            Text(
+                                text = dday,
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Secondary
                                 )
-                                Text(
-                                    text = title,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = TextPrimary
-                                )
-                            }
+                            )
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextPrimary
+                            )
                         }
                     }
                 }
             }
+        }
 
 
-            Column {
-                Text("이런 선물은 어때요?", fontWeight = FontWeight.Medium)
-                Spacer(Modifier.height(8.dp))
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(recommendedGifts) { gift ->Card(
+        Column {
+            Text("이런 선물은 어때요?", fontWeight = FontWeight.Medium)
+            Spacer(Modifier.height(8.dp))
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(recommendedGifts) { gift ->
+                    Card(
                         modifier = Modifier
                             .width(180.dp)
-                            .height(240.dp), // 적절히 늘림
+                            .height(240.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = White),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -184,8 +194,15 @@ fun HomeScreen(
                                             Log.d("CoilImage", "이미지 로딩 성공: ${gift.imageUrl}")
                                         },
                                         onError = { _, error ->
-                                            Log.e("CoilImage", "이미지 로딩 실패: ${gift.imageUrl}", error.throwable)
-                                            Log.e("CoilImage", "에러 메시지: ${error.throwable.message}")
+                                            Log.e(
+                                                "CoilImage",
+                                                "이미지 로딩 실패: ${gift.imageUrl}",
+                                                error.throwable
+                                            )
+                                            Log.e(
+                                                "CoilImage",
+                                                "에러 메시지: ${error.throwable.message}"
+                                            )
                                         }
                                     )
                                     .build(),
@@ -216,7 +233,6 @@ fun HomeScreen(
                         }
                     }
 
-                    }
                 }
             }
         }

@@ -1,13 +1,24 @@
 package com.kosa.selp.features.survey.presentation.screen
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.kosa.selp.features.survey.viewModel.SurveyStep
 import com.kosa.selp.features.survey.viewModel.SurveyViewModel
 import com.kosa.selp.shared.theme.AppColor
@@ -18,7 +29,7 @@ import kotlinx.coroutines.flow.filter
 
 @Composable
 fun SurveyResultWaitingScreen(
-    onComplete: () -> Unit,
+    navController: NavController,
     viewModel: SurveyViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -29,10 +40,9 @@ fun SurveyResultWaitingScreen(
             .filter { it == SurveyStep.COMPLETE }
             .collectLatest {
                 delay(300)
-                onComplete()
+                navController.navigate("surveyResult")
             }
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()

@@ -1,6 +1,7 @@
 package com.kosa.selp.shared.composable.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Home
@@ -10,8 +11,8 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kosa.selp.shared.theme.AppColor
@@ -19,10 +20,11 @@ import com.kosa.selp.shared.theme.AppColor
 
 @Composable
 fun BottomNavBar(
+    modifier: Modifier = Modifier,
     selectedIndex: Int,
-    onItemSelected: (Int) -> Unit
+    onItemSelected: (Int) -> Unit,
 ) {
-    val items = listOf("홈", "선물", "일정","마이 페이지")
+    val items = listOf("홈", "선물", "일정", "마이 페이지")
     val icons = listOf(
         Icons.Filled.Home,
         Icons.Filled.CardGiftcard,
@@ -38,6 +40,7 @@ fun BottomNavBar(
             val isSelected = selectedIndex == index
 
             NavigationBarItem(
+                modifier = modifier,
                 selected = isSelected,
                 onClick = { onItemSelected(index) },
                 icon = {
