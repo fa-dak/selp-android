@@ -47,6 +47,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.kosa.selp.R
+import com.kosa.selp.features.home.ageGroupGift.screen.AgeGroupGiftSection
 import com.kosa.selp.shared.theme.AppColor
 
 data class GiftItem(
@@ -236,6 +237,9 @@ fun HomeScreen(
                     }
                 }
             }
+        }
+        item {
+            AgeGroupGiftSection()
         }
     }
 }
