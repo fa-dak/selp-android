@@ -6,11 +6,21 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     id("kotlin-kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.kosa.selp"
     compileSdk = 36
+
+    signingConfigs {
+        create("sharedDebug") {
+            storeFile = file("${rootDir}/tools/shared-debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
 
     defaultConfig {
         applicationId = "com.kosa.selp"
@@ -28,11 +38,20 @@ android {
         }
 
         // BuildConfig에 추가
-        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", properties.getProperty("KAKAO_NATIVE_APP_KEY", ""))
-        buildConfigField("String", "BACKEND_BASE_URL", properties.getProperty("BACKEND_BASE_URL", ""))
+        buildConfigField(
+            "String",
+            "KAKAO_NATIVE_APP_KEY",
+            properties.getProperty("KAKAO_NATIVE_APP_KEY", "")
+        )
+        buildConfigField(
+            "String",
+            "BACKEND_BASE_URL",
+            properties.getProperty("BACKEND_BASE_URL", "")
+        )
 
         // AndroidManifest.xml에서 사용할 수 있도록 추가
-        manifestPlaceholders["kakaoAppKey"] = properties.getProperty("KAKAO_NATIVE_APP_KEY", "").removeSurrounding("\"")
+        manifestPlaceholders["kakaoAppKey"] =
+            properties.getProperty("KAKAO_NATIVE_APP_KEY", "").removeSurrounding("\"")
     }
 
     buildTypes {
@@ -43,6 +62,11 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("sharedDebug")
+        }
+
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -78,6 +102,10 @@ dependencies {
     implementation(libs.lottie.compose)
 
     implementation("com.kakao.sdk:v2-user:2.19.0")
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
