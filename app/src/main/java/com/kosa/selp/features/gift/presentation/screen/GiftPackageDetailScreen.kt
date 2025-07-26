@@ -4,12 +4,14 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -18,13 +20,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.kosa.selp.features.gift.composable.MessageRecommendBottomSheet
 import com.kosa.selp.features.home.presentation.screen.GiftItem
 import com.kosa.selp.shared.composable.gift.GiftCardGrid
 import com.kosa.selp.shared.theme.AppColor
@@ -75,6 +85,8 @@ fun GiftPackageDetailScreen(
         ),
     )
 
+    var showSheet by remember { mutableStateOf(false) }
+
     BackHandler { navController.popBackStack() }
 
     Scaffold(
@@ -83,17 +95,22 @@ fun GiftPackageDetailScreen(
                 title = {},
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "뒤로가기",
-                            tint = TextPrimary
-                        )
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "뒤로가기", tint = TextPrimary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = AppColor.white)
             )
         },
-        containerColor = AppColor.white
+        containerColor = AppColor.white,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { showSheet = true },
+                containerColor = AppColor.primary,
+                shape = CircleShape,
+            ) {
+                Icon(Icons.Default.Edit, "메시지 추천", tint = Color.White)
+            }
+        }
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -102,13 +119,9 @@ fun GiftPackageDetailScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 0.dp)
-                ) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
-                        text = buildAnnotatedString {
+                        buildAnnotatedString {
                             append("보라님의 ")
                             withStyle(style = SpanStyle(color = AppColor.primary)) {
                                 append("20대 친구를\n")
@@ -116,7 +129,7 @@ fun GiftPackageDetailScreen(
                             append("위한 추천 선물 결과입니다")
                         },
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                        color = AppColor.textPrimary,
+                        color = AppColor.textPrimary
                     )
                 }
             }
@@ -128,5 +141,19 @@ fun GiftPackageDetailScreen(
                 )
             }
         }
+
+        if (showSheet) {
+            MessageRecommendBottomSheet(onDismiss = { showSheet = false })
+        }
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun GiftPackageDetailPreview() {
+    GiftPackageDetailScreen(
+        giftPackageId = "dummy",
+        navController = rememberNavController()
+    )
 }
