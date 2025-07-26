@@ -3,29 +3,20 @@ package com.kosa.selp.features.home.presentation.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,23 +27,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import com.kosa.selp.R
+import com.kosa.selp.features.home.composable.AnniversaryList
+import com.kosa.selp.shared.composable.gift.GiftCardGrid
+import com.kosa.selp.shared.composable.gift.GiftPackageRowList
 import com.kosa.selp.shared.theme.AppColor
 
 data class GiftItem(
     val title: String,
     val imageUrl: String,
     val price: String
+)
+
+data class GiftPackage(
+    val id: String,
+    val title: String,
+    val recipient: String,
+    val createdAt: String,
+    val gifts: List<GiftItem>
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,13 +93,30 @@ fun HomeScreen(
         ),
     )
 
+    val recentGiftPackages = listOf(
+        GiftPackage(
+            id = "1",
+            title = "20대 친구를 위한 선물",
+            recipient = "친구",
+            createdAt = "2025.07.26",
+            gifts = recommendedGifts.take(4)
+        ),
+        GiftPackage(
+            id = "2",
+            title = "감사한 부모님 선물",
+            recipient = "부모님",
+            createdAt = "2025.07.20",
+            gifts = recommendedGifts.shuffled().take(4)
+        )
+    )
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .background(AppColor.white)
             .systemBarsPadding()
             .padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
             Row(
@@ -129,7 +140,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
-                shape = RoundedCornerShape(28.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 contentPadding = PaddingValues()
             ) {
@@ -140,7 +151,7 @@ fun HomeScreen(
                             brush = Brush.horizontalGradient(
                                 listOf(AppColor.primary, AppColor.secondary)
                             ),
-                            shape = RoundedCornerShape(28.dp)
+                            shape = RoundedCornerShape(16.dp)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
@@ -149,146 +160,25 @@ fun HomeScreen(
             }
         }
 
-        item {
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                items(anniversaries) { (title, dayName) ->
-                    Card(
-                        modifier = Modifier
-                            .width(130.dp)
-                            .aspectRatio(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    Brush.verticalGradient(
-                                        colors = listOf(
-                                            AppColor.primary,
-                                            AppColor.secondary.copy(alpha = 0.8f)
-                                        )
-                                    )
-                                )
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(72.dp)
-                                        .align(Alignment.BottomEnd)
-                                        .padding(8.dp)
-                                        .background(
-                                            color = Color.White.copy(alpha = 0.2f),
-                                            shape = CircleShape
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = dayName,
-                                        style = MaterialTheme.typography.titleSmall.copy(
-                                            fontWeight = FontWeight.ExtraBold,
-                                        ),
-                                        color = Color.White
-                                    )
-                                }
-                            }
 
-                            Text(
-                                modifier = Modifier
-                                    .align(Alignment.TopStart)
-                                    .padding(12.dp),
-                                text = title,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Color.White.copy(alpha = 0.9f),
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                }
-            }
+        item { AnniversaryList(anniversaries = anniversaries) }
+        item {
+            Text("촤근에 만든 선물꾸러미", fontWeight = FontWeight.Medium)
+            Spacer(modifier = Modifier.height(8.dp))
+            GiftPackageRowList(
+                packages = recentGiftPackages,
+                onClickPackage = { pkg -> }
+            )
         }
 
         item {
             Text("이런 선물은 어때요?", fontWeight = FontWeight.Medium)
-            Spacer(Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            GiftCardGrid(items = recommendedGifts, navController = navController)
         }
 
-        item {
-            recommendedGifts.chunked(2).forEach { rowItems ->
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    rowItems.forEach { gift ->
-                        GiftCard(
-                            gift = gift,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                    if (rowItems.size < 2) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
-            }
-        }
+
     }
 }
 
-@Composable
-fun GiftCard(
-    gift: GiftItem,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(0.8f)
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White)
-        ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(gift.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = gift.title,
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(R.drawable.selp_background),
-                error = painterResource(R.drawable.selp_background),
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        Text(
-            text = gift.title,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = AppColor.textSecondary,
-                fontWeight = FontWeight.Medium
-            ),
-            maxLines = 1
-        )
-
-        Text(
-            text = gift.price,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = AppColor.textPrimary,
-                fontWeight = FontWeight.Bold
-            )
-        )
-    }
-}
 
