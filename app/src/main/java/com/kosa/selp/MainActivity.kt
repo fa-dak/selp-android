@@ -19,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kosa.selp.features.calendar.presentation.CalendarScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftDetailScreen
+import com.kosa.selp.features.gift.presentation.screen.GiftPackageDetailScreen
 import com.kosa.selp.features.gift.presentation.screen.SurveyResultScreen
 import com.kosa.selp.features.home.presentation.screen.HomeScreen
 import com.kosa.selp.features.login.presentation.screen.LoginScreen
@@ -142,6 +143,16 @@ class MainActivity : ComponentActivity() {
                             val giftId = backStackEntry.arguments?.getString("giftId")
                             if (giftId != null) {
                                 GiftDetailScreen(giftId = giftId, navController = navController)
+                            }
+                        }
+
+                        animatedComposable("giftPackage/{giftPackageId}") { backStackEntry ->
+                            val giftPackageId = backStackEntry.arguments?.getString("giftPackageId")
+                            if (giftPackageId != null) {
+                                GiftPackageDetailScreen(
+                                    giftPackageId = giftPackageId,
+                                    navController = navController
+                                )
                             }
                         }
                     }

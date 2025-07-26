@@ -34,12 +34,11 @@ fun GiftCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(0.8f)
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
+                .aspectRatio(1f),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)

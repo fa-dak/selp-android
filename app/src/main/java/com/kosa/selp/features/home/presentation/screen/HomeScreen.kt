@@ -36,6 +36,7 @@ import com.kosa.selp.shared.composable.gift.GiftPackageRowList
 import com.kosa.selp.shared.theme.AppColor
 
 data class GiftItem(
+    val id: String,
     val title: String,
     val imageUrl: String,
     val price: String
@@ -62,31 +63,37 @@ fun HomeScreen(
 
     val recommendedGifts = listOf(
         GiftItem(
+            "1",
             "향 좋은 디퓨저",
             "https://ldb-phinf.pstatic.net/20241226_124/1735176183750fjEhg_JPEG/%C8%A6%C5%D7%B5%F0%C4%C9%C0%CC%C5%A9_%281%29.jpg",
             "19,800원"
         ),
         GiftItem(
+            "1",
             "레터링 케이크",
             "https://ldb-phinf.pstatic.net/20241226_81/1735176192690m2B0T_JPEG/%C8%AD%C0%CC%C6%AE%C8%A6%C5%D7%B5%F0.jpeg",
             "35,000원"
         ),
         GiftItem(
+            "3",
             "무드등",
             "https://ldb-phinf.pstatic.net/20250416_9/1744784155310s0lbX_JPEG/%BE%F3%B1%D7%B7%B9%C0%CC_%C6%DB%C7%C7.jpeg",
             "28,900원"
         ),
         GiftItem(
+            "4",
             "감성 꽃다발",
             "https://ldb-phinf.pstatic.net/20250416_9/1744784155310s0lbX_JPEG/%BE%F3%B1%D7%B7%B9%C0%CC_%C6%DB%C7%C7.jpeg",
             "42,000원"
         ),
         GiftItem(
+            "3",
             "에어팟 케이스",
             "https://ldb-phinf.pstatic.net/20250416_9/1744784155310s0lbX_JPEG/%BE%F3%B1%D7%B7%B9%C0%CC_%C6%DB%C7%C7.jpeg",
             "12,500원"
         ),
         GiftItem(
+            "2",
             "감성 엽서 세트",
             "https://ldb-phinf.pstatic.net/20250416_9/1744784155310s0lbX_JPEG/%BE%F3%B1%D7%B7%B9%C0%CC_%C6%DB%C7%C7.jpeg",
             "8,900원"
@@ -167,8 +174,9 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(8.dp))
             GiftPackageRowList(
                 packages = recentGiftPackages,
-                onClickPackage = { pkg -> }
-            )
+                onClick = { giftPackage ->
+                    navController.navigate("giftPackage/${giftPackage.id}")
+                })
         }
 
         item {

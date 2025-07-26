@@ -14,18 +14,18 @@ import com.kosa.selp.features.home.presentation.screen.GiftPackage
 fun GiftPackageRowList(
     packages: List<GiftPackage>,
     modifier: Modifier = Modifier,
-    onClickPackage: (GiftPackage) -> Unit = {}
+    onClick: (GiftPackage) -> Unit = {}
 ) {
     LazyRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(horizontal = 0.dp)
     ) {
-        items(packages) { pkg ->
+        items(packages) { giftPackage ->
             GiftPackageRowCard(
-                giftPackage = pkg,
+                giftPackage = giftPackage,
                 modifier = Modifier.fillParentMaxWidth(),
-                onClick = { onClickPackage(pkg) }
+                onClick = { onClick(giftPackage) }
             )
         }
     }
