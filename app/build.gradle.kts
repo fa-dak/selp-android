@@ -17,7 +17,7 @@ android {
         create("sharedDebug") {
             storeFile = file("${rootDir}/tools/shared-debug.keystore")
             storePassword = "android"
-            keyAlias = "sharedkeyalias" // 또는 androiddebugkey
+            keyAlias = "sharedkeyalias"
             keyPassword = "android"
         }
     }
