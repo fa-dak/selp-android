@@ -1,7 +1,9 @@
 package com.kosa.selp.shared.di
 
+import android.util.Log
 import com.kosa.selp.BuildConfig
 import com.kosa.selp.features.login.data.service.AuthApiService
+import com.kosa.selp.shared.data.interceptor.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,8 +30,12 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        authInterceptor: AuthInterceptor
+    ): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()
     }
@@ -37,6 +43,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        Log.d("NetworkModule", "BASE_URL: $BASE_URL")
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
