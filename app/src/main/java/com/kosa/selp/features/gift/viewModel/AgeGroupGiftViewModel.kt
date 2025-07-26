@@ -1,20 +1,20 @@
-package com.kosa.selp.features.home.ageGroupGift.viewModel
+package com.kosa.selp.features.gift.viewModel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kosa.selp.features.home.ageGroupGift.model.AgeGroupGiftItem
-import com.kosa.selp.features.home.ageGroupGift.repository.AgeGroupGiftRepository
+import com.kosa.selp.features.gift.model.AgeGroupGift
+import com.kosa.selp.features.gift.repository.AgeGroupGiftRepository
 import kotlinx.coroutines.launch
 
-class AgeGroupGiftViewModel: ViewModel() {
+class AgeGroupGiftViewModel : ViewModel() {
 
     var selectedAgeGroup by mutableStateOf("10대")
         private set
 
-    var gifts by mutableStateOf<List<AgeGroupGiftItem>>(emptyList())
+    var gifts by mutableStateOf<List<AgeGroupGift>>(emptyList())
         private set
 
     private val repository = AgeGroupGiftRepository()

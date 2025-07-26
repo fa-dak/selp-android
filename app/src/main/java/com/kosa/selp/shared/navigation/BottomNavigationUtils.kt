@@ -2,7 +2,7 @@ package com.kosa.selp.shared.navigation
 
 enum class BottomBarRoute(val route: String) {
     Home("home"),
-    Gift(""),
+    Gift("ageGift"),
     Calendar("calendar"),
     MyPage("");
 

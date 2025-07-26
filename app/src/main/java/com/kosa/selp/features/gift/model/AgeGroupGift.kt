@@ -1,6 +1,6 @@
-package com.kosa.selp.features.home.ageGroupGift.model
+package com.kosa.selp.features.gift.model
 
-data class AgeGroupGiftItem(
+data class AgeGroupGift(
     val id: String,
     val title: String,
     val ageGroup: String,

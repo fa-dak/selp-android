@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kosa.selp.features.calendar.presentation.CalendarScreen
+import com.kosa.selp.features.gift.presentation.screen.AgeGroupGiftScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftDetailScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftPackageDetailScreen
 import com.kosa.selp.features.gift.presentation.screen.SurveyResultScreen
@@ -154,6 +155,15 @@ class MainActivity : ComponentActivity() {
                                     navController = navController
                                 )
                             }
+                        }
+
+                        composable("ageGift") {
+                            AgeGroupGiftScreen(
+                                navController = navController,
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .consumeWindowInsets(innerPadding)
+                            )
                         }
                     }
                 }
