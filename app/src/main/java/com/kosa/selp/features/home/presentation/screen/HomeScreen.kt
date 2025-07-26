@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kosa.selp.features.home.ageGroupGift.screen.AgeGroupGiftSection
 import com.kosa.selp.features.home.composable.AnniversaryList
 import com.kosa.selp.shared.composable.gift.GiftCardGrid
 import com.kosa.selp.shared.composable.gift.GiftPackageRowList
@@ -185,6 +186,11 @@ fun HomeScreen(
             GiftCardGrid(items = recommendedGifts, navController = navController)
         }
 
+        item {
+            Text("연령대별 추천 선물", fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(8.dp))
+            AgeGroupGiftSection(navController = navController)
+        }
 
     }
 }
