@@ -13,6 +13,7 @@ import com.kosa.selp.features.fcm.model.FcmTokenRegisterRequestDto
 import com.kosa.selp.features.fcm.service.FcmTokenApiService
 import com.kosa.selp.features.login.data.model.KakaoLoginRequest
 import com.kosa.selp.features.login.data.service.AuthApiService
+import com.kosa.selp.shared.data.manager.AuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -23,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authApiService: AuthApiService,
-    private val fcmTokenApiService: FcmTokenApiService
+    private val fcmTokenApiService: FcmTokenApiService,
+    private val authManager: AuthManager
 ) : ViewModel() {
 
     private val _loginEvent = MutableSharedFlow<LoginEvent>()
@@ -67,13 +69,15 @@ class LoginViewModel @Inject constructor(
                 // 백엔드에 카카오 accessToken 전송
                 val request = KakaoLoginRequest(accessToken = token.accessToken)
                 val response = authApiService.loginWithKakao(request)
-                val fcmToken = FirebaseMessaging.getInstance().token.await()
-                Log.i("LoginViewModel", "FCM 토큰: $fcmToken")
-                fcmTokenApiService.registerToken(FcmTokenRegisterRequestDto(token = fcmToken))
-                Log.i("LoginViewModel", "FCM 토큰 등록 완료")
-                
-                // TODO: 서버로부터 받은 accessToken, refreshToken 저장 로직 추가
-                Log.i("LoginViewModel", "백엔드 로그인 성공: accessToken=${response.accessToken}")
+//                val fcmToken = FirebaseMessaging.getInstance().token.await()
+//                Log.i("LoginViewModel", "FCM 토큰: $fcmToken")
+//                fcmTokenApiService.registerToken(FcmTokenRegisterRequestDto(token = fcmToken))
+//                Log.i("LoginViewModel", "FCM 토큰 등록 완료")
+
+                // 서버로부터 받은 accessToken, refreshToken 저장
+                authManager.accessToken = response.accessToken
+                authManager.refreshToken = response.refreshToken
+                Log.i("LoginViewModel", "백엔드 로그인 성공 및 토큰 저장 완료")
 
                 _loginEvent.emit(LoginEvent.LoginSuccess)
             } catch (e: Exception) {
