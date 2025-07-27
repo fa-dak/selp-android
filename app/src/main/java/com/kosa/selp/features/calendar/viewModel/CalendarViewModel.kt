@@ -21,6 +21,13 @@ class CalendarViewModel : ViewModel() {
     private val _calendar = mutableStateOf(Calendar.getInstance())
     val calendar: State<Calendar> = _calendar
 
+    private fun updateCalendar(newCalendar: Calendar) {
+        _calendar.value = newCalendar
+        val year = newCalendar.get(Calendar.YEAR)
+        val month = newCalendar.get(Calendar.MONTH) + 1 // 0-indexed → 1-indexed
+        fetchEvents(year, month)
+    }
+
     // 선택된 날짜를 저장하는 상태 변수
     private val _selectedDate = mutableStateOf(Date())
     val selectedDate: State<Date> = _selectedDate
@@ -51,38 +58,21 @@ class CalendarViewModel : ViewModel() {
     private val api = retrofit.create(EventApiService::class.java)
 
     init {
-        fetchEvents()
+        val now = Calendar.getInstance()
+        updateCalendar(now)
     }
 
-    private fun fetchEvents() {
+    private fun fetchEvents(year: Int, month: Int) {
         viewModelScope.launch {
             try {
-                val apiEvents = api.getEvents()
+                val apiEvents = api.getEvents(year, month)
                 Log.d("CalendarViewModel", "잘 가져옴: $apiEvents")
                 if (apiEvents.isNotEmpty()) {
                     _events.value = apiEvents
                 }
             } catch (e: Exception) {
-                // 실패 시 기존 더미 데이터 유지
                 Log.d("CalendarViewModel", "실패: $e")
-                _events.value = listOf(
-                    CalendarEvent(
-                        eventId = "1",
-                        eventName = "가족 여행",
-                        eventType = "여행",
-                        receiverNickname = "세영이",
-                        notificationDaysBefore = 1,
-                        eventDate = SimpleDateFormat("yyyy-MM-dd").parse("2025-07-01")!!
-                    ),
-                    CalendarEvent(
-                        eventId = "2",
-                        eventName = "쇼핑",
-                        eventType = "기념일",
-                        receiverNickname = "엄마아빠",
-                        notificationDaysBefore = 3,
-                        eventDate = SimpleDateFormat("yyyy-MM-dd").parse("2025-07-10")!!
-                    )
-                )
+                // 더미 데이터 유지
             }
         }
     }
@@ -91,15 +81,16 @@ class CalendarViewModel : ViewModel() {
     fun goToPreviousMonth() {
         val newCalendar = _calendar.value.clone() as Calendar
         newCalendar.add(Calendar.MONTH, -1)
-        _calendar.value = newCalendar
+        updateCalendar(newCalendar)
     }
 
     // 다음 달로 이동하는 함수
     fun goToNextMonth() {
         val newCalendar = _calendar.value.clone() as Calendar
         newCalendar.add(Calendar.MONTH, 1)
-        _calendar.value = newCalendar
+        updateCalendar(newCalendar)
     }
+
 
     fun onDateClick(date: Date) {
         val sameDay = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date) ==

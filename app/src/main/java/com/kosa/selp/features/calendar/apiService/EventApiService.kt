@@ -9,10 +9,14 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface EventApiService {
-    @GET("events?year=2025&month=7")
-    suspend fun getEvents(): List<CalendarEvent>
+    @GET("events")
+    suspend fun getEvents(
+        @Query("year") year: Int,
+        @Query("month") month: Int
+    ): List<CalendarEvent>
 
     @POST("events")
     suspend fun registerEvent(
