@@ -1,5 +1,6 @@
 package com.kosa.selp.features.mypage.presentation.screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -53,7 +54,7 @@ fun GiftBundleListScreen(
     navController: NavController,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
-    val bundles by viewModel.giftBundles.collectAsState()
+    val groupedBundles by viewModel.giftBundles.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.fetchMyGiftBundles()
@@ -62,7 +63,13 @@ fun GiftBundleListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("내 선물 꾸러미", color = AppColor.textPrimary) },
+                title = {
+                    Text(
+                        text = "내 선물 꾸러미",
+                        style = MaterialTheme.typography.titleMedium, // 스타일 적용
+                        fontWeight = FontWeight.Bold // FontWeight 적용
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로 가기")
@@ -78,26 +85,54 @@ fun GiftBundleListScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(bundles) { bundle ->
-                GiftBundleItem(bundle = bundle)
+            // groupedBundles의 key(날짜)들을 순회
+            val dates = groupedBundles.keys.sortedDescending()
+            dates.forEachIndexed { index, date ->
+                // 1. 날짜 헤더 표시
+                item {
+                    Text(
+                        text = date,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp, top = if (index > 0) 24.dp else 0.dp)
+                    )
+                }
+                // 2. 해당 날짜의 꾸러미 카드 목록 표시
+                val bundlesOnDate = groupedBundles[date] ?: emptyList()
+                items(bundlesOnDate) { bundle ->
+                    GiftBundleItem(
+                        bundle = bundle,
+                        onClick = {
+                            navController.navigate("giftBundleDetail/${bundle.giftBundleId}")
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp)) // 카드 사이의 간격
+                }
             }
         }
     }
 }
 
 @Composable
-fun GiftBundleItem(bundle: GiftBundleResponse) {
+fun GiftBundleItem(
+    bundle: GiftBundleResponse,
+    onClick: () -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick), // 클릭 이벤트 추가
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = AppColor.white)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // 1. 받는 사람 정보
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // 받는 사람 정보
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
                     imageVector = Icons.Default.Face,
                     contentDescription = "받는 사람",
@@ -117,14 +152,14 @@ fun GiftBundleItem(bundle: GiftBundleResponse) {
                 )
             }
             Spacer(modifier = Modifier.height(4.dp))
-            // 2. 이벤트 정보
+            // 이벤트 정보
             Text(
                 text = "${bundle.eventName} (${bundle.eventDate})",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(start = 4.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            // 3. 상품 이미지 목록 (가로 스크롤)
+            // 상품 이미지 목록
             Text(
                 text = "담은 선물",
                 style = MaterialTheme.typography.bodyMedium,
@@ -157,11 +192,21 @@ fun GiftBundleItemPreview() {
         imagePath = "https://image.thehyundai.com/static/6/9/8/92/A1/40A1928964_0_600.jpg", detailPath = ""
     )
     val fakeBundle = GiftBundleResponse(
-        giftBundleId = 1, eventId = 1, eventType = "BIRTHDAY", eventDate = "2025-08-15",
-        eventName = "민준이 생일", receiverInfoId = 1, receiverNickname = "대학 동기(김민준)",
-        relationship = "친구", products = listOf(fakeProduct, fakeProduct, fakeProduct)
+        giftBundleId = 1,
+        createdDate = "25.07.27",
+        eventId = 1,
+        eventType = "BIRTHDAY",
+        eventDate = "2025-08-15",
+        eventName = "민준이 생일",
+        receiverInfoId = 1,
+        receiverNickname = "대학 동기(김민준)",
+        relationship = "친구",
+        products = listOf(fakeProduct, fakeProduct, fakeProduct)
     )
     SelpTheme {
-        GiftBundleItem(bundle = fakeBundle)
+        GiftBundleItem(
+            bundle = fakeBundle,
+            onClick = {} // Preview에서는 아무 동작도 하지 않는 빈 람다 전달
+        )
     }
 }

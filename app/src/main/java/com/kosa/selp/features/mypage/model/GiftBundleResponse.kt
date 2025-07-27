@@ -9,6 +9,8 @@ import kotlinx.parcelize.Parcelize
 data class GiftBundleResponse(
     @SerializedName("giftBundleId")
     val giftBundleId: Long,
+    @SerializedName("createdDate")
+    val createdDate: String,
     @SerializedName("eventId")
     val eventId: Long,
     @SerializedName("eventType")

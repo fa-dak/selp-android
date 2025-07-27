@@ -21,11 +21,12 @@ sealed class MyPageEvent {
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
     private val myPageRepository: MyPageRepository,
-    private val authManager: AuthManager // AuthManager 주입
+    private val authManager: AuthManager
 ) : ViewModel() {
 
-    private val _giftBundles = MutableStateFlow<List<GiftBundleResponse>>(emptyList())
-    val giftBundles: StateFlow<List<GiftBundleResponse>> = _giftBundles
+    // StateFlow의 타입을 그룹화된 Map으로 변경
+    private val _giftBundles = MutableStateFlow<Map<String, List<GiftBundleResponse>>>(emptyMap())
+    val giftBundles: StateFlow<Map<String, List<GiftBundleResponse>>> = _giftBundles
 
     private val _event = Channel<MyPageEvent>()
     val event = _event.receiveAsFlow()
@@ -33,9 +34,13 @@ class MyPageViewModel @Inject constructor(
     fun fetchMyGiftBundles() {
         viewModelScope.launch {
             try {
-                val bundles = myPageRepository.getMyGiftBundles()
-                _giftBundles.value = bundles
-                Log.d("MyPageViewModel", "성공: ${bundles.size}개 아이템 로드")
+                // 1. Repository에서 평평한 리스트를 가져옴
+                val bundlesList = myPageRepository.getMyGiftBundles()
+                // 2. 'createdDate'를 기준으로 데이터를 그룹화하여 Map으로 변환
+                val groupedBundles = bundlesList.groupBy { it.createdDate }
+                // 3. 그룹화된 데이터를 StateFlow에 업데이트
+                _giftBundles.value = groupedBundles
+                Log.d("MyPageViewModel", "성공: ${groupedBundles.size}개 날짜 그룹 로드")
             } catch (e: Exception) {
                 Log.e("MyPageViewModel", "실패: ${e.message}")
             }
