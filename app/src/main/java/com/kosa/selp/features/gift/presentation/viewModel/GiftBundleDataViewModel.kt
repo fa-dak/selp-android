@@ -7,6 +7,7 @@ import com.kosa.selp.features.gift.data.response.GiftItemDto
 import com.kosa.selp.features.gift.domain.usecase.GetGiftBundleDetailUseCase
 import com.kosa.selp.features.gift.domain.usecase.GetGiftBundleRecommendMessagesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,7 +47,6 @@ class GiftBundleDataViewModel @Inject constructor(
     private val getRecommendedMessagesUseCase: GetGiftBundleRecommendMessagesUseCase
 ) : ViewModel() {
 
-
     private val _giftBundleData = MutableStateFlow<GiftBundleDetailResponseDto?>(null)
     val giftBundleData: StateFlow<GiftBundleDetailResponseDto?> = _giftBundleData.asStateFlow()
 
@@ -62,8 +62,10 @@ class GiftBundleDataViewModel @Inject constructor(
 
     fun loadRecommendedMessages(bundleId: String) {
         viewModelScope.launch {
+            delay(1500)
 //            val result = getRecommendedMessagesUseCase(bundleId)
             _recommendedMessages.value = dummyMessages
+
         }
     }
 

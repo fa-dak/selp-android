@@ -41,7 +41,6 @@ fun GiftPackageDetailScreen(
 
     LaunchedEffect(uiState.showOverlay) {
         if (uiState.showOverlay) {
-            uiViewModel.finishLoading()
             recommendedMessages.forEachIndexed { index, message ->
                 for (i in message.indices) {
                     delay(10)
@@ -68,6 +67,7 @@ fun GiftPackageDetailScreen(
         }
     }
 
+
     if (uiState.showBottomSheet) {
         MessageRecommendBottomSheet(
             viewModel = messageViewModel,
@@ -82,9 +82,10 @@ fun GiftPackageDetailScreen(
     if (uiState.showOverlay) {
         MessageOverlay(
             messages = uiState.typingTexts,
-            isLoading = uiState.isLoading,
+            isLoading = recommendedMessages.isEmpty(),
             onDismiss = {
                 uiViewModel.resetOverlay()
+                messageViewModel.reset()
                 dataViewModel.resetMessages()
             }
         )

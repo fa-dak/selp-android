@@ -22,7 +22,6 @@ class GiftBundleUiViewModel : ViewModel() {
     fun showOverlay() {
         _uiState.value = _uiState.value.copy(
             showOverlay = true,
-            isLoading = true,
             typingTexts = List(3) { "" }
         )
     }
@@ -34,14 +33,9 @@ class GiftBundleUiViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(typingTexts = updated)
     }
 
-    fun finishLoading() {
-        _uiState.value = _uiState.value.copy(isLoading = false)
-    }
-
     fun resetOverlay() {
         _uiState.value = _uiState.value.copy(
             showOverlay = false,
-            isLoading = true,
             typingTexts = List(3) { "" }
         )
     }
