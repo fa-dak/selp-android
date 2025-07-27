@@ -4,7 +4,7 @@ enum class BottomBarRoute(val route: String) {
     Home("home"),
     Gift("ageGift"),
     Calendar("calendar"),
-    MyPage("");
+    MyPage("mypage");
 
     companion object {
         val allRoutes = entries.map { it.route }
