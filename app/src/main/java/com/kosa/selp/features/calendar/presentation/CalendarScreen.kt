@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -26,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,6 +43,7 @@ import com.kosa.selp.shared.composable.calendar.CalendarMonthGrid
 import com.kosa.selp.shared.composable.calendar.CalendarWeekDays
 import com.kosa.selp.shared.composable.calendar.model.CalendarConfig
 import com.kosa.selp.shared.theme.AppColor
+import java.util.Calendar
 import java.util.Collections.emptyList
 
 @Composable
@@ -48,7 +52,11 @@ fun CalendarScreen(
     modifier: Modifier = Modifier
 ) {
     val viewModel: CalendarViewModel = hiltViewModel()
-
+    val currentMonthOffset = 1000
+    val pagerState = rememberPagerState(
+        initialPage = currentMonthOffset,
+        pageCount = { Int.MAX_VALUE }
+    )
     // 현재 달력, 선택된 날짜, 모달 표시 여부 상태 값
     val calendar = viewModel.calendar.value
     val selectedDate = viewModel.selectedDate.value
@@ -56,6 +64,20 @@ fun CalendarScreen(
     val events = viewModel.events.value
     val selectedDayEvents = viewModel.selectedDayEvents
     val selectedEventForDetail = remember { mutableStateOf<CalendarEvent?>(null) }
+
+    // 기준 날짜를 remember로 고정
+    val baseCalendar = remember {
+        Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_MONTH, 1) // 날짜를 1일로 고정하면 월 기준 정확
+        }
+    }
+    LaunchedEffect(pagerState.currentPage) {
+        val offset = pagerState.currentPage - currentMonthOffset
+        val newCalendar = (baseCalendar.clone() as Calendar).apply {
+            add(Calendar.MONTH, offset)
+        }
+        viewModel.setCalendar(newCalendar)
+    }
 
     selectedEventForDetail.value?.let { event ->
         AlertDialog(
@@ -106,11 +128,21 @@ fun CalendarScreen(
         // 요일 표시 줄
         CalendarWeekDays()
         // 달력 그리드 (날짜 선택 등) - 세로 공간을 꽉 채우게 weight(1f) 적용
-        CalendarMonthGrid(
-            month = calendar.time,
-            config = config,
+        HorizontalPager(
+            state = pagerState,
             modifier = Modifier.weight(1f)
-        )
+        ) { page ->
+            val offset = page - currentMonthOffset
+            val targetCalendar = (baseCalendar.clone() as Calendar).apply {
+                add(Calendar.MONTH, offset)
+            }
+
+            CalendarMonthGrid(
+                month = targetCalendar.time,
+                config = config.copy(onChange = { viewModel.onDateClick(it) }),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
 
         // 선택된 날짜의 이벤트를 아래에 카드 형태로 표시
@@ -130,7 +162,7 @@ fun CalendarScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { selectedEventForDetail.value = event },
-                        colors = androidx.compose.material3.CardDefaults.cardColors(
+                        colors = CardDefaults.cardColors(
                             containerColor = if (idx % 2 == 0) AppColor.primary.copy(alpha = 0.5f) else AppColor.secondary.copy(
                                 alpha = 0.5f
                             )

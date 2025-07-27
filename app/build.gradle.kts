@@ -95,7 +95,7 @@ dependencies {
 
     // 날짜 선택
     implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
-
+    implementation("androidx.compose.foundation:foundation:1.8.3")
     // Kotlin Coroutines core
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     // Kotlin Coroutines Android

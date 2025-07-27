@@ -109,5 +109,8 @@ class CalendarViewModel : ViewModel() {
         _isEventModalVisible.value = false
     }
 
-
+    fun setCalendar(newCalendar: Calendar) {
+        _calendar.value = newCalendar
+        fetchEvents(newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH) + 1)
+    }
 }
