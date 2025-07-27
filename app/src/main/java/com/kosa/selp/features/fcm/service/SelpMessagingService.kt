@@ -15,8 +15,9 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.kosa.selp.MainActivity
 import com.kosa.selp.R
-import com.kosa.selp.features.fcm.data.remote.FcmApiService
 import com.kosa.selp.features.fcm.data.request.FcmTokenRegisterRequestDto
+import com.kosa.selp.features.fcm.domain.usecase.RegisterFcmTokenUseCase
+import com.kosa.selp.features.fcm.model.DeviceType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,8 +26,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SelpMessagingService : FirebaseMessagingService() {
+
     @Inject
-    lateinit var fcmApiService: FcmApiService
+    lateinit var registerFcmTokenUseCase: RegisterFcmTokenUseCase
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.i("FCM", "onMessageReceived 호출됨")
@@ -41,15 +43,17 @@ class SelpMessagingService : FirebaseMessagingService() {
         Log.i("FCM", "FCM 토큰 갱신됨: $token")
 
         CoroutineScope(Dispatchers.IO).launch {
-            try {
-                fcmApiService.registerToken(FcmTokenRegisterRequestDto(token = token))
+            runCatching {
+                val request =
+                    FcmTokenRegisterRequestDto(token = token, deviceType = DeviceType.ANDROID)
+                registerFcmTokenUseCase(request)
+            }.onSuccess {
                 Log.i("FCM", "토큰 갱신 등록 완료")
-            } catch (e: Exception) {
-                Log.e("FCM", "토큰 갱신 등록 실패", e)
+            }.onFailure {
+                Log.e("FCM", "토큰 갱신 등록 실패", it)
             }
         }
     }
-
 
     private fun showNotification(title: String, message: String) {
         val channelId = "selp_channel"
@@ -58,6 +62,7 @@ class SelpMessagingService : FirebaseMessagingService() {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
+
         val pendingIntent = PendingIntent.getActivity(
             this, 0, intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -70,6 +75,7 @@ class SelpMessagingService : FirebaseMessagingService() {
             val channel = NotificationChannel(channelId, name, importance).apply {
                 description = descriptionText
             }
+
             val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
@@ -83,10 +89,9 @@ class SelpMessagingService : FirebaseMessagingService() {
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
 
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
+        if (
+            ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED
         ) {
             Log.w("FCM", "알림 권한 없음 → 알림 생략됨")
             return
@@ -94,6 +99,4 @@ class SelpMessagingService : FirebaseMessagingService() {
 
         NotificationManagerCompat.from(this).notify(notificationId, builder.build())
     }
-
-
 }
