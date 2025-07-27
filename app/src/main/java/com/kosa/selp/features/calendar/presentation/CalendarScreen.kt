@@ -1,23 +1,39 @@
 package com.kosa.selp.features.calendar.presentation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.kosa.selp.features.calendar.dto.CalendarEvent
 import com.kosa.selp.features.calendar.viewModel.CalendarViewModel
 import com.kosa.selp.shared.composable.calendar.CalendarHeader
 import com.kosa.selp.shared.composable.calendar.CalendarMonthGrid
@@ -26,19 +42,10 @@ import com.kosa.selp.shared.composable.calendar.model.CalendarConfig
 import com.kosa.selp.shared.theme.AppColor
 import java.util.Collections.emptyList
 
-data class CalendarEvent(
-    val eventId: String,
-    val eventName: String,
-    val eventType: String,
-    val receiverName: String,
-    val notificationDaysBefore: Int,
-    val date: java.util.Date
-)
-
 @Composable
 fun CalendarScreen(
+    navController: NavController,
     modifier: Modifier = Modifier
-
 ) {
     val viewModel: CalendarViewModel = hiltViewModel()
 
@@ -48,6 +55,28 @@ fun CalendarScreen(
     val isModalVisible = viewModel.isEventModalVisible.value
     val events = viewModel.events.value
     val selectedDayEvents = viewModel.selectedDayEvents
+    val selectedEventForDetail = remember { mutableStateOf<CalendarEvent?>(null) }
+
+    selectedEventForDetail.value?.let { event ->
+        AlertDialog(
+            onDismissRequest = { selectedEventForDetail.value = null },
+            confirmButton = {
+                Button(onClick = { selectedEventForDetail.value = null }) {
+                    Text("확인")
+                }
+            },
+            title = { Text("이벤트 상세") },
+            text = {
+                Column {
+                    Text("제목: ${event.eventName}")
+                    Text("유형: ${event.eventType}")
+                    Text("일자: ${event.eventDate}")
+                    Text("받는 사람: ${event.receiverNickname}")
+                    Text("알림: ${event.notificationDaysBefore}일 전")
+                }
+            }
+        )
+    }
 
     // 달력 설정 객체 (선택 날짜, 날짜 변경 이벤트, 모드, 범위, 비활성화 날짜, 이벤트)
     val config = CalendarConfig(
@@ -65,8 +94,8 @@ fun CalendarScreen(
             .fillMaxSize()
             .background(AppColor.white)
             .systemBarsPadding()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+            .padding(horizontal = 24.dp, vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         // 달력 헤더 (월 이동 버튼 포함)
         CalendarHeader(
@@ -85,16 +114,22 @@ fun CalendarScreen(
 
 
         // 선택된 날짜의 이벤트를 아래에 카드 형태로 표시
-        if (selectedDayEvents.isNotEmpty()) {
+        if (isModalVisible && !selectedDayEvents.isEmpty()) {
+            val scrollState = rememberScrollState()
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .heightIn(max = 130.dp)
+                    .verticalScroll(scrollState)
                     .padding(top = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                selectedDayEvents.forEachIndexed { idx, event ->
-                    androidx.compose.material3.Card(
-                        modifier = Modifier.fillMaxWidth(),
+                selectedDayEvents.forEachIndexed { idx: Int, event: CalendarEvent ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { selectedEventForDetail.value = event },
                         colors = androidx.compose.material3.CardDefaults.cardColors(
                             containerColor = if (idx % 2 == 0) AppColor.primary.copy(alpha = 0.5f) else AppColor.secondary.copy(
                                 alpha = 0.5f
@@ -105,7 +140,7 @@ fun CalendarScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(12.dp),
-                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(
                                 modifier = Modifier.weight(1f),
@@ -113,19 +148,19 @@ fun CalendarScreen(
                             ) {
                                 Text(
                                     text = event.eventName,
-                                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     color = AppColor.textPrimary,
                                     maxLines = 1
                                 )
                                 Text(
                                     text = "유형: ${event.eventType}",
-                                    style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                                    style = MaterialTheme.typography.bodySmall,
                                     color = AppColor.textSecondary,
                                     maxLines = 1
                                 )
                                 Text(
                                     text = "대상: ${event.receiverNickname}",
-                                    style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                                    style = MaterialTheme.typography.bodySmall,
                                     color = AppColor.textSecondary,
                                     maxLines = 1
                                 )
@@ -135,36 +170,45 @@ fun CalendarScreen(
                 }
             }
         }
-        // 맨 아래 일정 추가하기 버튼
-        Spacer(modifier = Modifier.height(2.dp))
 
-        androidx.compose.material3.Card(
+        val scrollState = rememberScrollState()
+
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            colors = androidx.compose.material3.CardDefaults.cardColors(containerColor = AppColor.surface),
-            shape = androidx.compose.material3.CardDefaults.shape,
-            elevation = androidx.compose.material3.CardDefaults.elevatedCardElevation(0.dp)
+                .heightIn(max = 200.dp)
+                .verticalScroll(scrollState)
         ) {
-            androidx.compose.material3.Button(
-                onClick = { /* TODO: 일정 추가 기능 */ },
-                modifier = Modifier.fillMaxWidth(),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = AppColor.surface),
-                elevation = null,
-                shape = androidx.compose.material3.CardDefaults.shape
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = AppColor.surface),
+                shape = CardDefaults.shape,
+                elevation = CardDefaults.elevatedCardElevation(0.dp)
             ) {
-                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = androidx.compose.material.icons.Icons.Default.Add,
-                        contentDescription = null,
-                        tint = AppColor.textPrimary
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "일정 추가하기",
-                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                        color = AppColor.textPrimary
-                    )
+                Button(
+                    onClick = {
+                        navController.navigate("eventRegister/${selectedDate.time}")
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = AppColor.surface),
+                    elevation = null,
+                    shape = CardDefaults.shape
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = AppColor.textPrimary
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "일정 추가하기",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = AppColor.textPrimary
+                        )
+                    }
                 }
             }
         }

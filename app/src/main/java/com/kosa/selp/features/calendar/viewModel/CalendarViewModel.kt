@@ -6,21 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kosa.selp.BuildConfig
-import com.kosa.selp.shared.composable.calendar.model.CalendarEvent
+import com.kosa.selp.features.calendar.apiService.EventApiService
+import com.kosa.selp.features.calendar.dto.CalendarEvent
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-
-// REST API 인터페이스 정의
-interface EventApiService {
-    @GET("events?year=2025&month=7") // 실제 엔드포인트에 맞게 수정
-    suspend fun getEvents(): List<CalendarEvent>
-}
 
 class CalendarViewModel : ViewModel() {
     // 현재 달력을 저장하는 상태 변수
@@ -107,17 +101,22 @@ class CalendarViewModel : ViewModel() {
         _calendar.value = newCalendar
     }
 
-    // 날짜를 클릭했을 때 호출되는 함수
     fun onDateClick(date: Date) {
-        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val formatted = formatter.format(date)
-        Log.d("CalendarViewModel", "선택한 날짜: $formatted")
-        _selectedDate.value = date
-        _isEventModalVisible.value = true
+        val sameDay = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date) ==
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(_selectedDate.value)
+
+        if (sameDay) {
+            _isEventModalVisible.value = false
+        } else {
+            _selectedDate.value = date
+            _isEventModalVisible.value = true
+        }
     }
 
     // 모달을 닫는 함수
     fun dismissModal() {
         _isEventModalVisible.value = false
     }
+
+
 }
