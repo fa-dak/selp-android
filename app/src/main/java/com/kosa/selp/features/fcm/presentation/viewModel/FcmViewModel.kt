@@ -6,9 +6,11 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
-import com.kosa.selp.features.fcm.data.remote.FcmApiService
 import com.kosa.selp.features.fcm.data.request.FcmTokenRegisterRequestDto
 import com.kosa.selp.features.fcm.data.request.NotificationRequestDto
+import com.kosa.selp.features.fcm.domain.usecase.RegisterFcmTokenUseCase
+import com.kosa.selp.features.fcm.domain.usecase.RegisterNotificationUseCase
+import com.kosa.selp.features.fcm.domain.usecase.SendNotificationsUseCase
 import com.kosa.selp.features.fcm.model.DeviceType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -19,7 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FcmViewModel @Inject constructor(
-    private val fcmApiService: FcmApiService
+    private val registerFcmTokenUseCase: RegisterFcmTokenUseCase,
+    private val registerNotificationUseCase: RegisterNotificationUseCase,
+    private val sendNotificationsUseCase: SendNotificationsUseCase
 ) : ViewModel() {
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -43,7 +47,7 @@ class FcmViewModel @Inject constructor(
                     content = content,
                     sendDate = sendDate
                 )
-                fcmApiService.registerNotification(request)
+                registerNotificationUseCase(request)
             }.onFailure {
                 Log.w("FcmViewModel", "알림 등록 실패: ${it.localizedMessage}")
             }
@@ -54,9 +58,11 @@ class FcmViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching {
                 val token = FirebaseMessaging.getInstance().token.await()
-                val request =
-                    FcmTokenRegisterRequestDto(token = token, deviceType = DeviceType.ANDROID)
-                fcmApiService.registerToken(request)
+                val request = FcmTokenRegisterRequestDto(
+                    token = token,
+                    deviceType = DeviceType.ANDROID
+                )
+                registerFcmTokenUseCase(request)
                 Log.i("FcmViewModel", "FCM 토큰 등록 성공 → $token")
             }.onFailure {
                 Log.w("FcmViewModel", "FCM 토큰 등록 실패", it)
@@ -66,7 +72,11 @@ class FcmViewModel @Inject constructor(
 
     fun sendNotifications() {
         viewModelScope.launch {
-            fcmApiService.sendNotifications()
+            runCatching {
+                sendNotificationsUseCase()
+            }.onFailure {
+                Log.w("FcmViewModel", "알림 발송 실패", it)
+            }
         }
     }
 }
