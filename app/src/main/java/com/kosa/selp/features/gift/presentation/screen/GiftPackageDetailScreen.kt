@@ -10,11 +10,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.kosa.selp.features.gift.composable.GiftBundleContent
-import com.kosa.selp.features.gift.composable.GiftBundleDetailSkeleton
-import com.kosa.selp.features.gift.composable.GiftBundleScaffold
-import com.kosa.selp.features.gift.composable.MessageOverlay
-import com.kosa.selp.features.gift.composable.MessageRecommendBottomSheet
+import com.kosa.selp.features.gift.composable.bundle.GiftBundleContent
+import com.kosa.selp.features.gift.composable.bundle.GiftBundleDetailSkeleton
+import com.kosa.selp.features.gift.composable.bundle.GiftBundleScaffold
+import com.kosa.selp.features.gift.composable.bundle.MessageOverlay
+import com.kosa.selp.features.gift.composable.bundle.MessageRecommendBottomSheet
 import com.kosa.selp.features.gift.presentation.viewModel.GiftBundleDataViewModel
 import com.kosa.selp.features.gift.presentation.viewModel.GiftBundleRecommendMessageUiViewModel
 import com.kosa.selp.features.gift.presentation.viewModel.GiftBundleUiViewModel

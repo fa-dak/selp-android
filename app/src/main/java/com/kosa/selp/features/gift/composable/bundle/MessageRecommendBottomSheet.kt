@@ -1,4 +1,4 @@
-package com.kosa.selp.features.gift.composable
+package com.kosa.selp.features.gift.composable.bundle
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
