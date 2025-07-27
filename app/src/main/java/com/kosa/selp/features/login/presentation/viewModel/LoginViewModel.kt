@@ -13,10 +13,17 @@ import com.kosa.selp.features.login.data.model.KakaoLoginRequest
 import com.kosa.selp.features.login.data.service.AuthApiService
 import com.kosa.selp.shared.data.manager.AuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed class LoginEvent {
+    data object LoginSuccess : LoginEvent()
+    data class LoginFailure(val error: Throwable) : LoginEvent()
+}
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -25,45 +32,57 @@ class LoginViewModel @Inject constructor(
     private val authManager: AuthManager
 ) : ViewModel() {
 
-    private val _loginEvent = MutableSharedFlow<LoginEvent>()
-    val loginEvent = _loginEvent.asSharedFlow()
+    private val _loginEvent = Channel<LoginEvent>()
+    val loginEvent = _loginEvent.receiveAsFlow()
 
-    fun loginWithKakao(context: Context) {
+    // 자동 로그인을 위한 상태 (null: 확인중, true: 로그인됨, false: 비로그인)
+    private val _isLoggedIn = MutableStateFlow<Boolean?>(null)
+    val isLoggedIn = _isLoggedIn.asStateFlow()
+
+    init {
+        // ViewModel이 생성될 때 로그인 상태 확인
+        checkLoginStatus()
+    }
+
+    private fun checkLoginStatus() {
         viewModelScope.launch {
-            val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-                if (error != null) {
-                    handleLoginError(error)
-                } else if (token != null) {
-                    handleLoginSuccess(token)
-                }
-            }
-
-            // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
-            if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
-                UserApiClient.instance.loginWithKakaoTalk(context) { token, error ->
-                    if (error != null) {
-                        // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
-                        // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
-                        if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
-                            return@loginWithKakaoTalk
-                        }
-                        // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
-                        UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
-                    } else if (token != null) {
-                        handleLoginSuccess(token)
-                    }
-                }
-            } else {
-                UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
-            }
+            // 저장된 accessToken이 있는지 확인하여 로그인 상태 결정
+            _isLoggedIn.value = authManager.accessToken != null
+            Log.d("LoginViewModel", "Login status checked: ${_isLoggedIn.value}")
         }
     }
 
-    private fun handleLoginSuccess(token: OAuthToken) {
+    fun loginWithKakao(context: Context) {
+        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+            if (error != null) {
+                Log.e("LoginViewModel", "카카오계정으로 로그인 실패", error)
+                viewModelScope.launch { _loginEvent.send(LoginEvent.LoginFailure(error)) }
+            } else if (token != null) {
+                sendTokenToBackend(token)
+            }
+        }
+
+        if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
+            UserApiClient.instance.loginWithKakaoTalk(context) { token, error ->
+                if (error != null) {
+                    Log.e("LoginViewModel", "카카오톡으로 로그인 실패", error)
+                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                        return@loginWithKakaoTalk
+                    }
+                    UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
+                } else if (token != null) {
+                    sendTokenToBackend(token)
+                }
+            }
+        } else {
+            UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
+        }
+    }
+
+    private fun sendTokenToBackend(token: OAuthToken) {
         Log.i("LoginViewModel", "카카오 로그인 성공. 백엔드에 토큰 전송 시도: ${token.accessToken}")
         viewModelScope.launch {
             try {
-                // 백엔드에 카카오 accessToken 전송
                 val request = KakaoLoginRequest(accessToken = token.accessToken)
                 val response = authApiService.loginWithKakao(request)
 //                val fcmToken = FirebaseMessaging.getInstance().token.await()
@@ -71,28 +90,15 @@ class LoginViewModel @Inject constructor(
 //                fcmApiService.registerToken(FcmTokenRegisterRequestDto(token = fcmToken))
 //                Log.i("LoginViewModel", "FCM 토큰 등록 완료")
 
-                // 서버로부터 받은 accessToken, refreshToken 저장
                 authManager.accessToken = response.accessToken
                 authManager.refreshToken = response.refreshToken
                 Log.i("LoginViewModel", "백엔드 로그인 성공 및 토큰 저장 완료")
 
-                _loginEvent.emit(LoginEvent.LoginSuccess)
+                _loginEvent.send(LoginEvent.LoginSuccess)
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "백엔드 로그인 실패", e)
-                _loginEvent.emit(LoginEvent.LoginFailure)
+                _loginEvent.send(LoginEvent.LoginFailure(e))
             }
         }
     }
-
-    private fun handleLoginError(error: Throwable) {
-        Log.e("LoginViewModel", "카카오계정으로 로그인 실패", error)
-        viewModelScope.launch {
-            _loginEvent.emit(LoginEvent.LoginFailure)
-        }
-    }
-}
-
-sealed class LoginEvent {
-    data object LoginSuccess : LoginEvent()
-    data object LoginFailure : LoginEvent()
 }

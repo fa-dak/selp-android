@@ -5,14 +5,21 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -26,6 +33,9 @@ import com.kosa.selp.features.home.presentation.screen.HomeScreen
 import com.kosa.selp.features.login.presentation.screen.LoginScreen
 import com.kosa.selp.features.login.presentation.viewModel.LoginEvent
 import com.kosa.selp.features.login.presentation.viewModel.LoginViewModel
+import com.kosa.selp.features.mypage.presentation.screen.GiftBundleListScreen
+import com.kosa.selp.features.mypage.presentation.screen.MyContactsScreen
+import com.kosa.selp.features.mypage.presentation.screen.MyPageScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyIntroScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyResultWaitingScreen
@@ -47,6 +57,7 @@ class MainActivity : ComponentActivity() {
             val context = LocalContext.current
             val currentBackStackEntry = navController.currentBackStackEntryAsState()
             val currentRoute = currentBackStackEntry.value?.destination?.route
+            val loginViewModel: LoginViewModel = hiltViewModel()
 
             SelpTheme {
                 Scaffold(
@@ -68,25 +79,30 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "home",
+                        startDestination = "splash",
                     ) {
-                        composable("login") {
-                            val viewModel: LoginViewModel = hiltViewModel()
+                        composable("splash") {
+                            SplashScreen(
+                                viewModel = loginViewModel,
+                                onNavigateToHome = {
+                                    navController.navigate("home") { popUpTo("splash") { inclusive = true } }
+                                },
+                                onNavigateToLogin = {
+                                    navController.navigate("login") { popUpTo("splash") { inclusive = true } }
+                                }
+                            )
+                        }
 
-                            LaunchedEffect(viewModel) {
-                                viewModel.loginEvent.collect { event ->
+                        composable("login") {
+                            LaunchedEffect(loginViewModel) {
+                                loginViewModel.loginEvent.collect { event ->
                                     when (event) {
                                         is LoginEvent.LoginSuccess -> {
-                                            Toast.makeText(context, "로그인 성공", Toast.LENGTH_SHORT)
-                                                .show()
-                                            navController.navigate("home") {
-                                                popUpTo("login") { inclusive = true }
-                                            }
+                                            Toast.makeText(context, "로그인 성공", Toast.LENGTH_SHORT).show()
+                                            navController.navigate("home") { popUpTo("login") { inclusive = true } }
                                         }
-
                                         is LoginEvent.LoginFailure -> {
-                                            Toast.makeText(context, "로그인 실패", Toast.LENGTH_SHORT)
-                                                .show()
+                                            Toast.makeText(context, "로그인 실패: ${event.error.message}", Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                 }
@@ -94,7 +110,7 @@ class MainActivity : ComponentActivity() {
 
                             LoginScreen(
                                 onKakaoLoginClick = {
-                                    viewModel.loginWithKakao(context)
+                                    loginViewModel.loginWithKakao(context)
                                 }
                             )
                         }
@@ -165,9 +181,47 @@ class MainActivity : ComponentActivity() {
                                     .consumeWindowInsets(innerPadding)
                             )
                         }
+
+                        // --- 마이페이지 관련 네비게이션 ---
+                        composable("mypage") {
+                            MyPageScreen(
+                                navController = navController,
+                                onLogout = {
+                                    navController.navigate("login") {
+                                        popUpTo(0) // 모든 백스택 제거
+                                    }
+                                },
+                                modifier = Modifier.padding(innerPadding).consumeWindowInsets(innerPadding)
+                            )
+                        }
+                        animatedComposable("giftBundleList") {
+                            GiftBundleListScreen(navController = navController)
+                        }
+                        animatedComposable("myContacts") {
+                            MyContactsScreen()
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SplashScreen(
+    viewModel: LoginViewModel,
+    onNavigateToHome: () -> Unit,
+    onNavigateToLogin: () -> Unit
+) {
+    val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle()
+    LaunchedEffect(isLoggedIn) {
+        when (isLoggedIn) {
+            true -> onNavigateToHome()
+            false -> onNavigateToLogin()
+            null -> { /* Wait */ }
+        }
+    }
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
     }
 }
