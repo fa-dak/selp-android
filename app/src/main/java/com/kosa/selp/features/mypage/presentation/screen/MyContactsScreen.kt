@@ -44,6 +44,10 @@ import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsUiState
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsViewModel
 import com.kosa.selp.shared.theme.AppColor
 
+import androidx.compose.runtime.LaunchedEffect
+
+// ... (other code)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyContactsScreen(
@@ -51,6 +55,19 @@ fun MyContactsScreen(
     viewModel: MyContactsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val needsRefreshState = navController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("needsRefresh", false)?.collectAsState()
+    val needsRefresh = needsRefreshState?.value
+
+    LaunchedEffect(needsRefresh) {
+        if (needsRefresh == true) {
+            viewModel.fetchContacts()
+            navController.currentBackStackEntry
+                ?.savedStateHandle
+                ?.set("needsRefresh", false)
+        }
+    }
 
     Scaffold(
         topBar = {

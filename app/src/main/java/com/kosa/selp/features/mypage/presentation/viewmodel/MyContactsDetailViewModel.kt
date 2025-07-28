@@ -82,7 +82,7 @@ class MyContactsDetailViewModel @Inject constructor(
                 } else {
                     myPageRepository.modifyReceiverInfo(receiverId, request)
                 }
-                _event.emit(MyContactsDetailEvent.NavigateUp)
+                _event.emit(MyContactsDetailEvent.NavigateUp(true))
             } catch (e: Exception) {
                 _uiState.value = MyContactsDetailUiState.Error(e.message ?: "Save failed")
             }
@@ -93,7 +93,7 @@ class MyContactsDetailViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 myPageRepository.deleteReceiverInfo(receiverId)
-                _event.emit(MyContactsDetailEvent.NavigateUp)
+                _event.emit(MyContactsDetailEvent.NavigateUp(true))
             } catch (e: Exception) {
                 _uiState.value = MyContactsDetailUiState.Error(e.message ?: "Delete failed")
             }
@@ -102,7 +102,7 @@ class MyContactsDetailViewModel @Inject constructor(
 }
 
 sealed interface MyContactsDetailEvent {
-    object NavigateUp : MyContactsDetailEvent
+    data class NavigateUp(val needsRefresh: Boolean) : MyContactsDetailEvent
 }
 
 sealed interface MyContactsDetailUiState {
