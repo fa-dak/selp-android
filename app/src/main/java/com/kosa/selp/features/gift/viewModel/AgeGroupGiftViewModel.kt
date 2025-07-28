@@ -8,11 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.kosa.selp.features.gift.model.AgeGroupGift
 import com.kosa.selp.features.gift.repository.AgeGroupGiftRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class AgeGroupGiftViewModel @Inject constructor(
@@ -36,8 +36,12 @@ class AgeGroupGiftViewModel @Inject constructor(
 
     fun loadGifts(ageGroup: String) {
         viewModelScope.launch {
-            val result = repository.getGiftsByAgeGroup(ageGroup)
-            _gifts.value = result
+            try {
+                val result = repository.getGiftsByAgeGroup(ageGroup)
+                _gifts.value = result
+            } catch (e: Exception) {
+                _gifts.value = emptyList()
+            }
         }
     }
 }
