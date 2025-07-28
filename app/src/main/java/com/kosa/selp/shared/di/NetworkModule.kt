@@ -2,6 +2,7 @@ package com.kosa.selp.shared.di
 
 import android.util.Log
 import com.kosa.selp.BuildConfig
+import com.kosa.selp.features.gift.service.AgeGroupGiftApiService
 import com.kosa.selp.features.login.data.service.AuthApiService
 import com.kosa.selp.shared.data.interceptor.AuthInterceptor
 import dagger.Module
@@ -55,5 +56,11 @@ object NetworkModule {
     @Singleton
     fun provideAuthApiService(retrofit: Retrofit): AuthApiService {
         return retrofit.create(AuthApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGiftApiService(retrofit: Retrofit): AgeGroupGiftApiService {
+        return retrofit.create(AgeGroupGiftApiService::class.java)
     }
 }
