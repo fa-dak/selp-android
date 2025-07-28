@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
+    <!-- selp-backend.jaeyoung2.duckdns.org (HTTPS 통신용) -->
+    <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">selp-backend.jaeyoung2.duckdns.org</domain>
+    </domain-config>
+
+    <!-- selp-backend.jaeyoung.store (HTTPS 통신용) -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">selp-backend.jaeyoung.store</domain>
     </domain-config>
 </network-security-config>

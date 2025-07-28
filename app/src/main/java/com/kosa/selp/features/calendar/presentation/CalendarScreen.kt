@@ -116,7 +116,7 @@ fun CalendarScreen(
             .fillMaxSize()
             .background(AppColor.white)
             .systemBarsPadding()
-            .padding(horizontal = 24.dp, vertical = 4.dp),
+            .padding(horizontal = 0.dp, vertical = 0.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         // 달력 헤더 (월 이동 버튼 포함)
