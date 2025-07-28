@@ -41,11 +41,17 @@ fun GiftCarouselMultiBrowse(gifts: List<GiftBundleItemResponseDto>) {
     val screenWidth = with(LocalDensity.current) { windowSize.width.toDp() }
     val screenHeight = with(LocalDensity.current) { windowSize.height.toDp() }
 
-    val cardWidth = screenWidth * if (gifts.size == 1) 0.88f else 0.72f
-    val itemSpacing = if (gifts.size == 1) 4.dp else 12.dp
-    val contentHorizontalPadding = if (gifts.size == 1) 8.dp else 16.dp
+    val (cardWidthRatio, spacing, horizontalPadding) = when (gifts.size) {
+        1 -> Triple(0.92f, 0.dp, 0.dp)
+        2 -> Triple(0.76f, 12.dp, 12.dp)
+        3 -> Triple(0.72f, 16.dp, 16.dp)
+        4 -> Triple(0.7f, 16.dp, 16.dp)
+        else -> Triple(0.68f, 20.dp, 20.dp)
+    }
 
+    val cardWidth = screenWidth * cardWidthRatio
     val cardHeight = screenHeight * 0.33f
+
 
     HorizontalMultiBrowseCarousel(
         state = rememberCarouselState { gifts.size },
@@ -54,8 +60,8 @@ fun GiftCarouselMultiBrowse(gifts: List<GiftBundleItemResponseDto>) {
             .wrapContentHeight()
             .padding(vertical = 16.dp),
         preferredItemWidth = cardWidth,
-        itemSpacing = itemSpacing,
-        contentPadding = PaddingValues(horizontal = contentHorizontalPadding)
+        itemSpacing = spacing,
+        contentPadding = PaddingValues(horizontal = horizontalPadding)
     ) { index ->
         val gift = gifts[index]
 
