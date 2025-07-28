@@ -28,7 +28,8 @@ import kotlinx.coroutines.delay
 fun DotsLoadingIndicator(
     modifier: Modifier = Modifier,
     message: String = "추천 중이에요...",
-    dotColor: Color = AppColor.primary
+    dotColor: Color = AppColor.primary,
+    textColor: Color = AppColor.white
 ) {
     val dotCount = 3
     var visibleDot by remember { mutableIntStateOf(0) }
@@ -65,7 +66,7 @@ fun DotsLoadingIndicator(
         Text(
             text = message,
             style = MaterialTheme.typography.bodyMedium,
-            color = AppColor.white
+            color = textColor
         )
     }
 }

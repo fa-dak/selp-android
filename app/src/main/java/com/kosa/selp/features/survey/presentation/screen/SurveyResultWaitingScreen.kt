@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.kosa.selp.features.survey.viewModel.SurveyStep
-import com.kosa.selp.features.survey.viewModel.SurveyViewModel
+import com.kosa.selp.features.survey.presentation.state.SurveyStep
+import com.kosa.selp.features.survey.presentation.viewModel.SurveyViewModel
 import com.kosa.selp.shared.theme.AppColor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
