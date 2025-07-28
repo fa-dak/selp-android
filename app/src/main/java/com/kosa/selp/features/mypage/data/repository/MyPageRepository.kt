@@ -9,4 +9,8 @@ class MyPageRepository @Inject constructor(
     suspend fun getMyGiftBundles() = myPageApiService.getMyGiftBundles()
 
     suspend fun getMyGiftBundleDetail(bundleId: Long) = myPageApiService.getMyGiftBundleDetail(bundleId)
+
+    suspend fun getMyReceiverInfoList() = myPageApiService.getMyReceiverInfoList()
+
+    suspend fun getMyReceiverInfoDetail(receiverInfoId: Long) = myPageApiService.getMyReceiverInfoDetail(receiverInfoId)
 }
