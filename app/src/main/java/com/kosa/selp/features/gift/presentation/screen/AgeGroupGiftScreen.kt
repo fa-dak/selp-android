@@ -48,6 +48,7 @@ fun AgeGroupGiftScreen(
         )
     }
 
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -56,6 +57,14 @@ fun AgeGroupGiftScreen(
             .padding(horizontal = 24.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
+        item {
+            Button(
+                onClick = { navController.navigate("payTest") }
+            ) {
+                Text("결제 테스트")
+            }
+        }
         item {
             Text(
                 "연령대별 추천 선물",

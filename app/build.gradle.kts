@@ -10,6 +10,7 @@ plugins {
     id("kotlin-parcelize")
 }
 
+
 android {
     namespace = "com.kosa.selp"
     compileSdk = 36
@@ -72,6 +73,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlin {
         compilerOptions {
@@ -124,6 +127,11 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     // Kotlin Coroutines Android
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+
+    // port one 결제
+    implementation("com.github.portone-io:android-sdk:0.1.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5") // java 8 API를 사용하기 위해, desugaring 의존성을 추가해주셔야 합니다.
+
 
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.hilt.compiler)
