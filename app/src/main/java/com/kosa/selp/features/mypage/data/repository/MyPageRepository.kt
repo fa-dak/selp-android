@@ -3,6 +3,8 @@ package com.kosa.selp.features.mypage.data.repository
 import com.kosa.selp.features.mypage.data.service.MyPageApiService
 import javax.inject.Inject
 
+import com.kosa.selp.features.mypage.model.ReceiverModifyRequest
+
 class MyPageRepository @Inject constructor(
     private val myPageApiService: MyPageApiService
 ) {
@@ -13,4 +15,6 @@ class MyPageRepository @Inject constructor(
     suspend fun getMyReceiverInfoList() = myPageApiService.getMyReceiverInfoList()
 
     suspend fun getMyReceiverInfoDetail(receiverInfoId: Long) = myPageApiService.getMyReceiverInfoDetail(receiverInfoId)
+
+    suspend fun modifyReceiverInfo(receiverInfoId: Long, request: ReceiverModifyRequest) = myPageApiService.modifyReceiverInfo(receiverInfoId, request)
 }

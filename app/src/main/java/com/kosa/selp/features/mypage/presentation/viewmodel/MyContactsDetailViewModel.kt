@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.kosa.selp.features.mypage.model.ReceiverModifyRequest
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+
 @HiltViewModel
 class MyContactsDetailViewModel @Inject constructor(
     private val myPageRepository: MyPageRepository,
@@ -21,6 +25,9 @@ class MyContactsDetailViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<MyContactsDetailUiState>(MyContactsDetailUiState.Loading)
     val uiState: StateFlow<MyContactsDetailUiState> = _uiState
+
+    private val _event = MutableSharedFlow<MyContactsDetailEvent>()
+    val event = _event.asSharedFlow()
 
     init {
         fetchContactDetail()
@@ -37,6 +44,36 @@ class MyContactsDetailViewModel @Inject constructor(
             }
         }
     }
+
+    fun saveContact(
+        nickname: String,
+        age: String,
+        gender: String,
+        relationship: String,
+        preferences: String,
+        detail: String
+    ) {
+        viewModelScope.launch {
+            try {
+                val request = ReceiverModifyRequest(
+                    nickname = nickname,
+                    age = age.toInt(),
+                    gender = gender,
+                    relationship = relationship,
+                    preferences = preferences,
+                    detail = detail
+                )
+                myPageRepository.modifyReceiverInfo(receiverId, request)
+                _event.emit(MyContactsDetailEvent.NavigateUp)
+            } catch (e: Exception) {
+                _uiState.value = MyContactsDetailUiState.Error(e.message ?: "Save failed")
+            }
+        }
+    }
+}
+
+sealed interface MyContactsDetailEvent {
+    object NavigateUp : MyContactsDetailEvent
 }
 
 sealed interface MyContactsDetailUiState {
