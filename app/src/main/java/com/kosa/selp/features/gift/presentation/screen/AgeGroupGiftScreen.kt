@@ -17,10 +17,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kosa.selp.features.gift.viewModel.AgeGroupGiftViewModel
 import com.kosa.selp.features.home.presentation.screen.GiftItem
@@ -30,17 +32,17 @@ import com.kosa.selp.shared.theme.AppColor
 @Composable
 fun AgeGroupGiftScreen(
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: AgeGroupGiftViewModel = hiltViewModel()
 ) {
-    val viewModel: AgeGroupGiftViewModel = viewModel()
-    val ageGroups = listOf("10대", "20대", "30대", "40대", "50대")
+    val ageGroups = listOf("10s", "20s", "30s", "40s", "50s")
     val selected = viewModel.selectedAgeGroup
-    val gifts = viewModel.gifts
+    val gifts by viewModel.gifts.collectAsState()
 
     val converted = gifts.map { gift ->
         GiftItem(
             id = gift.id,
-            title = gift.title,
+            title = gift.name,
             imageUrl = gift.imageUrl,
             price = gift.price
         )
@@ -79,7 +81,7 @@ fun AgeGroupGiftScreen(
                             null
                         }
                     ) {
-                        Text(ageGroup)
+                        Text(ageGroup.toKoreanLabel())
                     }
                 }
             }
@@ -91,5 +93,16 @@ fun AgeGroupGiftScreen(
             GiftCardGrid(items = converted, navController = navController)
         }
 
+    }
+}
+
+fun String.toKoreanLabel(): String {
+    return when (this) {
+        "10s" -> "10대"
+        "20s" -> "20대"
+        "30s" -> "30대"
+        "40s" -> "40대"
+        "50s" -> "50대"
+        else -> this
     }
 }

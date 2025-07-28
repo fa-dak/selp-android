@@ -7,20 +7,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kosa.selp.features.gift.model.AgeGroupGift
 import com.kosa.selp.features.gift.repository.AgeGroupGiftRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AgeGroupGiftViewModel : ViewModel() {
+@HiltViewModel
+class AgeGroupGiftViewModel @Inject constructor(
+    private val repository: AgeGroupGiftRepository
+) : ViewModel()  {
 
-    var selectedAgeGroup by mutableStateOf("10대")
+    var selectedAgeGroup by mutableStateOf("10s")
         private set
 
-    var gifts by mutableStateOf<List<AgeGroupGift>>(emptyList())
-        private set
-
-    private val repository = AgeGroupGiftRepository()
+    private val _gifts = MutableStateFlow<List<AgeGroupGift>>(emptyList())
+    val gifts: StateFlow<List<AgeGroupGift>> = _gifts.asStateFlow()
 
     init {
-        loadGifts("10대")
+        loadGifts("10s")
     }
 
     fun selectAgeGroup(ageGroup: String) {
@@ -28,9 +34,10 @@ class AgeGroupGiftViewModel : ViewModel() {
         loadGifts(ageGroup)
     }
 
-    private fun loadGifts(ageGroup: String) {
+    fun loadGifts(ageGroup: String) {
         viewModelScope.launch {
-            gifts = repository.getGiftsByAgeGroup(ageGroup)
+            val result = repository.getGiftsByAgeGroup(ageGroup)
+            _gifts.value = result
         }
     }
 }
