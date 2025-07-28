@@ -9,6 +9,7 @@ import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.POST
 
 interface MyPageApiService {
     @GET("/gift-bundle/gift-bundles")
@@ -38,5 +39,10 @@ interface MyPageApiService {
     @DELETE("/receiver-infos/{receiver-info-id}")
     suspend fun deleteReceiverInfo(
         @Path("receiver-info-id") receiverInfoId: Long
+    )
+
+    @POST("/receiver-infos")
+    suspend fun registerReceiverInfo(
+        @Body request: ReceiverModifyRequest
     )
 }
