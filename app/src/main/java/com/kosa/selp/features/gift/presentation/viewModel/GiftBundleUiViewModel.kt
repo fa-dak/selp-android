@@ -26,13 +26,6 @@ class GiftBundleUiViewModel : ViewModel() {
         )
     }
 
-    fun updateTyping(index: Int, text: String) {
-        val updated = _uiState.value.typingTexts.toMutableList().apply {
-            this[index] = text
-        }
-        _uiState.value = _uiState.value.copy(typingTexts = updated)
-    }
-
     fun resetOverlay() {
         _uiState.value = _uiState.value.copy(
             showOverlay = false,
