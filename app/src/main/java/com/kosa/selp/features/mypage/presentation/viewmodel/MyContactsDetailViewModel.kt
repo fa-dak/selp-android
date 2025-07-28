@@ -30,7 +30,21 @@ class MyContactsDetailViewModel @Inject constructor(
     val event = _event.asSharedFlow()
 
     init {
-        fetchContactDetail()
+        if (receiverId != -1L) {
+            fetchContactDetail()
+        } else {
+            _uiState.value = MyContactsDetailUiState.Success(
+                Contact(
+                    id = -1,
+                    nickname = "",
+                    gender = "NONE",
+                    relationship = "",
+                    age = 0,
+                    preferences = "",
+                    detail = ""
+                )
+            )
+        }
     }
 
     private fun fetchContactDetail() {
@@ -63,7 +77,11 @@ class MyContactsDetailViewModel @Inject constructor(
                     preferences = preferences,
                     detail = detail
                 )
-                myPageRepository.modifyReceiverInfo(receiverId, request)
+                if (receiverId == -1L) {
+                    myPageRepository.registerReceiverInfo(request)
+                } else {
+                    myPageRepository.modifyReceiverInfo(receiverId, request)
+                }
                 _event.emit(MyContactsDetailEvent.NavigateUp)
             } catch (e: Exception) {
                 _uiState.value = MyContactsDetailUiState.Error(e.message ?: "Save failed")

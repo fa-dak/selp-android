@@ -16,10 +16,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +34,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -68,6 +71,15 @@ fun MyContactsScreen(
                     containerColor = AppColor.white
                 )
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate("myContactDetail/-1") },
+                containerColor = AppColor.primary,
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "주변인 추가")
+            }
         },
         containerColor = AppColor.background // 배경색 적용
     ) { paddingValues ->
@@ -162,9 +174,10 @@ fun ContactItem(navController: NavController, contact: Contact) {
 @Composable
 private fun getEmojiForRelationship(relationship: String): String {
     return when (relationship.trim()) {
-        "여자친구", "남자친구" -> "❤️"
+        "연인" -> "❤️"
         "부모님" -> "👨‍👩‍👧‍👦"
-        "형제자매" -> "👧‍👦"
+        "자식" -> "👨‍👩‍👧‍👦"
+        "형제" -> "👧‍👦"
         "친인척" -> "👨‍👩‍👧"
         "친구" -> "🧑‍🤝‍🧑"
         "직장동료" -> "💼"
