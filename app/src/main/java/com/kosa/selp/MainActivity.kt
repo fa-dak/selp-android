@@ -77,9 +77,11 @@ class MainActivity : ComponentActivity() {
                                 selectedIndex = BottomBarRoute.indexOf(currentRoute),
                                 onItemSelected = { index ->
                                     val destination = BottomBarRoute.fromIndex(index)
-                                    navController.navigate(destination) {
-                                        popUpTo("home") { inclusive = false }
-                                        launchSingleTop = true
+                                    if (currentRoute != destination) {
+                                        navController.navigate(destination) {
+                                            popUpTo("home") { inclusive = false }
+                                            launchSingleTop = true
+                                        }
                                     }
                                 }
                             )
