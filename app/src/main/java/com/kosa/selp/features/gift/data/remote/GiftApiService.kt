@@ -15,7 +15,7 @@ interface GiftApiService {
     @GET("gift-bundle/{giftBundleId}")
     suspend fun getGiftBundle(@Path("giftBundleId") giftBundleId: String): GiftBundleDetailResponseDto
 
-    @GET("gift-bundle/{giftBundleId}/messages")
+    @POST("messages/{giftBundleId}")
     suspend fun getRecommendedMessages(
         @Path("giftBundleId") giftBundleId: String, @Query("tone") tone: String
     ): GiftBundleRecommendMessageResponseDto

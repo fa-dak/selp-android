@@ -53,12 +53,7 @@ fun SurveyResultContent(
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-
-        GiftCarouselMultiBrowse(gifts)
-
-        Spacer(modifier = Modifier.weight(1f))
-
-
+        
         if (!isEmpty) {
             GiftCarouselMultiBrowse(gifts)
             Spacer(modifier = Modifier.weight(1f))

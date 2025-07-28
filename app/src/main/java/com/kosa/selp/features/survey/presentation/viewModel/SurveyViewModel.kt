@@ -76,16 +76,6 @@ class SurveyViewModel @Inject constructor(
     private fun submitSurvey() {
         val state = uiState.value
 
-//        val request = GiftBundleRecommendRequestDto(
-//            ageRange = "30대",
-//            anniversaryType = "생일",
-//            categories = listOf("fashion", "living", "sedert"),
-//            relation = "아내",
-//            gender = "여성",
-//            budget = 80000,
-//            userMessage = "내 아내는 따뜻한 감성을 좋아해"
-//        )
-
         val request = GiftBundleRecommendRequestDto(
             ageRange = state.ageRange.orEmpty(),
             anniversaryType = state.anniversary.orEmpty(),
@@ -99,9 +89,8 @@ class SurveyViewModel @Inject constructor(
         viewModelScope.launch {
             update { copy(isSubmitting = true, submissionError = null) }
             try {
-                _recommendedGiftBundles.value = recommendGiftBundleUseCase(request)
-                Log.i("SurveyViewModel", "추천 성공: ${_recommendedGiftBundles.value}")
-
+                val result = recommendGiftBundleUseCase(request)
+                _recommendedGiftBundles.value = result
             } catch (e: Exception) {
                 Log.e("SurveyViewModel", "추천 실패", e)
                 update {

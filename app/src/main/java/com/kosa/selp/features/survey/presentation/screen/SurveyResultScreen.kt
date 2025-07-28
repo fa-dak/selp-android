@@ -1,6 +1,5 @@
 package com.kosa.selp.features.survey.presentation.screen
 
-import android.util.Log
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,7 +57,6 @@ fun SurveyResultScreen(
     val isLoading = recommendedGifts == null
     val isLottie = recommendedGifts != null && showLottie
     val isReady = recommendedGifts != null && !showLottie
-    Log.i("SurveyViewModel", "surveyResultSccn: ${recommendedGifts}")
 
     Scaffold(
         topBar = {
