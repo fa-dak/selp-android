@@ -103,7 +103,7 @@ fun MyContactsDetailScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = { /* TODO */ }) {
+                    TextButton(onClick = { viewModel.deleteContact() }) {
                         Text(
                             text = "삭제",
                             style = MaterialTheme.typography.titleMedium,
