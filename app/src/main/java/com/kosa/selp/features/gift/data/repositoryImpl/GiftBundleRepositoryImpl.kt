@@ -2,6 +2,8 @@ package com.kosa.selp.features.gift.data.repositoryImpl
 
 import com.kosa.selp.features.gift.data.remote.GiftApiService
 import com.kosa.selp.features.gift.data.request.GiftBundleRecommendRequestDto
+import com.kosa.selp.features.gift.data.request.GiftBundleSaveRequestDto
+import com.kosa.selp.features.gift.data.request.GiftItemReplaceRequestDto
 import com.kosa.selp.features.gift.data.response.GiftBundleDetailResponseDto
 import com.kosa.selp.features.gift.data.response.GiftBundleItemResponseDto
 import com.kosa.selp.features.gift.data.response.GiftBundleRecommendMessageResponseDto
@@ -27,4 +29,14 @@ class GiftRepositoryImpl @Inject constructor(
     override suspend fun recommendGiftBundle(giftBundleRecommendRequest: GiftBundleRecommendRequestDto): List<GiftBundleItemResponseDto> {
         return api.recommendGiftBundle(giftBundleRecommendRequest)
     }
+
+    override suspend fun replaceGiftItem(giftItemReplaceRequest: GiftItemReplaceRequestDto): GiftBundleItemResponseDto {
+        return api.replaceGiftItem(giftItemReplaceRequest)
+    }
+
+    override suspend fun saveGiftBundle(giftBundleSaveRequest: GiftBundleSaveRequestDto) {
+        api.saveGiftBundle(giftBundleSaveRequest)
+    }
+
+
 }
