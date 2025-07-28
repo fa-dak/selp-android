@@ -81,6 +81,11 @@ fun MyContactsDetailScreen(
         viewModel.event.collect { event ->
             when (event) {
                 is MyContactsDetailEvent.NavigateUp -> {
+                    if (event.needsRefresh) {
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("needsRefresh", true)
+                    }
                     navController.popBackStack()
                 }
             }
