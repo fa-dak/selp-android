@@ -19,10 +19,10 @@ class MyContactsViewModel @Inject constructor(
     val uiState: StateFlow<MyContactsUiState> = _uiState
 
     init {
-        fetchMyContacts()
+        fetchContacts()
     }
 
-    private fun fetchMyContacts() {
+    fun fetchContacts() {
         viewModelScope.launch {
             _uiState.value = MyContactsUiState.Loading
             try {
