@@ -5,6 +5,7 @@ import com.kosa.selp.features.gift.data.repositoryImpl.GiftRepositoryImpl
 import com.kosa.selp.features.gift.domain.repository.GiftRepository
 import com.kosa.selp.features.gift.domain.usecase.GetGiftBundleDetailUseCase
 import com.kosa.selp.features.gift.domain.usecase.GetGiftBundleRecommendMessagesUseCase
+import com.kosa.selp.features.gift.domain.usecase.RecommendGiftBundleUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +16,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object GiftNetworkModule {
-    
+
     @Provides
     @Singleton
     fun provideGiftApiService(retrofit: Retrofit): GiftApiService {
@@ -44,5 +45,13 @@ object GiftNetworkModule {
         repository: GiftRepository
     ): GetGiftBundleRecommendMessagesUseCase {
         return GetGiftBundleRecommendMessagesUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecommendGiftBundleUseCase(
+        repository: GiftRepository
+    ): RecommendGiftBundleUseCase {
+        return RecommendGiftBundleUseCase(repository)
     }
 }
