@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,7 +37,12 @@ import java.text.DecimalFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GiftCarouselMultiBrowse(gifts: List<GiftBundleItemResponseDto>) {
+fun GiftCarouselMultiBrowse(
+    gifts: List<GiftBundleItemResponseDto>,
+    onReplaceClick: (GiftBundleItemResponseDto) -> Unit,
+    loadingItemIds: Set<Long> = emptySet()
+
+) {
     val windowSize = LocalWindowInfo.current.containerSize
     val screenWidth = with(LocalDensity.current) { windowSize.width.toDp() }
     val screenHeight = with(LocalDensity.current) { windowSize.height.toDp() }
@@ -64,63 +70,81 @@ fun GiftCarouselMultiBrowse(gifts: List<GiftBundleItemResponseDto>) {
         contentPadding = PaddingValues(horizontal = horizontalPadding)
     ) { index ->
         val gift = gifts[index]
+        val isLoading = gift.id in loadingItemIds
 
         Box(
             modifier = Modifier
                 .height(cardHeight)
                 .maskClip(MaterialTheme.shapes.extraLarge)
         ) {
-            Image(
-                painter = rememberAsyncImagePainter(gift.imagePath),
-                contentDescription = gift.name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-
-            AssistChip(
-                onClick = {},
-                label = {
-                    Text(
-                        "재추천",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = AppColor.white
-                    )
-                },
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(12.dp),
-                shape = RoundedCornerShape(50),
-                border = BorderStroke(1.dp, AppColor.primary),
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = AppColor.primary,
-                    labelColor = Color.White
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(AppColor.surface),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = AppColor.primary)
+                }
+            } else {
+                Image(
+                    painter = rememberAsyncImagePainter(gift.imagePath),
+                    contentDescription = gift.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
-            )
 
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(Color.Transparent, Color(0xCC000000))
+                AssistChip(
+                    onClick = { onReplaceClick(gift) },
+                    label = {
+                        Text(
+                            "재추천",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = AppColor.white
+                        )
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(12.dp),
+                    shape = RoundedCornerShape(50),
+                    border = BorderStroke(1.dp, AppColor.primary),
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor = AppColor.primary,
+                        labelColor = Color.White
+                    )
+                )
+
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(Color.Transparent, Color(0xCC000000))
+                            )
+                        )
+                        .padding(12.dp)
+                ) {
+                    Text(
+                        text = gift.name,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                        maxLines = 1
+                    )
+                    Text(
+                        text = "${DecimalFormat("#,###").format(gift.price)}원",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = Color.White.copy(
+                                alpha = 0.85f
+                            )
                         )
                     )
-                    .padding(12.dp)
-            ) {
-                Text(
-                    text = gift.name,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                    maxLines = 1
-                )
-                Text(
-                    text = "${DecimalFormat("#,###").format(gift.price)}원",
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.White.copy(alpha = 0.85f))
-                )
+                }
             }
+
+
         }
     }
 }
