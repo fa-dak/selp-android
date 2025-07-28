@@ -65,6 +65,9 @@ object NetworkModule {
     fun provideGiftApiService(retrofit: Retrofit): AgeGroupGiftApiService {
         return retrofit.create(AgeGroupGiftApiService::class.java)
     }
+
+    @Provides
+    @Singleton
     fun provideReceiverInfoApiService(retrofit: Retrofit): ReceiverInfoApiService {
         return retrofit.create(ReceiverInfoApiService::class.java)
     }

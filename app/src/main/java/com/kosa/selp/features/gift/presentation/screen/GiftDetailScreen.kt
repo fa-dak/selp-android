@@ -42,16 +42,26 @@ import com.kosa.selp.shared.theme.TextPrimary
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun GiftDetailScreen(
-    giftId: String,
-    navController: NavController
+    navController: NavController,
+    giftId: String? = null,
+    url: String? = null
 ) {
-    val giftUrlMap = mapOf(
-        "1" to "https://www.thehyundai.com/front/pda/itemPtc.thd?slitmCd=40A1928964",
-        "2" to "https://www.thehyundai.com/front/pda/itemPtc.thd?slitmCd=40A1928999",
-        "3" to "https://www.thehyundai.com/front/pda/itemPtc.thd?slitmCd=40A1928031"
-    )
+    val finalUrl = remember(giftId, url) {
+        if (url != null) {
+            url
+        } else {
+            // giftId가 null이 아닐 때만 맵을 사용
+            giftId?.let {
+                val giftUrlMap = mapOf(
+                    "1" to "https://www.thehyundai.com/front/pda/itemPtc.thd?slitmCd=40A1928964",
+                    "2" to "https://www.thehyundai.com/front/pda/itemPtc.thd?slitmCd=40A1928999",
+                    "3" to "https://www.thehyundai.com/front/pda/itemPtc.thd?slitmCd=40A1928031"
+                )
+                giftUrlMap[it]
+            }
+        }
+    }
 
-    val url = giftUrlMap[giftId]
     var isLoading by remember { mutableStateOf(true) }
     val webViewAlpha by remember { derivedStateOf { if (isLoading) 0f else 1f } }
 
@@ -80,9 +90,9 @@ fun GiftDetailScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (url != null) {
+            if (finalUrl != null) {
                 GiftDetailWebView(
-                    url = url,
+                    url = finalUrl,
                     onLoadingFinished = { isLoading = false },
                     alpha = webViewAlpha,
                     modifier = Modifier.fillMaxSize()
