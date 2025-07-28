@@ -2,12 +2,13 @@ package com.kosa.selp.shared.composable.calendar
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,7 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kosa.selp.shared.composable.calendar.model.CalendarConfig
 import com.kosa.selp.shared.theme.AppColor
@@ -28,7 +36,8 @@ import java.util.Date
 @Composable
 fun CalendarMonthGrid(
     month: Date,
-    config: CalendarConfig
+    config: CalendarConfig,
+    modifier: Modifier = Modifier
 ) {
     val calendar = Calendar.getInstance().apply {
         time = month
@@ -50,11 +59,12 @@ fun CalendarMonthGrid(
         if (extra < 7) repeat(extra) { add(null) }
     }
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxSize()) {
         for (week in cells.chunked(7)) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .weight(1f)
             ) {
                 week.forEach { date ->
                     val ts = date?.time ?: 0L
@@ -66,23 +76,17 @@ fun CalendarMonthGrid(
                             )
                     val isSelected = date != null && isSameDay(date, config.selectedDate)
 
-                    val background = when {
+                    val borderColor = when {
                         isSelected -> AppColor.primary
                         isDisabled -> AppColor.secondary
                         else -> AppColor.white
                     }
 
-                    val textColor = when {
-                        isSelected -> AppColor.white
-                        isDisabled -> AppColor.textSecondary
-                        else -> AppColor.textPrimary
-                    }
+                    val textColor = AppColor.textPrimary
 
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .aspectRatio(1f)
-                            .padding(4.dp)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
@@ -96,19 +100,79 @@ fun CalendarMonthGrid(
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .background(
-                                        background,
-                                        RoundedCornerShape(8.dp)
-                                    ),
+                                    // 안쪽 테두리 생성
+                                    .drawBehind {
+                                        val strokeWidth = 2.dp.toPx()
+                                        val halfStroke = strokeWidth / 2
+                                        drawRoundRect(
+                                            color = borderColor,
+                                            topLeft = Offset(halfStroke, halfStroke),
+                                            size = Size(
+                                                size.width - strokeWidth,
+                                                size.height - strokeWidth
+                                            ),
+                                            cornerRadius = CornerRadius(8.dp.toPx(), 8.dp.toPx()),
+                                            style = Stroke(width = strokeWidth)
+                                        )
+                                    },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    text = Calendar.getInstance().apply { time = date }
-                                        .get(Calendar.DAY_OF_MONTH).toString(),
-                                    color = textColor,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center
-                                )
+                                // 한 칸
+                                Column(
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.Top,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    // 날짜
+                                    Text(
+                                        text = Calendar.getInstance().apply { time = date }
+                                            .get(Calendar.DAY_OF_MONTH).toString(),
+                                        color = textColor,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.padding(start = 5.dp, top = 2.dp)
+                                    )
+                                    // 해당 날짜의 이벤트가 있으면 아래에 표시
+                                    val dayEvents = config.events.filter { event ->
+                                        isSameDay(event.eventDate, date)
+                                    }
+
+                                    // 이벤트들
+                                    if (dayEvents.isNotEmpty()) {
+                                        Column(
+                                            verticalArrangement = Arrangement.spacedBy(1.dp) // 각 bar 사이 간격
+                                        ) {
+                                            dayEvents.forEach { event ->
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .background(
+                                                            color = AppColor.primary,
+                                                            shape = RoundedCornerShape(8.dp)
+                                                        )
+                                                        .border(
+                                                            width = 2.dp,
+                                                            color = AppColor.primary,
+                                                            shape = RoundedCornerShape(8.dp)
+                                                        )
+//                                                        .padding(vertical = 1.dp, horizontal = 3.dp)
+                                                ) {
+                                                    Text(
+                                                        text = event.eventName,
+                                                        color = Color.White,
+                                                        style = MaterialTheme.typography.bodySmall.copy(
+                                                            fontSize = MaterialTheme.typography.bodySmall.fontSize * 0.7f
+                                                        ),
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Clip,
+                                                        textAlign = TextAlign.Center,
+                                                        modifier = Modifier.align(Alignment.Center)
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

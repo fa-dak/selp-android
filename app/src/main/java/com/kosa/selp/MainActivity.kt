@@ -24,10 +24,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.kosa.selp.features.calendar.presentation.CalendarScreen
 import com.kosa.selp.features.gift.presentation.screen.AgeGroupGiftScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftDetailScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftPackageDetailScreen
+import com.kosa.selp.features.calendar.presentation.EventRegisterScreen
 import com.kosa.selp.features.gift.presentation.screen.SurveyResultScreen
 import com.kosa.selp.features.home.presentation.screen.HomeScreen
 import com.kosa.selp.features.login.presentation.screen.LoginScreen
@@ -49,7 +51,7 @@ import com.kosa.selp.shared.theme.SelpTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.net.URLDecoder
 import androidx.navigation.NavType
-import androidx.navigation.navArgument
+import java.util.Date
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -157,7 +159,27 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("calendar") {
-                            CalendarScreen(modifier = Modifier.padding(innerPadding))
+                            CalendarScreen(
+                                navController = navController,
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                        }
+
+                        composable(
+                            route = "eventRegister/{selectedDateMillis}",
+                            arguments = listOf(navArgument("selectedDateMillis") {
+                                type = NavType.LongType
+                            })
+                        ) { backStackEntry ->
+                            val selectedDateMillis =
+                                backStackEntry.arguments?.getLong("selectedDateMillis")
+                                    ?: System.currentTimeMillis()
+                            val selectedDate = Date(selectedDateMillis)
+
+                            EventRegisterScreen(
+                                navController = navController,
+                                selectedDate = selectedDate
+                            )
                         }
 
                         animatedComposable("giftDetail/{giftId}") { backStackEntry ->
