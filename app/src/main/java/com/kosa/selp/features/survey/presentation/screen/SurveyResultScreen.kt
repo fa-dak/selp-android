@@ -42,21 +42,39 @@ fun SurveyResultScreen(
     viewModel: SurveyViewModel = hiltViewModel()
 ) {
     val recommendedGifts by viewModel.recommendedGiftBundles.collectAsStateWithLifecycle()
-    var showLottie by remember { mutableStateOf(true) }
+    var showLottie by remember { mutableStateOf(false) }
+    var animationCompleted by remember { mutableStateOf(false) }
+    var isInitialLoad by remember { mutableStateOf(true) }
 
     val composition by rememberLottieComposition(LottieCompositionSpec.Asset("gift_open.json"))
-    val progress by animateLottieCompositionAsState(composition, iterations = 1)
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = 1,
+        isPlaying = showLottie && composition != null,
+        restartOnPlay = false
+    )
 
-    LaunchedEffect(progress) {
-        if (progress == 1f) {
-            delay(300)
-            showLottie = false
+    LaunchedEffect(recommendedGifts) {
+        if (recommendedGifts != null && composition != null && isInitialLoad) {
+            showLottie = true
+        } else if (recommendedGifts != null && !isInitialLoad) {
+            animationCompleted = true
         }
     }
 
-    val isLoading = recommendedGifts == null
-    val isLottie = recommendedGifts != null && showLottie
-    val isReady = recommendedGifts != null && !showLottie
+    LaunchedEffect(progress, showLottie) {
+        if (showLottie && progress == 1f) {
+            delay(200)
+            animationCompleted = true
+            showLottie = false
+            isInitialLoad = false
+        }
+    }
+
+    val isLoading = recommendedGifts == null && isInitialLoad
+    val isLottieReady =
+        composition != null && recommendedGifts != null && showLottie && !animationCompleted && isInitialLoad
+    val isContentReady = recommendedGifts != null && animationCompleted
 
     Scaffold(
         topBar = {
@@ -64,7 +82,7 @@ fun SurveyResultScreen(
                 title = {},
                 navigationIcon = {
                     IconButton(onClick = {
-                        if (!showLottie) {
+                        if (isContentReady) {
                             navController.navigate("home") {
                                 popUpTo(0) { inclusive = true }
                             }
@@ -105,20 +123,20 @@ fun SurveyResultScreen(
                     }
                 }
 
-                isLottie -> {
-                    val safeComposition = composition
-                    if (safeComposition != null) {
+                isLottieReady -> {
+                    composition?.let { safeComposition ->
                         SurveyResultLottie(safeComposition, progress = progress)
                     }
                 }
 
-                isReady -> SurveyResultContent(
-                    gifts = recommendedGifts!!,
-                    navController = navController
-                )
+                isContentReady -> {
+                    SurveyResultContent(
+                        gifts = recommendedGifts!!,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
+                }
             }
         }
     }
 }
-
-
