@@ -4,6 +4,7 @@ import com.kosa.selp.features.mypage.model.Contact
 import com.kosa.selp.features.mypage.model.GiftBundleResponse
 import com.kosa.selp.features.mypage.model.ReceiverModifyRequest
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -32,5 +33,10 @@ interface MyPageApiService {
     suspend fun modifyReceiverInfo(
         @Path("receiver-info-id") receiverInfoId: Long,
         @Body request: ReceiverModifyRequest
+    )
+
+    @DELETE("/receiver-infos/{receiver-info-id}")
+    suspend fun deleteReceiverInfo(
+        @Path("receiver-info-id") receiverInfoId: Long
     )
 }

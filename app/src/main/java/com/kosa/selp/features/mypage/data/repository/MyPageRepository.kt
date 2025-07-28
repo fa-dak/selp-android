@@ -17,4 +17,6 @@ class MyPageRepository @Inject constructor(
     suspend fun getMyReceiverInfoDetail(receiverInfoId: Long) = myPageApiService.getMyReceiverInfoDetail(receiverInfoId)
 
     suspend fun modifyReceiverInfo(receiverInfoId: Long, request: ReceiverModifyRequest) = myPageApiService.modifyReceiverInfo(receiverInfoId, request)
+
+    suspend fun deleteReceiverInfo(receiverInfoId: Long) = myPageApiService.deleteReceiverInfo(receiverInfoId)
 }

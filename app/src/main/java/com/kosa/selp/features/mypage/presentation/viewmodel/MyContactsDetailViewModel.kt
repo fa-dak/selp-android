@@ -70,6 +70,17 @@ class MyContactsDetailViewModel @Inject constructor(
             }
         }
     }
+
+    fun deleteContact() {
+        viewModelScope.launch {
+            try {
+                myPageRepository.deleteReceiverInfo(receiverId)
+                _event.emit(MyContactsDetailEvent.NavigateUp)
+            } catch (e: Exception) {
+                _uiState.value = MyContactsDetailUiState.Error(e.message ?: "Delete failed")
+            }
+        }
+    }
 }
 
 sealed interface MyContactsDetailEvent {
