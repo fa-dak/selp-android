@@ -20,19 +20,18 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.kosa.selp.features.calendar.presentation.CalendarScreen
+import com.kosa.selp.features.calendar.presentation.EventRegisterScreen
 import com.kosa.selp.features.gift.presentation.screen.AgeGroupGiftScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftDetailScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftPackageDetailScreen
-import com.kosa.selp.features.calendar.presentation.EventRegisterScreen
-import com.kosa.selp.features.gift.presentation.screen.SurveyResultScreen
 import com.kosa.selp.features.home.presentation.screen.HomeScreen
 import com.kosa.selp.features.login.presentation.screen.LoginScreen
 import com.kosa.selp.features.login.presentation.viewModel.LoginEvent
 import com.kosa.selp.features.login.presentation.viewModel.LoginViewModel
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyIntroScreen
-import com.kosa.selp.features.survey.presentation.screen.SurveyResultWaitingScreen
-import com.kosa.selp.features.survey.viewModel.SurveyViewModel
+import com.kosa.selp.features.survey.presentation.screen.SurveyResultScreen
+import com.kosa.selp.features.survey.presentation.viewModel.SurveyViewModel
 import com.kosa.selp.shared.composable.navigation.BottomNavBar
 import com.kosa.selp.shared.navigation.BottomBarRoute
 import com.kosa.selp.shared.navigation.animatedComposable
@@ -124,20 +123,16 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        animatedComposable("surveyResultLoading") { navBackStackEntry ->
-                            val parentEntry = remember(navBackStackEntry) {
+                        animatedComposable("surveyResult") { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
                                 navController.getBackStackEntry("surveyFunnel")
                             }
                             val viewModel = hiltViewModel<SurveyViewModel>(parentEntry)
 
-                            SurveyResultWaitingScreen(
+                            SurveyResultScreen(
                                 navController = navController,
-                                viewModel = viewModel,
+                                viewModel = viewModel
                             )
-                        }
-
-                        animatedComposable("surveyResult") {
-                            SurveyResultScreen(navController = navController)
                         }
 
                         composable("calendar") {
