@@ -22,8 +22,8 @@ import androidx.navigation.navArgument
 import com.kosa.selp.features.calendar.presentation.CalendarScreen
 import com.kosa.selp.features.calendar.presentation.EventRegisterScreen
 import com.kosa.selp.features.gift.presentation.screen.AgeGroupGiftScreen
+import com.kosa.selp.features.gift.presentation.screen.GiftBundleDetailScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftDetailScreen
-import com.kosa.selp.features.gift.presentation.screen.GiftPackageDetailScreen
 import com.kosa.selp.features.home.presentation.screen.HomeScreen
 import com.kosa.selp.features.login.presentation.screen.LoginScreen
 import com.kosa.selp.features.login.presentation.viewModel.LoginEvent
@@ -169,7 +169,7 @@ class MainActivity : ComponentActivity() {
                         animatedComposable("giftPackage/{giftPackageId}") { backStackEntry ->
                             val giftPackageId = backStackEntry.arguments?.getString("giftPackageId")
                             if (giftPackageId != null) {
-                                GiftPackageDetailScreen(
+                                GiftBundleDetailScreen(
                                     giftPackageId = giftPackageId,
                                     navController = navController
                                 )
