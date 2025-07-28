@@ -7,6 +7,10 @@ import com.kosa.selp.features.gift.data.response.GiftBundleRecommendMessageRespo
 
 interface GiftRepository {
     suspend fun getGiftBundle(giftBundleId: String): GiftBundleDetailResponseDto
-    suspend fun getRecommendedMessages(giftBundleId: String): GiftBundleRecommendMessageResponseDto
+    suspend fun getRecommendedMessages(
+        giftBundleId: String,
+        tone: String
+    ): GiftBundleRecommendMessageResponseDto
+
     suspend fun recommendGiftBundle(giftBundleRecommendRequest: GiftBundleRecommendRequestDto): List<GiftBundleItemResponseDto>
 }

@@ -1,6 +1,5 @@
 package com.kosa.selp.features.gift.presentation.screen
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -18,11 +17,10 @@ import com.kosa.selp.features.gift.composable.bundle.MessageRecommendBottomSheet
 import com.kosa.selp.features.gift.presentation.viewModel.GiftBundleDataViewModel
 import com.kosa.selp.features.gift.presentation.viewModel.GiftBundleRecommendMessageUiViewModel
 import com.kosa.selp.features.gift.presentation.viewModel.GiftBundleUiViewModel
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GiftPackageDetailScreen(
+fun GiftBundleDetailScreen(
     giftPackageId: String,
     navController: NavController,
     uiViewModel: GiftBundleUiViewModel = hiltViewModel(),
@@ -33,21 +31,8 @@ fun GiftPackageDetailScreen(
     val giftBundleData by dataViewModel.giftBundleData.collectAsState()
     val recommendedMessages by dataViewModel.recommendedMessages.collectAsState()
 
-    BackHandler { navController.popBackStack() }
-
     LaunchedEffect(giftPackageId) {
         dataViewModel.loadGiftBundle(giftPackageId)
-    }
-
-    LaunchedEffect(uiState.showOverlay) {
-        if (uiState.showOverlay) {
-            recommendedMessages.forEachIndexed { index, message ->
-                for (i in message.indices) {
-                    delay(10)
-                    uiViewModel.updateTyping(index, message.substring(0, i + 1))
-                }
-            }
-        }
     }
 
     when (val data = giftBundleData) {
@@ -73,15 +58,19 @@ fun GiftPackageDetailScreen(
             viewModel = messageViewModel,
             onDismiss = { uiViewModel.dismissBottomSheet() },
             onComplete = {
-                dataViewModel.loadRecommendedMessages(giftPackageId)
-                uiViewModel.showOverlay()
+                messageViewModel.selectedTone.value?.let { tone ->
+                    val finalTone =
+                        if (tone == "직접 입력할게요") messageViewModel.customMessage.value else tone
+                    dataViewModel.loadRecommendedMessages("20", finalTone)
+                    uiViewModel.showOverlay()
+                }
             }
         )
     }
 
     if (uiState.showOverlay) {
         MessageOverlay(
-            messages = uiState.typingTexts,
+            messages = recommendedMessages,
             isLoading = recommendedMessages.isEmpty(),
             onDismiss = {
                 uiViewModel.resetOverlay()
