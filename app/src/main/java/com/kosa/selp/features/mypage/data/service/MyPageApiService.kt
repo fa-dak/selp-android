@@ -6,12 +6,12 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MyPageApiService {
-    @GET("/mypage/gift-bundles")
+    @GET("/gift-bundle/gift-bundles")
     suspend fun getMyGiftBundles(
         @Query("sort") sort: String = "createdDate,desc"
     ): List<GiftBundleResponse>
 
-    @GET("/mypage/gift-bundles/{bundleId}")
+    @GET("/gift-bundle/gift-bundles/{bundleId}")
     suspend fun getMyGiftBundleDetail(
         @Path("bundleId") bundleId: Long
     ): GiftBundleResponse
