@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,6 +32,10 @@ class MyPageViewModel @Inject constructor(
     private val _event = Channel<MyPageEvent>()
     val event = _event.receiveAsFlow()
 
+    // 상세 꾸러미 정보를 담을 StateFlow
+    private val _giftBundleDetail = MutableStateFlow<GiftBundleResponse?>(null)
+    val giftBundleDetail = _giftBundleDetail.asStateFlow()
+
     fun fetchMyGiftBundles() {
         viewModelScope.launch {
             try {
@@ -47,7 +52,25 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
-    // 로그아웃 함수 추가
+    fun fetchGiftBundleDetail(bundleId: Long) {
+        viewModelScope.launch {
+            try {
+                val detail = myPageRepository.getMyGiftBundleDetail(bundleId)
+                Log.d("MyPageViewModel", "GiftBundleDetail DTO: $detail") // DTO 전체 로그 출력
+                _giftBundleDetail.value = detail
+                Log.d("MyPageViewModel", "상세 정보 로드 성공: ${detail.eventName}")
+            } catch (e: Exception) {
+                Log.e("MyPageViewModel", "상세 정보 로드 실패: ${e.message}")
+            }
+        }
+    }
+
+    // 화면이 사라질 때 상세 정보를 초기화하는 함수
+    fun clearGiftBundleDetail() {
+        _giftBundleDetail.value = null
+    }
+
+    // 로그아웃
     fun logout() {
         viewModelScope.launch {
             authManager.clearTokens() // 저장된 토큰 삭제

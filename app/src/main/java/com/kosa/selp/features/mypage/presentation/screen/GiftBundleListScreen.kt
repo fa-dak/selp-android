@@ -124,7 +124,7 @@ fun GiftBundleItem(
             .fillMaxWidth()
             .clickable(onClick = onClick), // 클릭 이벤트 추가
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(containerColor = AppColor.white)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

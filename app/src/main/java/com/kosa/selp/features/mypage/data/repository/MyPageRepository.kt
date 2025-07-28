@@ -7,4 +7,6 @@ class MyPageRepository @Inject constructor(
     private val myPageApiService: MyPageApiService
 ) {
     suspend fun getMyGiftBundles() = myPageApiService.getMyGiftBundles()
+
+    suspend fun getMyGiftBundleDetail(bundleId: Long) = myPageApiService.getMyGiftBundleDetail(bundleId)
 }

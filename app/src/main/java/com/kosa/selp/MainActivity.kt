@@ -47,6 +47,9 @@ import com.kosa.selp.shared.navigation.animatedComposable
 import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.SelpTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.net.URLDecoder
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -162,6 +165,18 @@ class MainActivity : ComponentActivity() {
                             if (giftId != null) {
                                 GiftDetailScreen(giftId = giftId, navController = navController)
                             }
+                        }
+
+                        animatedComposable(
+                            "webView?url={url}",
+                            arguments = listOf(navArgument("url") {
+                                type = NavType.StringType
+                                nullable = true
+                            })
+                        ) { backStackEntry ->
+                            val encodedUrl = backStackEntry.arguments?.getString("url")
+                            val url = if (encodedUrl != null) URLDecoder.decode(encodedUrl, "UTF-8") else null
+                            GiftDetailScreen(url = url, navController = navController)
                         }
 
                         animatedComposable("giftPackage/{giftPackageId}") { backStackEntry ->
