@@ -111,9 +111,18 @@ dependencies {
     implementation(libs.firebase.messaging)
 
     // Retrofit
+    // API 호출
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // 날짜 선택
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
+    implementation("androidx.compose.foundation:foundation:1.8.3")
+    // Kotlin Coroutines core
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    // Kotlin Coroutines Android
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.hilt.compiler)
