@@ -22,14 +22,15 @@ fun TypingMessage(
     message: String,
     modifier: Modifier = Modifier
 ) {
-    var visibleText by remember { mutableStateOf("") }
+    var currentText by remember { mutableStateOf("") }
 
     LaunchedEffect(message) {
-        visibleText = ""
-        for (i in message.indices) {
-            visibleText = message.substring(0, i + 1)
-            delay(10)
+        currentText = ""
+        for (char in message) {
+            currentText += char
+            delay(20L)
         }
+        delay(300L)
     }
 
     Box(
@@ -39,7 +40,7 @@ fun TypingMessage(
             .padding(16.dp)
     ) {
         Text(
-            text = visibleText,
+            text = currentText,
             style = MaterialTheme.typography.bodyLarge
         )
     }
