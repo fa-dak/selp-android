@@ -2,6 +2,8 @@ package com.kosa.selp.shared.di
 
 import android.util.Log
 import com.kosa.selp.BuildConfig
+import com.kosa.selp.features.calendar.apiService.EventApiService
+import com.kosa.selp.features.calendar.apiService.ReceiverInfoApiService
 import com.kosa.selp.features.login.data.service.AuthApiService
 import com.kosa.selp.shared.data.interceptor.AuthInterceptor
 import dagger.Module
@@ -56,4 +58,17 @@ object NetworkModule {
     fun provideAuthApiService(retrofit: Retrofit): AuthApiService {
         return retrofit.create(AuthApiService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideReceiverInfoApiService(retrofit: Retrofit): ReceiverInfoApiService {
+        return retrofit.create(ReceiverInfoApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventApiService(retrofit: Retrofit): EventApiService {
+        return retrofit.create(EventApiService::class.java)
+    }
+
 }
