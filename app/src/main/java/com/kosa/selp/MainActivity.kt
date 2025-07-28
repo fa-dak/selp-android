@@ -37,6 +37,7 @@ import com.kosa.selp.features.login.presentation.viewModel.LoginEvent
 import com.kosa.selp.features.login.presentation.viewModel.LoginViewModel
 import com.kosa.selp.features.mypage.presentation.screen.GiftBundleDetailScreen
 import com.kosa.selp.features.mypage.presentation.screen.GiftBundleListScreen
+import com.kosa.selp.features.mypage.presentation.screen.MyContactsDetailScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyContactsScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyPageScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
@@ -236,7 +237,13 @@ class MainActivity : ComponentActivity() {
                             GiftBundleListScreen(navController = navController)
                         }
                         animatedComposable("myContacts") {
-                            MyContactsScreen()
+                            MyContactsScreen(navController = navController)
+                        }
+                        animatedComposable(
+                            "myContactDetail/{contactId}",
+                            arguments = listOf(navArgument("contactId") { type = NavType.LongType })
+                        ) {
+                            MyContactsDetailScreen(navController = navController)
                         }
                         animatedComposable("giftBundleDetail/{bundleId}") { backStackEntry ->
                             val bundleId = backStackEntry.arguments?.getString("bundleId")?.toLongOrNull()

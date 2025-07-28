@@ -1,5 +1,6 @@
 package com.kosa.selp.features.mypage.data.service
 
+import com.kosa.selp.features.mypage.model.Contact
 import com.kosa.selp.features.mypage.model.GiftBundleResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -15,4 +16,12 @@ interface MyPageApiService {
     suspend fun getMyGiftBundleDetail(
         @Path("bundleId") bundleId: Long
     ): GiftBundleResponse
+
+    @GET("/receiver-infos")
+    suspend fun getMyReceiverInfoList(): List<Contact>
+
+    @GET("/receiver-infos/{receiver-info-id}")
+    suspend fun getMyReceiverInfoDetail(
+        @Path("receiver-info-id") receiverInfoId: Long
+    ): Contact
 }
