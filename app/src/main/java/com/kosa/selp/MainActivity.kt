@@ -45,8 +45,7 @@ import com.kosa.selp.features.mypage.presentation.screen.MyPageScreen
 import com.kosa.selp.features.pay.PayExampleScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyIntroScreen
-import com.kosa.selp.features.survey.presentation.screen.SurveyResultWaitingScreen
-import com.kosa.selp.features.survey.viewModel.SurveyViewModel
+import com.kosa.selp.features.survey.presentation.viewModel.SurveyViewModel
 import com.kosa.selp.shared.composable.navigation.BottomNavBar
 import com.kosa.selp.shared.navigation.BottomBarRoute
 import com.kosa.selp.shared.navigation.animatedComposable
@@ -161,20 +160,15 @@ class MainActivity : ComponentActivity() {
                             SurveyFunnelScreen(navController = navController)
                         }
 
-                        animatedComposable("surveyResultLoading") { navBackStackEntry ->
-                            val parentEntry = remember(navBackStackEntry) {
+                        animatedComposable("surveyResult") { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
                                 navController.getBackStackEntry("surveyFunnel")
                             }
                             val viewModel = hiltViewModel<SurveyViewModel>(parentEntry)
 
-                            SurveyResultWaitingScreen(
-                                navController = navController,
-                                viewModel = viewModel,
+                            SurveyResultScreen(
+                                navController = navController
                             )
-                        }
-
-                        animatedComposable("surveyResult") {
-                            SurveyResultScreen(navController = navController)
                         }
 
                         composable("calendar") {
