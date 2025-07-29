@@ -64,7 +64,7 @@ class PaymentManager(
             updateStatus("결제 검증 중...")
             val response = paymentApiService.verify(giftBundleId, PaymentVerifyRequest(impUid))
 
-            if (response.isSuccessful && response.body()?.isValid == true) {
+            if (response.isSuccessful) {
                 updateStatus("결제 완료!")
                 Toast.makeText(context, "결제 완료!", Toast.LENGTH_SHORT).show()
             } else {

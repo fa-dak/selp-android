@@ -1,5 +1,6 @@
 package com.kosa.selp.features.pay
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import dagger.hilt.android.EntryPointAccessors
+import kotlinx.coroutines.launch
 
 @Composable
 fun PayExampleScreen() {
@@ -50,16 +52,37 @@ fun PayExampleScreen() {
         paymentManager.startIamportPayment(
             giftBundleId, productName, amount, buyerName, buyerTel, buyerEmail
         ) { impUid ->
-//            val retrofit = Retrofit.Builder()
-//                .baseUrl(BuildConfig.BACKEND_BASE_URL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build()
-//            val paymentApi = retrofit.create(PaymentApiService::class.java)
             paymentManager.verifyPaymentOnServer(
                 giftBundleId,
                 impUid,
                 paymentApi
             )
+        }
+    }
+
+    fun cancelIamportPayment() {
+        val giftBundleId: Long = giftBundleId.toLongOrNull() ?: 0L
+
+        val appContext = context.applicationContext
+        val entryPoint = EntryPointAccessors.fromApplication(
+            appContext,
+            PaymentApiEntryPoint::class.java
+        )
+        val paymentApi = entryPoint.paymentApiService()
+
+        coroutineScope.launch {
+            try {
+                val response = paymentApi.cancel(giftBundleId)
+                if (response.isSuccessful) {
+                    // 취소 성공 처리
+                    Log.d("CANCEL", "결제 취소 성공")
+                } else {
+                    // 실패 응답 처리
+                    Log.w("CANCEL", "결제 취소 실패: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("CANCEL", "결제 취소 중 오류 발생", e)
+            }
         }
     }
 
@@ -97,6 +120,10 @@ fun PayExampleScreen() {
 
         Button(onClick = { startIamportPayment() }) {
             Text("결제하기")
+        }
+
+        Button(onClick = { cancelIamportPayment() }) {
+            Text("결제 취소하기")
         }
     }
 }

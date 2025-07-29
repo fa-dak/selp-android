@@ -2,6 +2,7 @@ package com.kosa.selp.features.pay
 
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -11,5 +12,10 @@ interface PaymentApiService {
         @Path("giftBundleId") giftBundleId: Long,
         @Body
         request: PaymentVerifyRequest
-    ): Response<PaymentVerifyResponse>
+    ): Response<Unit>
+
+    @DELETE("/payments/gift-bundles/{giftBundleId}/cancel")
+    suspend fun cancel(
+        @Path("giftBundleId") giftBundleId: Long
+    ): Response<Unit>
 }
