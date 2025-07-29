@@ -56,6 +56,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.net.URLDecoder
 import java.util.Date
 
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -283,32 +284,36 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+            Iamport.init(this) // Iamport
         }
         Iamport.init(this) // Iamport
-    }
-
-    @Composable
-    fun SplashScreen(
-        viewModel: LoginViewModel,
-        onNavigateToHome: () -> Unit,
-        onNavigateToLogin: () -> Unit
-    ) {
-        val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle()
-        LaunchedEffect(isLoggedIn) {
-            when (isLoggedIn) {
-                true -> onNavigateToHome()
-                false -> onNavigateToLogin()
-                null -> { /* Wait */
-                }
-            }
-        }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         Iamport.close()
+    }
+}
+
+@Composable
+fun SplashScreen(
+    viewModel: LoginViewModel,
+    onNavigateToHome: () -> Unit,
+    onNavigateToLogin: () -> Unit
+) {
+    val isLoggedIn by viewModel.isLoggedIn.collectAsStateWithLifecycle()
+    LaunchedEffect(isLoggedIn) {
+        when (isLoggedIn) {
+            true -> onNavigateToHome()
+            false -> onNavigateToLogin()
+            null -> { /* Wait */
+            }
+        }
+    }
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
     }
 }
