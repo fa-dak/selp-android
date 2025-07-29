@@ -140,7 +140,7 @@ fun GiftBundleItem(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = bundle.receiverNickname,
+                    text = bundle.receiverNickname ?: "-",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -154,7 +154,7 @@ fun GiftBundleItem(
             Spacer(modifier = Modifier.height(4.dp))
             // 이벤트 정보
             Text(
-                text = "${bundle.eventName} (${bundle.eventDate})",
+                text = "${bundle.eventName ?: "-"} (${bundle.eventDate})",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(start = 4.dp)
             )

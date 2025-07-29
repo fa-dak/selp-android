@@ -130,12 +130,21 @@ fun ContactList(navController: NavController, contacts: List<Contact>) {
             Text("저장된 연락처가 없습니다.")
         }
     } else {
-        LazyColumn(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(contacts) { contact ->
-                ContactItem(navController = navController, contact = contact)
+        Column(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = "친구 ${contacts.size}",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = AppColor.textSecondary,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)
+            )
+            LazyColumn(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(contacts) { contact ->
+                    ContactItem(navController = navController, contact = contact)
+                }
             }
         }
     }
@@ -157,7 +166,7 @@ fun ContactItem(navController: NavController, contact: Contact) {
         ) {
             // 이모지 아이콘
             Text(
-                text = getEmojiForRelationship(contact.relationship),
+                text = getEmojiForRelationship(contact.relationship ?: "-"),
                 style = MaterialTheme.typography.headlineSmall // 이모지 크기 조절
             )
             Spacer(modifier = Modifier.width(16.dp))
@@ -165,27 +174,33 @@ fun ContactItem(navController: NavController, contact: Contact) {
                 // 닉네임과 관계
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
-                        text = contact.nickname,
+                        text = contact.nickname ?: "-",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "(${contact.relationship})",
+                        text = "(${contact.relationship ?: "-"})",
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppColor.textDisabled
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 // 나이와 성별
+                val genderText = when (contact.gender) {
+                    "MALE" -> "남성"
+                    "FEMALE" -> "여성"
+                    "NONE" -> "없음"
+                    else -> "-"
+                }
                 Text(
-                    text = "${contact.age}세, ${if (contact.gender == "MALE") "남성" else "여성"}",
+                    text = "${contact.age?.toString() ?: "-"}세, $genderText",
                     style = MaterialTheme.typography.bodyMedium,
                     color = AppColor.textSecondary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 // 선호도
-                if (contact.preferences.isNotEmpty()) {
+                if (contact.preferences?.isNotEmpty() == true) {
                     Text(
                         text = "선호도: ${contact.preferences.joinToString(", ")}",
                         style = MaterialTheme.typography.bodyMedium,
