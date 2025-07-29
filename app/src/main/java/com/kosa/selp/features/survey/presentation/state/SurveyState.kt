@@ -5,7 +5,7 @@ data class SurveyState(
     val budget: Int? = null,
     val anniversary: String? = null,
     val gender: String? = null,
-    val ageRange: String? = null,
+    val ageRange: Int? = null,
     val relationship: String? = null,
     val categories: List<String> = emptyList(),
     val userMessage: String? = null,

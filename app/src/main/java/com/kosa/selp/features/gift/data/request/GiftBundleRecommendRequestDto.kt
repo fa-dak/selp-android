@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class GiftBundleRecommendRequestDto(
     @SerializedName("ageRange")
-    val ageRange: String,
+    val ageRange: Int,
 
     @SerializedName("anniversaryType")
     val anniversaryType: String,

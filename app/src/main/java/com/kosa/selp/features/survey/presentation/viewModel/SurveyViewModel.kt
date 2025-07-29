@@ -10,6 +10,7 @@ import com.kosa.selp.features.gift.data.response.GiftBundleItemResponseDto
 import com.kosa.selp.features.gift.domain.usecase.RecommendGiftBundleUseCase
 import com.kosa.selp.features.gift.domain.usecase.ReplaceGiftItemUseCase
 import com.kosa.selp.features.gift.domain.usecase.SaveGiftBundleUseCase
+import com.kosa.selp.features.survey.model.AnniversaryType
 import com.kosa.selp.features.survey.presentation.state.SurveyEvent
 import com.kosa.selp.features.survey.presentation.state.SurveyState
 import com.kosa.selp.features.survey.presentation.state.SurveyStep
@@ -50,8 +51,15 @@ class SurveyViewModel @Inject constructor(
     fun onEvent(event: SurveyEvent) {
         when (event) {
             is SurveyEvent.BudgetSelected -> update { copy(budget = event.budget) }
-            is SurveyEvent.AnniversarySelected -> update { copy(anniversary = event.anniversary) }
-            is SurveyEvent.GenderSelected -> update { copy(gender = event.gender) }
+            is SurveyEvent.AnniversarySelected -> update {
+                val anniv = AnniversaryType.fromCode(event.anniversary)
+                copy(anniversary = anniv?.code)
+            }
+
+            is SurveyEvent.GenderSelected -> update {
+                copy(gender = event.gender)
+            }
+
             is SurveyEvent.AgeRangeSelected -> update { copy(ageRange = event.ageRange) }
             is SurveyEvent.RelationshipSelected -> update { copy(relationship = event.relationship) }
             is SurveyEvent.CategoriesSelected -> update { copy(categories = event.categories) }
@@ -85,7 +93,7 @@ class SurveyViewModel @Inject constructor(
         val state = uiState.value
 
         val request = GiftBundleRecommendRequestDto(
-            ageRange = state.ageRange.orEmpty(),
+            ageRange = state.ageRange ?: 20,
             anniversaryType = state.anniversary.orEmpty(),
             categories = state.categories,
             relation = state.relationship.orEmpty(),
@@ -150,13 +158,26 @@ class SurveyViewModel @Inject constructor(
 
         val request = GiftBundleSaveRequestDto(
             giftIds = gifts.map { it.id },
-            ageRange = state.ageRange?.toIntOrNull() ?: 20,
+            ageRange = state.ageRange ?: 20,
             anniversaryType = state.anniversary.orEmpty(),
             categories = state.categories,
             relation = state.relationship.orEmpty(),
             gender = state.gender.orEmpty(),
             detail = state.userMessage.orEmpty()
         )
+
+//        val request = GiftBundleSaveRequestDto(
+//            giftIds = listOf(48, 49, 50),
+//            ageRange = 20,
+//            anniversaryType = "BIRTHDAY",
+//            categories = listOf("BEAUTY", "FOOD"),
+//            relation = "친구", // 서버에서 "친구"를 enum으로 인식 못할 가능성 있음 → 문제 생기면 영어로
+//            gender = "FEMALE",
+//            detail = "화장품을 좋아하고 단 음식을 좋아함"
+//        )
+
+        Log.i("SurveyViewModel", "저장 요청: $request") // 🔥 이걸 추가
+
 
         viewModelScope.launch {
             runCatching {
