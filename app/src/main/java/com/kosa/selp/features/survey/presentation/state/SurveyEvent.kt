@@ -4,7 +4,7 @@ sealed interface SurveyEvent {
     data class BudgetSelected(val budget: Int?) : SurveyEvent
     data class AnniversarySelected(val anniversary: String) : SurveyEvent
     data class GenderSelected(val gender: String) : SurveyEvent
-    data class AgeRangeSelected(val ageRange: String) : SurveyEvent
+    data class AgeRangeSelected(val ageRange: Int) : SurveyEvent
     data class RelationshipSelected(val relationship: String) : SurveyEvent
     data class CategoriesSelected(val categories: List<String>) : SurveyEvent
     data class UserMessageEntered(val userMessage: String) : SurveyEvent

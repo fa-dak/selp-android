@@ -32,6 +32,7 @@ fun GiftDto.toGiftItem(): GiftItem {
         id = id.toString(),
         title = name,
         imageUrl = imagePath,
-        price = "%,d원".format(price)
+        price = "%,d원".format(price),
+        detailPath = detailPath
     )
 }

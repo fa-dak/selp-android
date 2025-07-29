@@ -1,5 +1,6 @@
 package com.kosa.selp.features.survey.presentation.funnel
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -25,25 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kosa.selp.features.survey.model.AnniversaryType
 import com.kosa.selp.features.survey.presentation.state.SurveyEvent
 import com.kosa.selp.features.survey.presentation.viewModel.SurveyViewModel
 import com.kosa.selp.shared.theme.AppColor
-
-data class AnniversaryOption(
-    val id: String,
-    val displayName: String
-)
-
-val allAnniversaries = listOf(
-    AnniversaryOption("생일", "생일"),
-    AnniversaryOption("결혼기념일", "결혼기념일"),
-    AnniversaryOption("입학/졸업", "입학/졸업"),
-    AnniversaryOption("취업/승진", "취업/승진"),
-    AnniversaryOption("집들이", "집들이"),
-    AnniversaryOption("출산/돌잔치", "출산/돌잔치"),
-    AnniversaryOption("명절", "명절"),
-    AnniversaryOption("기타", "기타")
-)
 
 @Composable
 fun AnniversaryFunnel(
@@ -51,7 +37,11 @@ fun AnniversaryFunnel(
     onNext: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    val selected = remember(state.anniversary) { mutableStateOf(state.anniversary) }
+    val selected = remember(state.anniversary) {
+        mutableStateOf(
+            AnniversaryType.entries.find { it.code == state.anniversary }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -67,13 +57,17 @@ fun AnniversaryFunnel(
         Spacer(modifier = Modifier.height(24.dp))
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            allAnniversaries.chunked(2).forEach { rowItems ->
+            AnniversaryType.entries.chunked(2).forEach { rowItems ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     rowItems.forEach { anniversary ->
-                        val isSelected = selected.value == anniversary.id
+                        val isSelected = state.anniversary == anniversary.code
+                        Log.d(
+                            "AnniversaryFunnel",
+                            "현재 선택된 코드: ${state.anniversary}, 비교 대상: ${anniversary.code}"
+                        )
 
                         val backgroundColor by animateColorAsState(
                             targetValue = if (isSelected) AppColor.primary.copy(alpha = 0.1f) else AppColor.white,
@@ -90,8 +84,8 @@ fun AnniversaryFunnel(
 
                         OutlinedButton(
                             onClick = {
-                                selected.value = anniversary.id
-                                viewModel.onEvent(SurveyEvent.AnniversarySelected(anniversary.id))
+                                selected.value = anniversary
+                                viewModel.onEvent(SurveyEvent.AnniversarySelected(anniversary.code))
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -104,7 +98,7 @@ fun AnniversaryFunnel(
                             border = BorderStroke(1.dp, borderColor)
                         ) {
                             Text(
-                                text = anniversary.displayName,
+                                text = anniversary.label,
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                                 )
@@ -137,4 +131,3 @@ fun AnniversaryFunnel(
         }
     }
 }
-

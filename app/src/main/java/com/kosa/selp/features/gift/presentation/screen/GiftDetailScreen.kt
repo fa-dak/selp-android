@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,8 +34,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kosa.selp.features.gift.composable.GiftDetailWebView
+import com.kosa.selp.features.gift.viewModel.GiftViewModel
 import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.TextPrimary
 
@@ -43,22 +46,13 @@ import com.kosa.selp.shared.theme.TextPrimary
 @Composable
 fun GiftDetailScreen(
     navController: NavController,
-    giftId: String? = null,
-    url: String? = null
+    giftId: Long,
+    viewModel: GiftViewModel = hiltViewModel()
 ) {
-    val finalUrl = remember(giftId, url) {
-        if (url != null) {
-            url
-        } else {
-            // giftId가 null이 아닐 때만 맵을 사용
-            giftId?.let {
-                val giftUrlMap = mapOf(
-                    "1" to "https://www.thehyundai.com/front/pda/itemPtc.thd?slitmCd=40A1928964",
-                    "2" to "https://www.thehyundai.com/front/pda/itemPtc.thd?slitmCd=40A1928999",
-                    "3" to "https://www.thehyundai.com/front/pda/itemPtc.thd?slitmCd=40A1928031"
-                )
-                giftUrlMap[it]
-            }
+    var finalUrl by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(giftId) {
+        giftId.let {
+            finalUrl = viewModel.getGiftUrlById(it)
         }
     }
 
@@ -90,9 +84,10 @@ fun GiftDetailScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (finalUrl != null) {
+            val url = finalUrl
+            if (url != null) {
                 GiftDetailWebView(
-                    url = finalUrl,
+                    url,
                     onLoadingFinished = { isLoading = false },
                     alpha = webViewAlpha,
                     modifier = Modifier.fillMaxSize()
@@ -106,7 +101,6 @@ fun GiftDetailScreen(
                         LoadingIndicator(color = AppColor.primary)
                     }
                 }
-
             } else {
                 Column(
                     modifier = Modifier

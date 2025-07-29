@@ -30,6 +30,7 @@ import com.kosa.selp.features.calendar.presentation.screen.CalendarScreen
 import com.kosa.selp.features.gift.presentation.screen.AgeGroupGiftScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftBundleDetailScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftDetailScreen
+import com.kosa.selp.features.gift.presentation.screen.WebViewScreen
 import com.kosa.selp.features.home.presentation.screen.HomeScreen
 import com.kosa.selp.features.login.presentation.screen.LoginScreen
 import com.kosa.selp.features.login.presentation.viewModel.LoginEvent
@@ -181,7 +182,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         animatedComposable("giftDetail/{giftId}") { backStackEntry ->
-                            val giftId = backStackEntry.arguments?.getString("giftId")
+                            val giftId = backStackEntry.arguments?.getLong("giftId")
                             if (giftId != null) {
                                 GiftDetailScreen(giftId = giftId, navController = navController)
                             }
@@ -194,12 +195,11 @@ class MainActivity : ComponentActivity() {
                                 nullable = true
                             })
                         ) { backStackEntry ->
-                            val encodedUrl = backStackEntry.arguments?.getString("url")
-                            val url = if (encodedUrl != null) URLDecoder.decode(
-                                encodedUrl,
+                            val url = URLDecoder.decode(
+                                backStackEntry.arguments?.getString("url"),
                                 "UTF-8"
-                            ) else null
-                            GiftDetailScreen(url = url, navController = navController)
+                            )
+                            WebViewScreen(url = url, navController = navController)
                         }
 
                         animatedComposable("giftPackage/{giftPackageId}") { backStackEntry ->

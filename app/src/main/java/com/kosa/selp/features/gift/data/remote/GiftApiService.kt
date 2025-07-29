@@ -6,6 +6,7 @@ import com.kosa.selp.features.gift.data.request.GiftItemReplaceRequestDto
 import com.kosa.selp.features.gift.data.response.GiftBundleDetailResponseDto
 import com.kosa.selp.features.gift.data.response.GiftBundleItemResponseDto
 import com.kosa.selp.features.gift.data.response.GiftBundleRecommendMessageResponseDto
+import com.kosa.selp.features.gift.data.response.GiftInfoResponseDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -30,4 +31,7 @@ interface GiftApiService {
 
     @POST("gift-bundle")
     suspend fun saveGiftBundle(@Body giftBundleSaveRequest: GiftBundleSaveRequestDto)
+
+    @GET("gifts/{giftId}")
+    suspend fun getGiftInfo(@Path("giftId") giftId: Long): GiftInfoResponseDto
 }

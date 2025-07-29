@@ -3,6 +3,7 @@ package com.kosa.selp.features.mypage.data.service
 import com.kosa.selp.features.mypage.model.Contact
 import com.kosa.selp.features.mypage.model.GiftBundleResponse
 import com.kosa.selp.features.mypage.model.ReceiverModifyRequest
+import com.kosa.selp.features.mypage.model.ReceiverRegisterRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -10,6 +11,8 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.POST
+
+import com.kosa.selp.features.mypage.model.ProductCategory
 
 interface MyPageApiService {
     @GET("/gift-bundle/gift-bundles")
@@ -43,6 +46,9 @@ interface MyPageApiService {
 
     @POST("/receiver-infos")
     suspend fun registerReceiverInfo(
-        @Body request: ReceiverModifyRequest
+        @Body request: ReceiverRegisterRequest
     )
+
+    @GET("/productCategories")
+    suspend fun getProductCategories(): List<ProductCategory>
 }

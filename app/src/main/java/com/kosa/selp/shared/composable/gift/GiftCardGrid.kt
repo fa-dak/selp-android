@@ -31,7 +31,8 @@ fun GiftCardGrid(
                             modifier = Modifier
                                 .weight(1f)
                                 .clickable {
-                                    navController.navigate("giftDetail/${gift.id}")
+                                    navController.navigate("webView?url=${gift.detailPath}")
+//                                    navController.navigate("giftDetail/${gift.id}")
                                 }
                         )
                     }

@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'android' }
 
     environment {
         APK_OUTPUT_PATH = "app/build/outputs/apk/release/app-release.apk"
@@ -39,7 +39,7 @@ pipeline {
             echo "❌ 빌드 실패! 콘솔 로그를 확인하세요."
         }
         success {
-            echo "✅ APK가 성공적으로 빌드 및 배포되었습니다."
+            echo "✅ APK가 성공적으로 빌드 및 배포되었습니다: ${DEST_DIR}/latest.apk"
         }
     }
 }

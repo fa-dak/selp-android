@@ -40,6 +40,7 @@ fun GiftItemDto.toGiftItem(): GiftItem {
         id = this.id,
         title = this.name,
         price = this.price,
-        imageUrl = this.imageUrl
+        imageUrl = this.imageUrl,
+        detailPath = this.detailPath,
     )
 }

@@ -63,11 +63,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kosa.selp.R
-import com.kosa.selp.features.mypage.model.Contact
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsDetailEvent
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsDetailUiState
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsDetailViewModel
 import com.kosa.selp.shared.theme.AppColor
+
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -134,7 +138,7 @@ fun MyContactsDetailScreen(
             is MyContactsDetailUiState.Success -> {
                 ContactDetailContent(
                     modifier = Modifier.padding(paddingValues),
-                    contact = state.contact,
+                    state = state,
                     viewModel = viewModel,
                     navController = navController
                 )
@@ -152,19 +156,19 @@ fun MyContactsDetailScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ContactDetailContent(
     modifier: Modifier = Modifier,
-    contact: Contact,
+    state: MyContactsDetailUiState.Success,
     viewModel: MyContactsDetailViewModel,
     navController: NavController
 ) {
-    var nickname by remember { mutableStateOf(contact.nickname) }
-    var age by remember { mutableStateOf(contact.age.toString()) }
-    var gender by remember { mutableStateOf(contact.gender ?: "NONE") }
-    var relationship by remember { mutableStateOf(contact.relationship) }
-    var preferences by remember { mutableStateOf(contact.preferences ?: "") }
-    var detail by remember { mutableStateOf(contact.detail ?: "") }
+    var nickname by remember { mutableStateOf(state.contact.nickname) }
+    var age by remember { mutableStateOf(state.contact.age.toString()) }
+    var gender by remember { mutableStateOf(state.contact.gender ?: "NONE") }
+    var relationship by remember { mutableStateOf(state.contact.relationship) }
+    var detail by remember { mutableStateOf(state.contact.detail ?: "") }
 
     Column(
         modifier = modifier
@@ -184,7 +188,16 @@ fun ContactDetailContent(
             })
             DetailInputItem(label = "성별", value = gender, onValueChange = { gender = it })
             DetailInputItem(label = "관계", value = relationship, onValueChange = { relationship = it })
-            DetailInputItem(label = "선호도", value = preferences, onValueChange = { preferences = it })
+
+            PreferenceChips(
+                allCategories = state.allCategories,
+                selectedPreferences = state.contact.preferences,
+                onPreferenceChanged = { preference, isSelected ->
+                    viewModel.onPreferenceChanged(preference, isSelected)
+                }
+            )
+            Divider(color = AppColor.textDisabled.copy(alpha = 0.2f), thickness = 1.dp)
+
             DetailInputItem(label = "상세 설명", value = detail, onValueChange = { detail = it })
         }
 
@@ -210,7 +223,6 @@ fun ContactDetailContent(
                         age = age,
                         gender = gender,
                         relationship = relationship,
-                        preferences = preferences,
                         detail = detail
                     )
                 },
@@ -219,6 +231,52 @@ fun ContactDetailContent(
                 colors = ButtonDefaults.buttonColors(containerColor = AppColor.primary)
             ) {
                 Text("저장")
+            }
+        }
+    }
+}
+
+@Composable
+fun PreferenceChips(
+    allCategories: List<com.kosa.selp.features.mypage.model.ProductCategory>,
+    selectedPreferences: List<String>,
+    onPreferenceChanged: (String, Boolean) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 40.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier.width(60.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.preferences_icon),
+                    contentDescription = "선호도 아이콘",
+                    modifier = Modifier.size(20.dp),
+                    tint = AppColor.textDisabled
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                allCategories.forEach { category ->
+                    val isSelected = selectedPreferences.contains(category.name)
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { onPreferenceChanged(category.name, !isSelected) },
+                        label = { Text(category.nameKR) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = AppColor.primary,
+                            selectedLabelColor = Color.White
+                        )
+                    )
+                }
             }
         }
     }

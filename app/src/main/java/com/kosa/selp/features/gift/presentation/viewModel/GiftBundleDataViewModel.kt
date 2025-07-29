@@ -22,13 +22,15 @@ val dummyGiftBundle = GiftBundleDetailResponseDto(
             id = "1",
             name = "향 좋은 디퓨저",
             imageUrl = "https://ldb-phinf.pstatic.net/20241226_124/1735176183750fjEhg_JPEG/%C8%A6%C5%D7%B5%F0%C4%C9%C0%CC%C5%A9_%281%29.jpg",
-            price = "19,800원"
+            price = "19,800원",
+            detailPath = "https://naver.com"
         ),
         GiftItemDto(
             id = "2",
             name = "레터링 케이크",
             imageUrl = "https://ldb-phinf.pstatic.net/20241226_81/1735176192690m2B0T_JPEG/%C8%AD%C0%CC%C6%AE%C8%A6%C5%D7%B5%F0.jpeg",
-            price = "35,000원"
+            price = "35,000원",
+            detailPath = "https://naver.com"
         )
     )
 )
