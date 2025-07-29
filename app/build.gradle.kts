@@ -21,6 +21,29 @@ android {
             keyAlias = "sharedkeyalias"
             keyPassword = "android"
         }
+        create("release") {
+            storeFile = file("${rootDir}/tools/selp-release.keystore")
+            storePassword = "SelpSelp58"                       // ✅ 위에서 설정한 값
+            keyAlias = "selpkey"                                        // ✅ 위에서 설정한 alias
+            keyPassword = "SelpSelp58"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("sharedDebug")
+        }
+
     }
 
     defaultConfig {
@@ -55,20 +78,6 @@ android {
             properties.getProperty("KAKAO_NATIVE_APP_KEY", "").removeSurrounding("\"")
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-
-        getByName("debug") {
-            signingConfig = signingConfigs.getByName("sharedDebug")
-        }
-
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
