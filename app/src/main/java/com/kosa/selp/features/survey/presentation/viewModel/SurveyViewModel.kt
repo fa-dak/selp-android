@@ -112,22 +112,6 @@ class SurveyViewModel @Inject constructor(
 
     fun replaceGiftItem(target: GiftBundleItemResponseDto) {
         val state = uiState.value
-
-
-        Log.d(
-            "replaceGiftItem", """
-                🧾 요청 정보
-                productId: ${target.id}
-                ageRange: ${state.ageRange}
-                anniversaryType: ${state.anniversary}
-                category: ${target.category}
-                relation: ${state.relationship}
-                gender: ${state.gender}
-                price: ${target.price}
-                userMessage: ${state.userMessage}
-            """.trimIndent()
-        )
-
         val request = GiftItemReplaceRequestDto(
             productId = target.id,
             ageRange = state.ageRange,
@@ -144,14 +128,10 @@ class SurveyViewModel @Inject constructor(
 
 
             try {
-                Log.d("SurveyViewModel", "재추천 API 요청: $request")
                 val replacement = replaceGiftItemUseCase(request)
-                Log.d("SurveyViewModel", "교체된 상품: $replacement")
-
                 _recommendedGiftBundles.update { currentList ->
                     currentList?.map {
                         if (it.id == target.id) {
-                            Log.d("SurveyViewModel", "→ ${it.name} → ${replacement.name}")
                             replacement
                         } else it
                     }

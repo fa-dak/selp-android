@@ -25,6 +25,7 @@ class CalendarDataViewModel @Inject constructor(
                 getAllEventListUseCase(year, month)
             }.onSuccess { result ->
                 _eventList.value = result
+                Log.i("AAACACSACASDSASA", "${result}")
             }.onFailure {
                 Log.i("CalendarDataViewModel", "getAllEvents: $it")
                 _eventList.value = emptyList()
