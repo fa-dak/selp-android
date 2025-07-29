@@ -1,6 +1,7 @@
 package com.kosa.selp.features.home.presentation.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -38,6 +40,7 @@ import com.kosa.selp.features.home.response.toGiftItem
 import com.kosa.selp.features.home.viewModel.HomeViewModel
 import com.kosa.selp.shared.composable.gift.GiftCardGrid
 import com.kosa.selp.shared.composable.gift.GiftPackageRowList
+import com.kosa.selp.shared.composable.loading.DotsLoadingIndicator
 import com.kosa.selp.shared.theme.AppColor
 
 data class GiftItem(
@@ -67,15 +70,15 @@ fun HomeScreen(
         val anniversaries = state!!.upcomingEvents.map { it.eventName to "D-${it.dday}" }
 
         val recommendedGifts = state!!.recommendProducts.map { it.toGiftItem() }
-        val recentGiftBundle = state!!.recentGiftBundleProducts.map { it.toGiftItem() }
+        val bundle = state!!.recentGiftBundleProducts
 
         val recentGiftPackages = listOf(
             GiftPackage(
-                id = "1",
+                id = bundle?.giftBundleId?.toString() ?: "",
                 title = "최근에 만든 선물꾸러미",
                 recipient = "",
                 createdAt = "", // 필요 시 포맷팅
-                gifts = recentGiftBundle
+                gifts = bundle?.products?.map { it.toGiftItem() } ?: emptyList()
             )
         )
 
@@ -148,6 +151,20 @@ fun HomeScreen(
             }
 
 
+        }
+    }else{
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {})
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            DotsLoadingIndicator(
+                message = "불러오는 중...",
+                textColor = AppColor.textPrimary
+            )
         }
     }
 }
