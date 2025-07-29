@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -32,8 +33,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.kosa.selp.R
+import com.kosa.selp.features.survey.presentation.viewModel.SurveyViewModel
 import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.Primary
 import com.kosa.selp.shared.theme.TextPrimary
@@ -44,7 +48,11 @@ import com.kosa.selp.shared.theme.White
 @Composable
 fun SurveyIntroScreen(
     navController: NavController,
+    viewModel: SurveyViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val userName = if (uiState.userName.isNotEmpty()) uiState.userName else "당신"
+
     Scaffold(
         topBar = {
             Column {
@@ -98,7 +106,7 @@ fun SurveyIntroScreen(
                 )
 
                 Text(
-                    text = "1분 만에 찾는,\n특정한 사람에게 딱 맞는 선물",
+                    text = "1분 만에 찾는,\n특별한 당신에게 딱 맞는 선물",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontWeight = FontWeight.Bold,
@@ -109,7 +117,7 @@ fun SurveyIntroScreen(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(
-                    text = "@@@@의 맞춤 선물 추천",
+                    text = "${userName} 님을 위한 맞춤 선물 추천",
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary
@@ -120,7 +128,7 @@ fun SurveyIntroScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "간단한 설문을 통해\n받는 사람에게 꼭 맞는 선물을 추천해드려요!",
+                    text = "간단한 설문을 통해\n 상대방에게 꼭 맞는 선물을 추천해드려요!",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = TextSecondary
                     ),

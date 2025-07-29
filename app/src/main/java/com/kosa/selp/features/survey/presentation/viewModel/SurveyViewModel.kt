@@ -14,6 +14,7 @@ import com.kosa.selp.features.survey.model.AnniversaryType
 import com.kosa.selp.features.survey.presentation.state.SurveyEvent
 import com.kosa.selp.features.survey.presentation.state.SurveyState
 import com.kosa.selp.features.survey.presentation.state.SurveyStep
+import com.kosa.selp.shared.data.manager.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +27,8 @@ import javax.inject.Inject
 class SurveyViewModel @Inject constructor(
     private val recommendGiftBundleUseCase: RecommendGiftBundleUseCase,
     private val replaceGiftItemUseCase: ReplaceGiftItemUseCase,
-    private val saveGiftBundleUseCase: SaveGiftBundleUseCase
+    private val saveGiftBundleUseCase: SaveGiftBundleUseCase,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _loadingItemIds = MutableStateFlow<Set<Long>>(emptySet())
@@ -47,6 +49,16 @@ class SurveyViewModel @Inject constructor(
         SurveyStep.GENDER,
         SurveyStep.COMPLETE
     )
+
+    init {
+        viewModelScope.launch {
+            sessionManager.currentUser.collect { userInfo ->
+                userInfo?.let {
+                    update { copy(userName = it.nickname) }
+                }
+            }
+        }
+    }
 
     fun onEvent(event: SurveyEvent) {
         when (event) {
