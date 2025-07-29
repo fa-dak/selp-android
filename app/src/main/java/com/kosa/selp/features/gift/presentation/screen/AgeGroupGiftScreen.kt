@@ -55,7 +55,8 @@ fun AgeGroupGiftScreen(
             .background(AppColor.white)
             .systemBarsPadding()
             .padding(horizontal = 24.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 100.dp)
     ) {
         item {
             Text(

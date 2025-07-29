@@ -1,7 +1,6 @@
 package com.kosa.selp.features.home.presentation.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -77,6 +74,7 @@ fun HomeScreen(
 
         is HomeUiState.Error -> {
             val message = (state as HomeUiState.Error).message
+            println("messagessage" + message)
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = "오류가 발생했습니다.",
@@ -88,7 +86,6 @@ fun HomeScreen(
         is HomeUiState.Success -> {
             val data = (state as HomeUiState.Success).data
             val anniversaries = data.upcomingEvents.map { it.eventName to "D-${it.dday}" }
-
             val recommendedGifts = data.recommendProducts.map { it.toGiftItem() }
             val bundle = data.recentGiftBundleProducts
 
@@ -164,7 +161,9 @@ fun HomeScreen(
                     GiftPackageRowList(
                         packages = recentGiftPackages,
                         onClick = { giftPackage ->
-                            navController.navigate("giftPackage/${giftPackage.id}")
+                            if (giftPackage.id.isNotBlank()) {
+                                navController.navigate("giftPackage/${giftPackage.id}")
+                            }
                         })
                 }
 

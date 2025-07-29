@@ -50,16 +50,7 @@ fun AgeFunnel(
     onNext: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-
-    val ages = listOf(
-        "10" to "10대",
-        "20" to "20대",
-        "30" to "30대",
-        "40" to "40대",
-        "50" to "50대",
-        "60" to "60대"
-    )
-
+    val ages = listOf(10, 20, 30, 40, 50, 60)
 
     Column(
         modifier = Modifier
@@ -75,11 +66,10 @@ fun AgeFunnel(
         Spacer(modifier = Modifier.height(48.dp))
 
         AgePickerRow(
-            items = ages.map { it.first },
-            selectedLabel = state.ageRange,
-            onSelect = { idx ->
-                val label = ages[idx].second
-                viewModel.onEvent(SurveyEvent.AgeRangeSelected(label))
+            items = ages,
+            selected = state.ageRange,
+            onSelect = { selectedValue ->
+                viewModel.onEvent(SurveyEvent.AgeRangeSelected(selectedValue))
             }
         )
 
@@ -104,11 +94,10 @@ fun AgeFunnel(
 
 @Composable
 private fun AgePickerRow(
-    items: List<String>,
-    selectedLabel: String?,
+    items: List<Int>,
+    selected: Int?,
     onSelect: (Int) -> Unit
 ) {
-
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
@@ -132,7 +121,7 @@ private fun AgePickerRow(
         contentPadding = PaddingValues(horizontal = itemDp / 2)
     ) {
         itemsIndexed(items) { idx, label ->
-            val isSelected = selectedLabel == "${label}대"
+            val isSelected = selected == label
 
             Box(
                 contentAlignment = Alignment.Center,
@@ -144,7 +133,7 @@ private fun AgePickerRow(
                         indication = null
                     ) {
                         coroutineScope.launch {
-                            onSelect(idx)
+                            onSelect(label)
                             val centerOffset =
                                 (listState.layoutInfo.viewportEndOffset - listState.layoutInfo.viewportStartOffset) / 2
                             val scrollOffset = idx * itemPx - centerOffset + itemPx / 2
@@ -156,15 +145,11 @@ private fun AgePickerRow(
                     Surface(
                         shape = CircleShape,
                         color = if (isSelected) AppColor.primary.copy(alpha = 0.08f) else Color.Transparent,
-                        modifier = Modifier
-                            .size(56.dp)
+                        modifier = Modifier.size(56.dp)
                     ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
+                        Box(contentAlignment = Alignment.Center) {
                             Text(
-                                text = label,
+                                text = "${label}",
                                 style = if (isSelected)
                                     MaterialTheme.typography.headlineMedium.copy(
                                         fontWeight = FontWeight.Bold,
@@ -197,3 +182,4 @@ private fun AgePickerRow(
         }
     }
 }
+

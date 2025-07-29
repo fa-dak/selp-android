@@ -35,14 +35,14 @@ data class CategoryOption(
 )
 
 val allCategories = listOf(
-    CategoryOption("beauty", "뷰티"),
-    CategoryOption("food", "푸드"),
-    CategoryOption("living", "리빙"),
-    CategoryOption("children", "아동"),
-    CategoryOption("sports", "스포츠"),
-    CategoryOption("fashion", "패션"),
-    CategoryOption("flower", "플라워"),
-    CategoryOption("desert", "디저트")
+    CategoryOption("BEAUTY", "뷰티"),
+    CategoryOption("FOOD", "푸드"),
+    CategoryOption("LIVING", "리빙"),
+    CategoryOption("CHILDREN", "아동"),
+    CategoryOption("SPORTS", "스포츠"),
+    CategoryOption("FASHION", "패션"),
+    CategoryOption("FLOWER", "플라워"),
+    CategoryOption("DESERT", "디저트")
 )
 
 @Composable
