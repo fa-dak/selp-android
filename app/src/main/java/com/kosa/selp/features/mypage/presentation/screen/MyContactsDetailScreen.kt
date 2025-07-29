@@ -5,17 +5,18 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -32,6 +33,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -68,11 +71,6 @@ import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsDetailUiSt
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsDetailViewModel
 import com.kosa.selp.shared.theme.AppColor
 
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyContactsDetailScreen(
@@ -96,7 +94,17 @@ fun MyContactsDetailScreen(
         }
     }
 
+    // ContactDetailContent에서 사용할 상태들을 여기서 미리 선언
+    val state = uiState
+    var nickname by remember(state) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.nickname else "") }
+    var age by remember(state) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.age.toString() else "0") }
+    var gender by remember(state) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.gender ?: "NONE" else "NONE") }
+    var relationship by remember(state) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.relationship else "") }
+    var detail by remember(state) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.detail ?: "" else "") }
+
+
     Scaffold(
+        modifier = Modifier.imePadding(), // 키보드 영역을 피하도록 패딩 추가
         topBar = {
             TopAppBar(
                 title = {
@@ -126,9 +134,46 @@ fun MyContactsDetailScreen(
                 )
             )
         },
+        bottomBar = {
+            // state가 Success일 때만 버튼을 보여줌
+            if (state is MyContactsDetailUiState.Success) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding() // 시스템 내비게이션 바 영역만큼 하단에 패딩 추가
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    TextButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.textButtonColors(contentColor = AppColor.primary)
+                    ) {
+                        Text("취소")
+                    }
+                    Button(
+                        onClick = {
+                            viewModel.saveContact(
+                                nickname = nickname,
+                                age = age,
+                                gender = gender,
+                                relationship = relationship,
+                                detail = detail
+                            )
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AppColor.primary)
+                    ) {
+                        Text("저장")
+                    }
+                }
+            }
+        },
         containerColor = AppColor.background
     ) { paddingValues ->
-        when (val state = uiState) {
+        when (state) {
             is MyContactsDetailUiState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -140,7 +185,16 @@ fun MyContactsDetailScreen(
                     modifier = Modifier.padding(paddingValues),
                     state = state,
                     viewModel = viewModel,
-                    navController = navController
+                    nickname = nickname,
+                    onNicknameChange = { nickname = it },
+                    age = age,
+                    onAgeChange = { newAge -> if (newAge.all { it.isDigit() }) age = newAge },
+                    gender = gender,
+                    onGenderChange = { gender = it },
+                    relationship = relationship,
+                    onRelationshipChange = { relationship = it },
+                    detail = detail,
+                    onDetailChange = { detail = it }
                 )
             }
 
@@ -162,80 +216,42 @@ fun ContactDetailContent(
     modifier: Modifier = Modifier,
     state: MyContactsDetailUiState.Success,
     viewModel: MyContactsDetailViewModel,
-    navController: NavController
+    nickname: String,
+    onNicknameChange: (String) -> Unit,
+    age: String,
+    onAgeChange: (String) -> Unit,
+    gender: String,
+    onGenderChange: (String) -> Unit,
+    relationship: String,
+    onRelationshipChange: (String) -> Unit,
+    detail: String,
+    onDetailChange: (String) -> Unit
 ) {
-    var nickname by remember { mutableStateOf(state.contact.nickname) }
-    var age by remember { mutableStateOf(state.contact.age.toString()) }
-    var gender by remember { mutableStateOf(state.contact.gender ?: "NONE") }
-    var relationship by remember { mutableStateOf(state.contact.relationship) }
-    var detail by remember { mutableStateOf(state.contact.detail ?: "") }
-
     Column(
         modifier = modifier
             .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            DetailInputItem(label = "닉네임", value = nickname, onValueChange = { nickname = it })
-            DetailInputItem(label = "나이", value = age, onValueChange = { newAge ->
-                if (newAge.all { it.isDigit() }) {
-                    age = newAge
-                }
-            })
-            DetailInputItem(label = "성별", value = gender, onValueChange = { gender = it })
-            DetailInputItem(label = "관계", value = relationship, onValueChange = { relationship = it })
+        DetailInputItem(label = "닉네임", value = nickname, onValueChange = onNicknameChange)
+        DetailInputItem(label = "나이", value = age, onValueChange = onAgeChange)
+        DetailInputItem(label = "성별", value = gender, onValueChange = onGenderChange)
+        DetailInputItem(label = "관계", value = relationship, onValueChange = onRelationshipChange)
 
-            PreferenceChips(
-                allCategories = state.allCategories,
-                selectedPreferences = state.contact.preferences,
-                onPreferenceChanged = { preference, isSelected ->
-                    viewModel.onPreferenceChanged(preference, isSelected)
-                }
-            )
-            Divider(color = AppColor.textDisabled.copy(alpha = 0.2f), thickness = 1.dp)
-
-            DetailInputItem(label = "상세 설명", value = detail, onValueChange = { detail = it })
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.safeDrawing)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            TextButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.textButtonColors(contentColor = AppColor.primary)
-            ) {
-                Text("취소")
+        PreferenceChips(
+            allCategories = state.allCategories,
+            selectedPreferences = state.contact.preferences,
+            onPreferenceChanged = { preference, isSelected ->
+                viewModel.onPreferenceChanged(preference, isSelected)
             }
-            Button(
-                onClick = {
-                    viewModel.saveContact(
-                        nickname = nickname,
-                        age = age,
-                        gender = gender,
-                        relationship = relationship,
-                        detail = detail
-                    )
-                },
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = AppColor.primary)
-            ) {
-                Text("저장")
-            }
-        }
+        )
+        Divider(color = AppColor.textDisabled.copy(alpha = 0.2f), thickness = 1.dp)
+
+        DetailInputItem(label = "상세 설명", value = detail, onValueChange = onDetailChange)
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreferenceChips(
     allCategories: List<com.kosa.selp.features.mypage.model.ProductCategory>,
