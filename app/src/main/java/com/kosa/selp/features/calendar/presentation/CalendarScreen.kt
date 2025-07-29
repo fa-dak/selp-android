@@ -65,7 +65,6 @@ fun CalendarScreen(
     val selectedDayEvents = viewModel.selectedDayEvents
     val selectedEventForDetail = remember { mutableStateOf<CalendarEvent?>(null) }
 
-    // 기준 날짜를 remember로 고정
     val baseCalendar = remember {
         Calendar.getInstance().apply {
             set(Calendar.DAY_OF_MONTH, 1) // 날짜를 1일로 고정하면 월 기준 정확
