@@ -11,7 +11,9 @@ import com.kakao.sdk.user.UserApiClient
 import com.kosa.selp.features.fcm.data.remote.FcmApiService
 import com.kosa.selp.features.login.data.model.KakaoLoginRequest
 import com.kosa.selp.features.login.data.service.AuthApiService
+import com.kosa.selp.shared.data.manager.SessionManager
 import com.kosa.selp.shared.data.manager.AuthManager
+import com.kosa.selp.shared.utils.JwtUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +31,8 @@ sealed class LoginEvent {
 class LoginViewModel @Inject constructor(
     private val authApiService: AuthApiService,
     private val fcmApiService: FcmApiService,
-    private val authManager: AuthManager
+    private val authManager: AuthManager,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _loginEvent = Channel<LoginEvent>()
@@ -46,8 +49,13 @@ class LoginViewModel @Inject constructor(
 
     private fun checkLoginStatus() {
         viewModelScope.launch {
-            // 저장된 accessToken이 있는지 확인하여 로그인 상태 결정
-            _isLoggedIn.value = authManager.accessToken != null
+            val token = authManager.accessToken
+            if (token != null) {
+                JwtUtils.decodeUserInfo(token)?.let { sessionManager.login(it) }
+                _isLoggedIn.value = true
+            } else {
+                _isLoggedIn.value = false
+            }
             Log.d("LoginViewModel", "Login status checked: ${_isLoggedIn.value}")
         }
     }
@@ -93,6 +101,12 @@ class LoginViewModel @Inject constructor(
                 authManager.accessToken = response.accessToken
                 authManager.refreshToken = response.refreshToken
                 Log.i("LoginViewModel", "백엔드 로그인 성공 및 토큰 저장 완료")
+
+                // 토큰 디코딩 및 세션에 사용자 정보 저장
+                JwtUtils.decodeUserInfo(response.accessToken)?.let {
+                    sessionManager.login(it)
+                    Log.i("LoginViewModel", "사용자 정보 세션 저장 완료: $it")
+                }
 
                 _loginEvent.send(LoginEvent.LoginSuccess)
             } catch (e: Exception) {
