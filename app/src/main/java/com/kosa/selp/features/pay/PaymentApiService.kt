@@ -6,9 +6,9 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface PaymentApiService {
-    @POST("/payments/products/{productId}")
+    @POST("/payments/gift-bundles/{giftBundleId}/verify")
     suspend fun verify(
-        @Path("productId") productId: Long,
+        @Path("giftBundleId") giftBundleId: Long,
         @Body
         request: PaymentVerifyRequest
     ): Response<PaymentVerifyResponse>

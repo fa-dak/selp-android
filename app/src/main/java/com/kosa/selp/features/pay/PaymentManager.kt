@@ -18,6 +18,7 @@ class PaymentManager(
 ) {
 
     fun startIamportPayment(
+        giftBundleId: Long,
         productName: String,
         amount: String,
         buyerName: String,
@@ -31,7 +32,7 @@ class PaymentManager(
                 pg = PG.html5_inicis.name,
                 pay_method = PayMethod.card.name,
                 name = productName,
-                merchant_uid = "pay_${System.currentTimeMillis()}",
+                merchant_uid = "giftBundle_${giftBundleId}_${System.currentTimeMillis()}",
                 amount = (amount.toDoubleOrNull() ?: 0.0).toString(),
                 buyer_name = buyerName,
                 buyer_tel = buyerTel,
@@ -54,10 +55,14 @@ class PaymentManager(
         )
     }
 
-    fun verifyPaymentOnServer(impUid: String, paymentApiService: PaymentApiService) {
+    fun verifyPaymentOnServer(
+        giftBundleId: Long,
+        impUid: String,
+        paymentApiService: PaymentApiService
+    ) {
         coroutineScope.launch {
             updateStatus("결제 검증 중...")
-            val response = paymentApiService.verify(PaymentVerifyRequest(impUid))
+            val response = paymentApiService.verify(giftBundleId, PaymentVerifyRequest(impUid))
 
             if (response.isSuccessful && response.body()?.isValid == true) {
                 updateStatus("결제 완료!")

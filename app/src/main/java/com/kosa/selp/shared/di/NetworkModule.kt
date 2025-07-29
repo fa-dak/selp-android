@@ -6,6 +6,7 @@ import com.kosa.selp.features.gift.service.AgeGroupGiftApiService
 
 import com.kosa.selp.features.home.service.HomeApiService
 import com.kosa.selp.features.login.data.service.AuthApiService
+import com.kosa.selp.features.pay.PaymentApiService
 import com.kosa.selp.shared.data.interceptor.AuthInterceptor
 import dagger.Module
 import dagger.Provides
@@ -65,10 +66,15 @@ object NetworkModule {
     fun provideGiftApiService(retrofit: Retrofit): AgeGroupGiftApiService {
         return retrofit.create(AgeGroupGiftApiService::class.java)
     }
-    
+
     @Provides
     fun provideHomeApiService(retrofit: Retrofit): HomeApiService {
         return retrofit.create(HomeApiService::class.java)
+    }
+
+    @Provides
+    fun providePaymentApiService(retrofit: Retrofit): PaymentApiService {
+        return retrofit.create(PaymentApiService::class.java)
     }
 
 }

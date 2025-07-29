@@ -17,38 +17,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.kosa.selp.BuildConfig
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import dagger.hilt.android.EntryPointAccessors
 
 @Composable
 fun PayExampleScreen() {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
+    var giftBundleId by remember { mutableStateOf("5") } // TODO: dev: 5 | prod: 17
     var productName by remember { mutableStateOf("아임포트 Android SDK 결제 테스트") }
     var amount by remember { mutableStateOf("100") }
-    var buyerName by remember { mutableStateOf("홍길동") }
+    var buyerName by remember { mutableStateOf("정재영") }
     var buyerTel by remember { mutableStateOf("01012345678") }
     var buyerEmail by remember { mutableStateOf("hanol98@naver.com") }
     var paymentStatus by remember { mutableStateOf<String?>(null) }
 
     fun startIamportPayment() {
+
+        val giftBundleId: Long = giftBundleId.toLongOrNull() ?: 0L
         // 잏회용
         val paymentManager = PaymentManager(context, coroutineScope) { statusMessage ->
             paymentStatus = statusMessage
         }
 
-        paymentManager.startIamportPayment(
-            productName, amount, buyerName, buyerTel, buyerEmail
-        ) { impUid ->
+        val appContext = context.applicationContext
+        val entryPoint = EntryPointAccessors.fromApplication(
+            appContext,
+            PaymentApiEntryPoint::class.java
+        )
+        val paymentApi = entryPoint.paymentApiService()
 
-            val retrofit = Retrofit.Builder()
-                .baseUrl(BuildConfig.BACKEND_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-            val paymentApi = retrofit.create(PaymentApiService::class.java)
-            paymentManager.verifyPaymentOnServer(impUid, paymentApi)
+        paymentManager.startIamportPayment(
+            giftBundleId, productName, amount, buyerName, buyerTel, buyerEmail
+        ) { impUid ->
+//            val retrofit = Retrofit.Builder()
+//                .baseUrl(BuildConfig.BACKEND_BASE_URL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build()
+//            val paymentApi = retrofit.create(PaymentApiService::class.java)
+            paymentManager.verifyPaymentOnServer(
+                giftBundleId,
+                impUid,
+                paymentApi
+            )
         }
     }
 
@@ -59,6 +70,10 @@ fun PayExampleScreen() {
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        OutlinedTextField(
+            value = giftBundleId,
+            onValueChange = { giftBundleId = it },
+            label = { Text("상품 id") })
         OutlinedTextField(
             value = productName,
             onValueChange = { productName = it },
