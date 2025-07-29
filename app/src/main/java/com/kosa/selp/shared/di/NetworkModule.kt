@@ -5,6 +5,7 @@ import com.kosa.selp.BuildConfig
 import com.kosa.selp.features.gift.service.AgeGroupGiftApiService
 import com.kosa.selp.features.calendar.apiService.EventApiService
 import com.kosa.selp.features.calendar.apiService.ReceiverInfoApiService
+import com.kosa.selp.features.home.service.HomeApiService
 import com.kosa.selp.features.login.data.service.AuthApiService
 import com.kosa.selp.shared.data.interceptor.AuthInterceptor
 import dagger.Module
@@ -76,6 +77,11 @@ object NetworkModule {
     @Singleton
     fun provideEventApiService(retrofit: Retrofit): EventApiService {
         return retrofit.create(EventApiService::class.java)
+    }
+
+    @Provides
+    fun provideHomeApiService(retrofit: Retrofit): HomeApiService {
+        return retrofit.create(HomeApiService::class.java)
     }
 
 }
