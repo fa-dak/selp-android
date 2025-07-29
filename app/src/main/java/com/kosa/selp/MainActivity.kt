@@ -63,6 +63,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        Iamport.init(this) // Iamport
         setContent {
             val navController = rememberNavController()
             val context = LocalContext.current
@@ -284,9 +285,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-            Iamport.init(this) // Iamport
         }
-        Iamport.init(this) // Iamport
     }
 
     override fun onDestroy() {
