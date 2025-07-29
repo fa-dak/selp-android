@@ -44,7 +44,8 @@ fun AgeGroupGiftScreen(
             id = gift.id,
             title = gift.name,
             imageUrl = gift.imageUrl,
-            price = gift.price
+            price = gift.price,
+            detailPath = gift.detailPath,
         )
     }
 

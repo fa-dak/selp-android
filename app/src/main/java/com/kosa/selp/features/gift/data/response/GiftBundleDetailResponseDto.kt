@@ -11,5 +11,6 @@ data class GiftItemDto(
     val id: String,
     val name: String,
     val imageUrl: String,
-    val price: String
+    val price: String,
+    val detailPath: String,
 )
