@@ -8,6 +8,6 @@ data class ReceiverModifyRequest(
     val gender: String,
     val relationship: String,
     val age: Int,
-    val preferences: List<String>,
+    val preferenceIds: List<Long>,
     val detail: String
 )
