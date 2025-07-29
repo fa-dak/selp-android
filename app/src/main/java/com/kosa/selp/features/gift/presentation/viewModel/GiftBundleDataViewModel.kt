@@ -7,7 +7,6 @@ import com.kosa.selp.features.gift.data.response.GiftItemDto
 import com.kosa.selp.features.gift.domain.usecase.GetGiftBundleDetailUseCase
 import com.kosa.selp.features.gift.domain.usecase.GetGiftBundleRecommendMessagesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,13 +33,6 @@ val dummyGiftBundle = GiftBundleDetailResponseDto(
     )
 )
 
-val dummyMessages = listOf(
-    "네 마음을 닮은 디퓨저로 향기 가득한 하루를 선물해 보세요.",
-    "달콤한 메시지와 함께 케이크로 특별한 날을 기념해요.",
-    "무드등처럼 은은하게 당신을 응원하는 선물이에요."
-)
-
-
 @HiltViewModel
 class GiftBundleDataViewModel @Inject constructor(
     private val getGiftBundleDetailUseCase: GetGiftBundleDetailUseCase,
@@ -60,12 +52,10 @@ class GiftBundleDataViewModel @Inject constructor(
         }
     }
 
-    fun loadRecommendedMessages(bundleId: String) {
+    fun loadRecommendedMessages(bundleId: String, tone: String) {
         viewModelScope.launch {
-            delay(1500)
-//            val result = getRecommendedMessagesUseCase(bundleId)
-            _recommendedMessages.value = dummyMessages
-
+            val response = getRecommendedMessagesUseCase(bundleId, tone)
+            _recommendedMessages.value = response.messages
         }
     }
 

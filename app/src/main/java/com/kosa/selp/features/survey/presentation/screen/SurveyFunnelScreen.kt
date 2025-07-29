@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,14 +35,15 @@ import androidx.navigation.NavController
 import com.kosa.selp.features.survey.presentation.composable.ExitConfirmBottomSheet
 import com.kosa.selp.features.survey.presentation.composable.FreeInputBottomSheet
 import com.kosa.selp.features.survey.presentation.funnel.AgeFunnel
+import com.kosa.selp.features.survey.presentation.funnel.AnniversaryFunnel
 import com.kosa.selp.features.survey.presentation.funnel.BudgetFunnel
+import com.kosa.selp.features.survey.presentation.funnel.CategoryFunnel
 import com.kosa.selp.features.survey.presentation.funnel.GenderFunnel
-import com.kosa.selp.features.survey.presentation.funnel.PreferenceFunnel
 import com.kosa.selp.features.survey.presentation.funnel.RelationshipFunnel
-import com.kosa.selp.features.survey.viewModel.SurveyEvent
-import com.kosa.selp.features.survey.viewModel.SurveyProgress
-import com.kosa.selp.features.survey.viewModel.SurveyStep
-import com.kosa.selp.features.survey.viewModel.SurveyViewModel
+import com.kosa.selp.features.survey.presentation.state.SurveyEvent
+import com.kosa.selp.features.survey.presentation.state.SurveyProgress
+import com.kosa.selp.features.survey.presentation.state.SurveyStep
+import com.kosa.selp.features.survey.presentation.viewModel.SurveyViewModel
 import com.kosa.selp.shared.theme.AppColor
 import kotlinx.coroutines.launch
 
@@ -76,10 +78,9 @@ fun SurveyFunnelScreen(
             sheetState = inputSheetState,
             onDismiss = { showFreeInputSheet = false },
             onSubmit = { input ->
-                viewModel.onEvent(SurveyEvent.FreeInputEntered(input))
-                viewModel.onEvent(SurveyEvent.SubmitClicked)
+                viewModel.onEvent(SurveyEvent.UserMessageEntered(input))
                 coroutineScope.launch { inputSheetState.hide() }
-                navController.navigate("surveyResultLoading")
+                viewModel.onEvent(SurveyEvent.SubmitClicked) // COMPLETED로변경ㄴ하고 API 요청
             }
         )
     }
@@ -149,11 +150,16 @@ fun SurveyFunnelScreen(
                         viewModel.onEvent(SurveyEvent.NextClicked)
                     })
 
+                    SurveyStep.ANNIVERSARY -> AnniversaryFunnel(onNext = {
+                        viewModel.onEvent(SurveyEvent.NextClicked)
+                    })
+                    
                     SurveyStep.RELATIONSHIP -> RelationshipFunnel(onNext = {
                         viewModel.onEvent(SurveyEvent.NextClicked)
                     })
 
-                    SurveyStep.PREFERENCE -> PreferenceFunnel(onNext = {
+
+                    SurveyStep.CATEGORY -> CategoryFunnel(onNext = {
                         viewModel.onEvent(SurveyEvent.NextClicked)
                     })
 
@@ -167,7 +173,13 @@ fun SurveyFunnelScreen(
                         }
                     )
 
-                    SurveyStep.COMPLETE -> TODO()
+                    SurveyStep.COMPLETE -> {
+                        LaunchedEffect(Unit) {
+                            navController.navigate("surveyResult") {
+                                popUpTo("surveyFunnel") { inclusive = false }
+                            }
+                        }
+                    }
                 }
             }
         }
