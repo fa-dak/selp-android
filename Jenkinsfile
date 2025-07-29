@@ -1,7 +1,7 @@
 pipeline {
     agent { label 'android' }
 
-    environment {A
+    environment {
         APK_OUTPUT_PATH = "app/build/outputs/apk/release/app-release.apk"
 //         APK_OUTPUT_PATH = "app/build/outputs/apk/release/app-release-unsigned.apk"
         DEST_DIR = "/var/www/selp-android"
