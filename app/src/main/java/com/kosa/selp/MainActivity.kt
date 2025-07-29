@@ -40,6 +40,7 @@ import com.kosa.selp.features.mypage.presentation.screen.GiftBundleListScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyContactsDetailScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyContactsScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyPageScreen
+import com.kosa.selp.features.notification.presentation.screen.NotificationScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyIntroScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyResultScreen
@@ -219,6 +220,11 @@ class MainActivity : ComponentActivity() {
                                     .consumeWindowInsets(innerPadding)
                             )
                         }
+
+                        composable("notification") {
+                            NotificationScreen(navController)
+                        }
+
 
                         // --- 마이페이지 관련 네비게이션 ---
                         composable("mypage") {

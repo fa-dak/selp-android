@@ -117,8 +117,10 @@ fun HomeScreen(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        IconButton(onClick = {}) {
-                            Icon(Icons.Default.Notifications, contentDescription = null)
+                        IconButton(onClick = {
+                            navController.navigate("notification")
+                        }) {
+                            Icon(Icons.Default.Notifications, contentDescription = "알림 보기")
                         }
                     }
                 }
@@ -177,5 +179,3 @@ fun HomeScreen(
         }
     }
 }
-
-
