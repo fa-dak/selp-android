@@ -26,8 +26,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.kosa.selp.features.calendar.presentation.CalendarScreen
 import com.kosa.selp.features.calendar.presentation.EventRegisterScreen
+import com.kosa.selp.features.calendar.presentation.screen.CalendarScreen
 import com.kosa.selp.features.gift.presentation.screen.AgeGroupGiftScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftBundleDetailScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftDetailScreen
