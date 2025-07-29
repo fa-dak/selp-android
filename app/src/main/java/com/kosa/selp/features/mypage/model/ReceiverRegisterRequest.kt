@@ -3,7 +3,7 @@ package com.kosa.selp.features.mypage.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ReceiverModifyRequest(
+data class ReceiverRegisterRequest(
     val nickname: String,
     val gender: String,
     val relationship: String,

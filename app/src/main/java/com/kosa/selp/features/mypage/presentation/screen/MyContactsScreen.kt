@@ -183,6 +183,15 @@ fun ContactItem(navController: NavController, contact: Contact) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = AppColor.textSecondary
                 )
+                Spacer(modifier = Modifier.height(4.dp))
+                // 선호도
+                if (contact.preferences.isNotEmpty()) {
+                    Text(
+                        text = "선호도: ${contact.preferences.joinToString(", ")}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = AppColor.textSecondary
+                    )
+                }
             }
         }
     }
