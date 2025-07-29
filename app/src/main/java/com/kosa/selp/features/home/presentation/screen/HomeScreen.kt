@@ -164,7 +164,9 @@ fun HomeScreen(
                     GiftPackageRowList(
                         packages = recentGiftPackages,
                         onClick = { giftPackage ->
-                            navController.navigate("giftPackage/${giftPackage.id}")
+                            if (giftPackage.id.isNotBlank()) {
+                                navController.navigate("giftPackage/${giftPackage.id}")
+                            }
                         })
                 }
 
