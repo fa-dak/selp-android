@@ -15,7 +15,7 @@ data class Contact(
     @SerializedName("relationship")
     val relationship: String,
     @SerializedName("receiverPreferences")
-    val preferences: String?,
+    val preferences: List<String>,
     @SerializedName("receiverDetail")
     val detail: String?
 )

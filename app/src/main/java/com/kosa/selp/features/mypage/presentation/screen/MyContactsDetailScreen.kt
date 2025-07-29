@@ -163,7 +163,7 @@ fun ContactDetailContent(
     var age by remember { mutableStateOf(contact.age.toString()) }
     var gender by remember { mutableStateOf(contact.gender ?: "NONE") }
     var relationship by remember { mutableStateOf(contact.relationship) }
-    var preferences by remember { mutableStateOf(contact.preferences ?: "") }
+    var preferences by remember { mutableStateOf(contact.preferences.joinToString(", ")) }
     var detail by remember { mutableStateOf(contact.detail ?: "") }
 
     Column(
@@ -194,7 +194,7 @@ fun ContactDetailContent(
                 .windowInsetsPadding(WindowInsets.safeDrawing)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        ) {0
             TextButton(
                 onClick = { navController.popBackStack() },
                 modifier = Modifier.weight(1f),
