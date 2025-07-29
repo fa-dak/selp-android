@@ -7,13 +7,13 @@ data class Contact(
     @SerializedName("receiverInfoId")
     val id: Long,
     @SerializedName("receiverNickname")
-    val nickname: String,
+    val nickname: String?,
     @SerializedName("receiverAge")
-    val age: Int,
+    val age: Int?,
     @SerializedName("receiverGender")
-    val gender: String,
+    val gender: String?,
     @SerializedName("relationship")
-    val relationship: String,
+    val relationship: String?,
     @SerializedName("receiverPreferences")
     val preferences: List<String>,
     @SerializedName("receiverDetail")
