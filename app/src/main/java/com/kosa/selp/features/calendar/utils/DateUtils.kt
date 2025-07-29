@@ -1,9 +1,18 @@
 package com.kosa.selp.features.calendar.utils
 
+import android.annotation.SuppressLint
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 object DateUtils {
+    @SuppressLint("ConstantLocale")
+    private val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+    fun parseDate(str: String?): Date {
+        return format.parse(str) ?: Date()
+    }
 
     fun isSameDay(date1: Date, date2: Date): Boolean {
         val cal1 = Calendar.getInstance().apply { time = date1 }
