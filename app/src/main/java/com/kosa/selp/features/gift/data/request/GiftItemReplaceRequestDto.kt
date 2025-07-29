@@ -7,7 +7,7 @@ data class GiftItemReplaceRequestDto(
     val productId: Long,
 
     @SerializedName("ageRange")
-    val ageRange: String?,
+    val ageRange: Int?,
 
     @SerializedName("anniversaryType")
     val anniversaryType: String?,

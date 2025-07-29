@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kosa.selp.features.survey.model.GenderType
 import com.kosa.selp.features.survey.presentation.state.SurveyEvent
 import com.kosa.selp.features.survey.presentation.viewModel.SurveyViewModel
 import com.kosa.selp.shared.theme.AppColor
@@ -32,7 +33,7 @@ fun GenderFunnel(
     onRequestFreeInput: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    val options = listOf("남성", "여성", "기타")
+    val options = GenderType.entries
 
     Column(
         modifier = Modifier
@@ -52,7 +53,7 @@ fun GenderFunnel(
             modifier = Modifier.fillMaxWidth()
         ) {
             options.forEach { gender ->
-                val isSelected = state.gender == gender
+                val isSelected = state.gender == gender.code
 
                 val backgroundColor by animateColorAsState(
                     targetValue = if (isSelected) AppColor.primary.copy(alpha = 0.1f) else AppColor.white,
@@ -69,7 +70,7 @@ fun GenderFunnel(
 
                 OutlinedButton(
                     onClick = {
-                        viewModel.onEvent(SurveyEvent.GenderSelected(gender))
+                        viewModel.onEvent(SurveyEvent.GenderSelected(gender.code)) // ← 변경된 부분
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -82,7 +83,7 @@ fun GenderFunnel(
                     border = BorderStroke(1.dp, borderColor)
                 ) {
                     Text(
-                        text = gender,
+                        text = gender.label,
                         style = MaterialTheme.typography.bodyLarge.copy(
                             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                         )

@@ -55,6 +55,7 @@ fun CalendarScreen(
     val selectedDate = uiViewModel.selectedDate.collectAsState().value
     val events = dataViewModel.eventList.collectAsState().value
     val showOverlay = remember { mutableStateOf(false) }
+    val showAddDialog = remember { mutableStateOf(false) }
 
     val calendar = remember { Calendar.getInstance() }
 
@@ -75,8 +76,6 @@ fun CalendarScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-
-        // 🟢 기본 캘린더 + 리스트 UI
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -99,48 +98,54 @@ fun CalendarScreen(
                 CalendarMonthGrid(month = calendar.time, config = config)
             }
 
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                val list = selectedDateEvents.take(3)
-                itemsIndexed(list) { index, event ->
-                    Column {
-                        CalendarEventListItem(event)
-                        if (index < list.lastIndex) {
-                            HorizontalDivider(
-                                modifier = Modifier.fillMaxWidth(),
-                                thickness = 1.dp,
-                                color = AppColor.divider
-                            )
-                        }
-                    }
-                }
-
-                // 더보기 버튼 항상 표시 (0개 제외)
-                if (selectedDateEvents.isNotEmpty()) {
-                    item {
-                        TextButton(
-                            onClick = { showOverlay.value = true },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp)
-                        ) {
-                            Text("더보기", color = AppColor.primary)
-                        }
-                    }
-                }
-            }
-
-            BottomAddButton(
-                onAddSchedule = { /* TODO: 일정 추가 화면 이동 */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                    .weight(1f),
+                verticalArrangement = Arrangement.SpaceBetween
             )
+            {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    val list = selectedDateEvents.take(3)
+                    itemsIndexed(list) { index, event ->
+                        Column {
+                            CalendarEventListItem(event)
+                            if (index < list.lastIndex) {
+                                HorizontalDivider(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    thickness = 1.dp,
+                                    color = AppColor.divider
+                                )
+                            }
+                        }
+                    }
+
+                    if (selectedDateEvents.isNotEmpty()) {
+                        item {
+                            TextButton(
+                                onClick = { showOverlay.value = true },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp)
+                            ) {
+                                Text("더보기", color = AppColor.primary)
+                            }
+                        }
+                    }
+                }
+
+                BottomAddButton(
+                    onAddSchedule = { showAddDialog.value = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
+            }
         }
 
         AnimatedVisibility(
@@ -193,6 +198,11 @@ fun CalendarScreen(
                     }
                 }
             }
+
+
+            // 추가 정보 입력하는 오버레이
         }
     }
 }
+
+
