@@ -61,7 +61,7 @@ fun GiftBundleDetailScreen(
                 messageViewModel.selectedTone.value?.let { tone ->
                     val finalTone =
                         if (tone == "직접 입력할게요") messageViewModel.customMessage.value else tone
-                    dataViewModel.loadRecommendedMessages("20", finalTone)
+                    dataViewModel.loadRecommendedMessages(giftPackageId, finalTone)
                     uiViewModel.showOverlay()
                 }
             }

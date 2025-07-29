@@ -13,27 +13,27 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-val dummyGiftBundle = GiftBundleDetailResponseDto(
-    userName = "보라",
-    ageGroup = "20대",
-    relation = "친구",
-    giftList = listOf(
-        GiftItemDto(
-            id = "1",
-            name = "향 좋은 디퓨저",
-            imageUrl = "https://ldb-phinf.pstatic.net/20241226_124/1735176183750fjEhg_JPEG/%C8%A6%C5%D7%B5%F0%C4%C9%C0%CC%C5%A9_%281%29.jpg",
-            price = "19,800원",
-            detailPath = "https://naver.com"
-        ),
-        GiftItemDto(
-            id = "2",
-            name = "레터링 케이크",
-            imageUrl = "https://ldb-phinf.pstatic.net/20241226_81/1735176192690m2B0T_JPEG/%C8%AD%C0%CC%C6%AE%C8%A6%C5%D7%B5%F0.jpeg",
-            price = "35,000원",
-            detailPath = "https://naver.com"
-        )
-    )
-)
+//val dummyGiftBundle = GiftBundleDetailResponseDto(
+//    userName = "보라",
+//    ageGroup = "20대",
+//    relation = "친구",
+//    giftList = listOf(
+//        GiftItemDto(
+//            id = "1",
+//            name = "향 좋은 디퓨저",
+//            imageUrl = "https://ldb-phinf.pstatic.net/20241226_124/1735176183750fjEhg_JPEG/%C8%A6%C5%D7%B5%F0%C4%C9%C0%CC%C5%A9_%281%29.jpg",
+//            price = "19,800원",
+//            detailPath = "https://naver.com"
+//        ),
+//        GiftItemDto(
+//            id = "2",
+//            name = "레터링 케이크",
+//            imageUrl = "https://ldb-phinf.pstatic.net/20241226_81/1735176192690m2B0T_JPEG/%C8%AD%C0%CC%C6%AE%C8%A6%C5%D7%B5%F0.jpeg",
+//            price = "35,000원",
+//            detailPath = "https://naver.com"
+//        )
+//    )
+//)
 
 @HiltViewModel
 class GiftBundleDataViewModel @Inject constructor(
@@ -49,8 +49,8 @@ class GiftBundleDataViewModel @Inject constructor(
 
     fun loadGiftBundle(giftBundleId: String) {
         viewModelScope.launch {
-//            val result = getGiftBundleDetailUseCase(giftBundleId)
-            _giftBundleData.value = dummyGiftBundle
+            val result = getGiftBundleDetailUseCase(giftBundleId)
+            _giftBundleData.value = result
         }
     }
 
