@@ -52,7 +52,7 @@ class SurveyViewModel @Inject constructor(
         when (event) {
             is SurveyEvent.BudgetSelected -> update { copy(budget = event.budget) }
             is SurveyEvent.AnniversarySelected -> update {
-                val anniv = AnniversaryType.fromCode(event.anniversary)
+                val anniv = AnniversaryType.fromCode(event.anniversary.uppercase())
                 copy(anniversary = anniv?.code)
             }
 
@@ -108,7 +108,6 @@ class SurveyViewModel @Inject constructor(
                 val result = recommendGiftBundleUseCase(request)
                 _recommendedGiftBundles.value = result
             } catch (e: Exception) {
-                Log.e("SurveyViewModel", "추천 실패", e)
                 update {
                     copy(
                         submissionError = "추천 결과를 가져오는데 실패했어요"
@@ -123,7 +122,7 @@ class SurveyViewModel @Inject constructor(
         val request = GiftItemReplaceRequestDto(
             productId = target.id,
             ageRange = state.ageRange,
-            anniversaryType = state.anniversary,
+            anniversaryType = state.anniversary?.uppercase() ?: "ANNIVERSARY",
             category = target.category,
             relation = state.relationship,
             gender = state.gender,
@@ -165,19 +164,6 @@ class SurveyViewModel @Inject constructor(
             gender = state.gender.orEmpty(),
             detail = state.userMessage.orEmpty()
         )
-
-//        val request = GiftBundleSaveRequestDto(
-//            giftIds = listOf(48, 49, 50),
-//            ageRange = 20,
-//            anniversaryType = "BIRTHDAY",
-//            categories = listOf("BEAUTY", "FOOD"),
-//            relation = "친구", // 서버에서 "친구"를 enum으로 인식 못할 가능성 있음 → 문제 생기면 영어로
-//            gender = "FEMALE",
-//            detail = "화장품을 좋아하고 단 음식을 좋아함"
-//        )
-
-        Log.i("SurveyViewModel", "저장 요청: $request") // 🔥 이걸 추가
-
 
         viewModelScope.launch {
             runCatching {

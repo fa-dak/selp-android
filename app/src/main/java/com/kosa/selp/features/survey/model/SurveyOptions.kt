@@ -25,7 +25,7 @@ enum class AnniversaryType(val label: String, val code: String) {
 enum class GenderType(val label: String, val code: String) {
     MALE("남성", "MALE"),
     FEMALE("여성", "FEMALE"),
-    NONE("상관없음", "NONE");
+    NONE("기타", "NONE");
 
     companion object {
         fun fromLabel(label: String): GenderType? =

@@ -1,6 +1,5 @@
 package com.kosa.selp.features.calendar.presentation.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kosa.selp.features.calendar.data.response.EventListResponseDto
@@ -26,7 +25,6 @@ class CalendarDataViewModel @Inject constructor(
             }.onSuccess { result ->
                 _eventList.value = result
             }.onFailure {
-                Log.i("CalendarDataViewModel", "getAllEvents: $it")
                 _eventList.value = emptyList()
             }
         }
