@@ -2,6 +2,7 @@ package com.kosa.selp.features.mypage.presentation.screen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -47,6 +48,7 @@ import com.kosa.selp.features.mypage.model.GiftBundleResponse
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageViewModel
 import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.SelpTheme
+import java.text.DecimalFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,6 +121,9 @@ fun GiftBundleItem(
     bundle: GiftBundleResponse,
     onClick: () -> Unit
 ) {
+    val totalPrice = bundle.products.sumOf { it.price }
+    val formatter = DecimalFormat("#,###")
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -127,59 +132,72 @@ fun GiftBundleItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(containerColor = AppColor.white)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            // 받는 사람 정보
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Face,
-                    contentDescription = "받는 사람",
-                    tint = AppColor.primary
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = bundle.receiverNickname,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "(${bundle.relationship})",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = AppColor.textDisabled
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            // 이벤트 정보
-            Text(
-                text = "${bundle.eventName} (${bundle.eventDate})",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(start = 4.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            // 상품 이미지 목록
-            Text(
-                text = "담은 선물",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(bundle.products) { product ->
-                    AsyncImage(
-                        model = product.imagePath,
-                        contentDescription = product.name,
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.Crop
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column {
+                // 받는 사람 정보
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Face,
+                        contentDescription = "받는 사람",
+                        tint = AppColor.primary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = bundle.receiverNickname ?: "-",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "(${bundle.relationship})",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = AppColor.textDisabled
                     )
                 }
+                Spacer(modifier = Modifier.height(4.dp))
+                // 이벤트 정보
+                Text(
+                    text = "${bundle.eventName ?: "-"} (${bundle.eventDate})",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                // 상품 이미지 목록
+                Text(
+                    text = "담은 선물",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(bundle.products) { product ->
+                        AsyncImage(
+                            model = product.imagePath,
+                            contentDescription = product.name,
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
             }
+            Text(
+                text = "총 ${formatter.format(totalPrice)}원",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = AppColor.primary,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
         }
     }
 }

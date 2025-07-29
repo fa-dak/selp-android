@@ -1,7 +1,9 @@
 package com.kosa.selp.features.mypage.presentation.screen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -33,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,6 +48,7 @@ import com.kosa.selp.features.mypage.model.GiftBundleResponse
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageViewModel
 import com.kosa.selp.shared.theme.AppColor
 import java.net.URLEncoder
+import java.text.DecimalFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,15 +57,12 @@ fun GiftBundleDetailScreen(
     navController: NavController,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
-    // ViewModel에서 상세 정보 상태를 구독
     val giftBundleDetail by viewModel.giftBundleDetail.collectAsStateWithLifecycle()
 
-    // 화면이 시작될 때 API 호출
     LaunchedEffect(bundleId) {
         viewModel.fetchGiftBundleDetail(bundleId)
     }
 
-    // 화면이 사라질 때 ViewModel의 상태를 초기화
     DisposableEffect(Unit) {
         onDispose {
             viewModel.clearGiftBundleDetail()
@@ -87,7 +89,6 @@ fun GiftBundleDetailScreen(
         },
         containerColor = AppColor.background
     ) { innerPadding ->
-        // 데이터 로딩 상태에 따라 다른 UI 표시
         if (giftBundleDetail == null) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -97,19 +98,23 @@ fun GiftBundleDetailScreen(
             }
         } else {
             val bundle = giftBundleDetail!!
+            val totalPrice = bundle.products.sumOf { it.price }
+            val formatter = DecimalFormat("#,###")
+
             LazyColumn(
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(innerPadding),
                 contentPadding = PaddingValues(16.dp)
             ) {
                 item {
                     Text(
-                        text = "'${bundle.receiverNickname}'님을 위한",
+                        text = "'${bundle.receiverNickname ?: "-"}'님을 위한",
                         style = MaterialTheme.typography.titleMedium
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "'${bundle.eventName}' 꾸러미",
+                        text = "'${bundle.eventName ?: "-"}' 꾸러미",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -125,12 +130,10 @@ fun GiftBundleDetailScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                items(bundle.products.size) { index ->
-                    val product = bundle.products[index]
+                items(bundle.products) { product ->
                     ProductItem(
                         product = product,
                         onClick = {
-                            // detailPath가 비어있지 않을 때만 네비게이션 실행
                             if (product.detailPath.isNotBlank()) {
                                 val encodedUrl = URLEncoder.encode(product.detailPath, "UTF-8")
                                 navController.navigate("webView?url=$encodedUrl")
@@ -138,6 +141,21 @@ fun GiftBundleDetailScreen(
                         }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            text = "총 ${formatter.format(totalPrice)}원",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = AppColor.primary
+                        )
+                    }
                 }
             }
         }
@@ -150,6 +168,8 @@ private fun ProductItem(
     onClick: () -> Unit
 ) {
     val isClickable = product.detailPath.isNotBlank()
+    val formatter = DecimalFormat("#,###")
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -157,20 +177,31 @@ private fun ProductItem(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = AppColor.white)
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
         ) {
-            AsyncImage(
-                model = product.imagePath,
-                contentDescription = product.name,
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop
+            Row(
+                verticalAlignment = Alignment.Top
+            ) {
+                AsyncImage(
+                    model = product.imagePath,
+                    contentDescription = product.name,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(text = product.name, style = MaterialTheme.typography.bodyLarge)
+            }
+            Text(
+                text = "${formatter.format(product.price)}원",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Black,
+                modifier = Modifier.align(Alignment.BottomEnd)
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(text = product.name, style = MaterialTheme.typography.bodyLarge)
         }
     }
 }

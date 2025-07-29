@@ -10,5 +10,6 @@ data class SurveyState(
     val categories: List<String> = emptyList(),
     val userMessage: String? = null,
     val isSubmitting: Boolean = false,
-    val submissionError: String? = null
+    val submissionError: String? = null,
+    val userName: String = ""
 )
