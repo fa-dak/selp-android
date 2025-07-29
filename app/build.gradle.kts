@@ -134,6 +134,11 @@ dependencies {
     // Kotlin Coroutines Android
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
 
+
+    // port one 결제
+    implementation("com.github.iamport:iamport-android:1.4.5")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
     kapt(libs.hilt.compiler)
     kapt(libs.androidx.hilt.compiler)
 
