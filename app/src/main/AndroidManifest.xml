@@ -43,6 +43,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="io.portone.sdk.android.payment.PaymentActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <service
             android:name="com.kosa.selp.features.fcm.service.SelpMessagingService"
             android:exported="false">

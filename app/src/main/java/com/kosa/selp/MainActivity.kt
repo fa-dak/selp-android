@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AlertDialog
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,12 +26,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.iamport.sdk.domain.core.Iamport
 import com.kosa.selp.features.calendar.presentation.CalendarScreen
 import com.kosa.selp.features.calendar.presentation.EventRegisterScreen
 import com.kosa.selp.features.gift.presentation.screen.AgeGroupGiftScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftDetailScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftPackageDetailScreen
-import com.kosa.selp.features.gift.presentation.screen.PayExampleScreen
 import com.kosa.selp.features.gift.presentation.screen.SurveyResultScreen
 import com.kosa.selp.features.home.presentation.screen.HomeScreen
 import com.kosa.selp.features.login.presentation.screen.LoginScreen
@@ -42,6 +41,7 @@ import com.kosa.selp.features.mypage.presentation.screen.GiftBundleDetailScreen
 import com.kosa.selp.features.mypage.presentation.screen.GiftBundleListScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyContactsScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyPageScreen
+import com.kosa.selp.features.pay.PayExampleScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyIntroScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyResultWaitingScreen
@@ -52,79 +52,11 @@ import com.kosa.selp.shared.navigation.animatedComposable
 import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.SelpTheme
 import dagger.hilt.android.AndroidEntryPoint
-import io.portone.sdk.android.PortOne
-import io.portone.sdk.android.issuebillingkey.IssueBillingKeyCallback
-import io.portone.sdk.android.issuebillingkey.IssueBillingKeyResponse
-import io.portone.sdk.android.payment.PaymentCallback
-import io.portone.sdk.android.payment.PaymentRequest
-import io.portone.sdk.android.payment.PaymentResponse
-import io.portone.sdk.android.type.Amount
-import io.portone.sdk.android.type.Currency
-import io.portone.sdk.android.type.PaymentMethod
 import java.net.URLDecoder
 import java.util.Date
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    fun launchPayment() {
-        PortOne.requestPayment(
-            this,
-            request = PaymentRequest(
-                storeId = "상점 아이디",
-                channelKey = "채널 키",
-                paymentId = "결제 건 ID",
-                orderName = "주문 명",
-                amount = Amount(total = 1000, currency = Currency.KRW),
-                method = PaymentMethod.Card()
-            ),
-            resultLauncher = paymentActivityResultLauncher
-        )
-    }
-
-    private val paymentActivityResultLauncher =
-        PortOne.registerForPaymentActivity(this, callback = object : PaymentCallback {
-            override fun onSuccess(response: PaymentResponse.Success) {
-                if (!isFinishing && !isDestroyed) {
-                    AlertDialog.Builder(this@MainActivity)
-                        .setTitle("결제 성공")
-                        .setMessage(response.toString())
-                        .show()
-                }
-            }
-
-            override fun onFail(response: PaymentResponse.Fail) {
-                if (!isFinishing && !isDestroyed) {
-                    AlertDialog.Builder(this@MainActivity)
-                        .setTitle("결제 실패")
-                        .setMessage(response.toString())
-                        .show()
-                }
-            }
-        })
-
-    private val issueBillingKeyActivityResultLauncher =
-        PortOne.registerForIssueBillingKeyActivity(
-            this,
-            callback = object : IssueBillingKeyCallback {
-                override fun onSuccess(response: IssueBillingKeyResponse.Success) {
-                    if (!isFinishing && !isDestroyed) {
-                        AlertDialog.Builder(this@MainActivity)
-                            .setTitle("빌링키 발급 성공")
-                            .setMessage(response.toString())
-                            .show()
-                    }
-                }
-
-                override fun onFail(response: IssueBillingKeyResponse.Fail) {
-                    if (!isFinishing && !isDestroyed) {
-                        AlertDialog.Builder(this@MainActivity)
-                            .setTitle("빌링키 발급 실패")
-                            .setMessage(response.toString())
-                            .show()
-                    }
-                }
-            })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -323,6 +255,11 @@ class MainActivity : ComponentActivity() {
                                     .consumeWindowInsets(innerPadding)
                             )
                         }
+
+                        composable("payTest") {
+                            PayExampleScreen()
+                        }
+
                         animatedComposable("giftBundleList") {
                             GiftBundleListScreen(navController = navController)
                         }
@@ -338,14 +275,12 @@ class MainActivity : ComponentActivity() {
                                     navController = navController
                                 )
                             }
-                            composable("payTest") {
-                                PayExampleScreen(activity = this@MainActivity)
-                            }
                         }
                     }
                 }
             }
         }
+        Iamport.init(this) // Iamport
     }
 
     @Composable
@@ -366,5 +301,10 @@ class MainActivity : ComponentActivity() {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Iamport.close()
     }
 }
