@@ -40,7 +40,7 @@ class MyContactsDetailViewModel @Inject constructor(
                     gender = "NONE",
                     relationship = "",
                     age = 0,
-                    preferences = "",
+                    preferences = emptyList(),
                     detail = ""
                 )
             )
@@ -69,12 +69,13 @@ class MyContactsDetailViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
+                val preferencesList = preferences.split(",").map { it.trim() }.filter { it.isNotEmpty() }
                 val request = ReceiverModifyRequest(
                     nickname = nickname,
-                    age = age.toInt(),
+                    age = age.toIntOrNull() ?: 0,
                     gender = gender,
                     relationship = relationship,
-                    preferences = preferences,
+                    preferences = preferencesList,
                     detail = detail
                 )
                 if (receiverId == -1L) {
