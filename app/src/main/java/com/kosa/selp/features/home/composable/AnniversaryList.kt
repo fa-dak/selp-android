@@ -17,7 +17,10 @@ fun AnniversaryList(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(anniversaries) { (title, dayName) ->
-            AnniversaryCard(title = title, dayName = dayName)
+            AnniversaryCard(
+                title = title ?: "제목없음",
+                dayName = dayName
+            )
         }
     }
 }
