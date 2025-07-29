@@ -15,7 +15,7 @@ import retrofit2.http.Query
 
 interface GiftApiService {
 
-    @GET("gift-bundle/{giftBundleId}")
+    @GET("gift-bundle/gift-bundles/{giftBundleId}")
     suspend fun getGiftBundle(@Path("giftBundleId") giftBundleId: String): GiftBundleDetailResponseDto
 
     @POST("messages/{giftBundleId}")

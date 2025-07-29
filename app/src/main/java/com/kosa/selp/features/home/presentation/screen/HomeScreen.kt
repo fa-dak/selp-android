@@ -162,9 +162,9 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     GiftPackageRowList(
                         packages = recentGiftPackages,
-                        onClick = { giftPackage ->
-                            if (giftPackage.id.isNotBlank()) {
-                                navController.navigate("giftPackage/${giftPackage.id}")
+                        onClick = { recentGiftPackages ->
+                            if (recentGiftPackages.id.isNotBlank()) {
+                                navController.navigate("giftPackage/${recentGiftPackages.id}")
                             }
                         })
                 }
