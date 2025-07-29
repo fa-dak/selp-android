@@ -21,15 +21,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.kosa.selp.features.calendar.data.response.EventListResponseDto
 import com.kosa.selp.shared.theme.AppColor
 
 @Composable
 fun CalendarEventListItem(
-    modifier: Modifier = Modifier,
-    title: String,
-    relationTag: String,
-    extraTags: List<String> = emptyList()
+    event: EventListResponseDto,
+    modifier: Modifier = Modifier
 ) {
+
+    val title = event.eventName?.takeIf { it.isNotBlank() } ?: "제목없음"
+    val relationTag = event.receiverNickname?.takeIf { it.isNotBlank() }
+    val typeTag = event.eventType?.takeIf { it.isNotBlank() }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -57,21 +61,25 @@ fun CalendarEventListItem(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                if (relationTag != null || typeTag != null) {
+                    Spacer(modifier = Modifier.height(4.dp))
 
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Tag(
-                        text = relationTag,
-                        backgroundColor = Color(0xFFD0E8FF),
-                        textColor = Color(0xFF1565C0)
-                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        relationTag?.let {
+                            Tag(
+                                text = it,
+                                backgroundColor = Color(0xFFD0E8FF),
+                                textColor = Color(0xFF1565C0)
+                            )
+                        }
 
-                    extraTags.forEach {
-                        Tag(
-                            text = it,
-                            backgroundColor = Color(0xFFFFECB3),
-                            textColor = Color(0xFFEF6C00)
-                        )
+                        typeTag?.let {
+                            Tag(
+                                text = it,
+                                backgroundColor = Color(0xFFFFECB3),
+                                textColor = Color(0xFFEF6C00)
+                            )
+                        }
                     }
                 }
             }
