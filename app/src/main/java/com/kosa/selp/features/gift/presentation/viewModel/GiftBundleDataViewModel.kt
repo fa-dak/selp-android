@@ -6,11 +6,13 @@ import com.kosa.selp.features.gift.data.response.GiftBundleDetailResponseDto
 import com.kosa.selp.features.gift.data.response.GiftItemDto
 import com.kosa.selp.features.gift.domain.usecase.GetGiftBundleDetailUseCase
 import com.kosa.selp.features.gift.domain.usecase.GetGiftBundleRecommendMessagesUseCase
+import com.kosa.selp.shared.data.manager.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 //val dummyGiftBundle = GiftBundleDetailResponseDto(
@@ -38,7 +40,8 @@ import javax.inject.Inject
 @HiltViewModel
 class GiftBundleDataViewModel @Inject constructor(
     private val getGiftBundleDetailUseCase: GetGiftBundleDetailUseCase,
-    private val getRecommendedMessagesUseCase: GetGiftBundleRecommendMessagesUseCase
+    private val getRecommendedMessagesUseCase: GetGiftBundleRecommendMessagesUseCase,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _giftBundleData = MutableStateFlow<GiftBundleDetailResponseDto?>(null)
@@ -51,6 +54,14 @@ class GiftBundleDataViewModel @Inject constructor(
         viewModelScope.launch {
             val result = getGiftBundleDetailUseCase(giftBundleId)
             _giftBundleData.value = result
+
+            sessionManager.currentUser.collect { userInfo ->
+                userInfo?.let {
+                    _giftBundleData.update { current ->
+                        current?.copy(userName = it.nickname)
+                    }
+                }
+            }
         }
     }
 

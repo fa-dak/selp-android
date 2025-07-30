@@ -1,6 +1,7 @@
 package com.kosa.selp.features.mypage.data.repository
 
 import com.kosa.selp.features.mypage.data.service.MyPageApiService
+import com.kosa.selp.features.mypage.model.EventModifyRequest
 import javax.inject.Inject
 
 import com.kosa.selp.features.mypage.model.ReceiverRegisterRequest
@@ -24,4 +25,8 @@ class MyPageRepository @Inject constructor(
     suspend fun registerReceiverInfo(request: ReceiverRegisterRequest) = myPageApiService.registerReceiverInfo(request)
 
     suspend fun getProductCategories() = myPageApiService.getProductCategories()
+
+    suspend fun getEventDetail(eventId: Long) = myPageApiService.getEventDetail(eventId)
+
+    suspend fun modifyEvent(eventId: Long, request: EventModifyRequest) = myPageApiService.modifyEvent(eventId, request)
 }

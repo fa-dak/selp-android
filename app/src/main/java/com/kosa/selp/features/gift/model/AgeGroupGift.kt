@@ -5,6 +5,6 @@ data class AgeGroupGift(
     val name: String,
     val ageGroup: String,
     val imageUrl: String,
-    val price: String,
+    val price: Int,
     val detailPath: String,
 )

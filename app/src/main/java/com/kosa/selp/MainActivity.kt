@@ -38,19 +38,17 @@ import com.kosa.selp.features.home.presentation.screen.HomeScreen
 import com.kosa.selp.features.login.presentation.screen.LoginScreen
 import com.kosa.selp.features.login.presentation.viewModel.LoginEvent
 import com.kosa.selp.features.login.presentation.viewModel.LoginViewModel
+import com.kosa.selp.features.mypage.presentation.screen.EventDetailScreen
 import com.kosa.selp.features.mypage.presentation.screen.GiftBundleDetailScreen
 import com.kosa.selp.features.mypage.presentation.screen.GiftBundleListScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyContactsDetailScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyContactsScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyPageScreen
+import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageViewModel
 import com.kosa.selp.features.notification.presentation.screen.NotificationScreen
-import com.kosa.selp.features.pay.PayExampleScreen
-import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelLiteScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyIntroScreen
-import com.kosa.selp.features.survey.presentation.screen.SurveyResultLiteScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyResultScreen
-import com.kosa.selp.features.survey.presentation.viewModel.LiteSurveyViewModel
 import com.kosa.selp.features.survey.presentation.viewModel.SurveyViewModel
 import com.kosa.selp.shared.composable.navigation.BottomNavBar
 import com.kosa.selp.shared.navigation.BottomBarRoute
@@ -158,9 +156,9 @@ class MainActivity : ComponentActivity() {
                                     .consumeWindowInsets(innerPadding)
                             )
                         }
-                        composable("payTest") {
-                            PayExampleScreen()
-                        }
+//                        composable("payTest") {
+//                            PayExampleScreen()
+//                        }
 
                         animatedComposable("surveyIntro") {
                             SurveyIntroScreen(
@@ -185,58 +183,6 @@ class MainActivity : ComponentActivity() {
                                 viewModel = viewModel
                             )
                         }
-
-                        animatedComposable(
-                            route = "surveyFunnelLite/{contactId}?anniversary={anniversary}",
-                            arguments = listOf(
-                                navArgument("contactId") {
-                                    type = NavType.StringType
-                                    nullable = false
-                                },
-                                navArgument("anniversary") {
-                                    type = NavType.StringType
-                                    nullable = true
-                                }
-                            )
-                        ) { backStackEntry ->
-                            val contactId =
-                                backStackEntry.arguments?.getString("contactId")?.toLongOrNull()
-                            val anniversary = backStackEntry.arguments?.getString("anniversary")
-
-                            contactId?.let {
-                                SurveyFunnelLiteScreen(
-                                    navController = navController,
-                                    contactId = it,
-                                    anniversary = anniversary // <-- 이렇게 넘겨줘야 ViewModel에서 받을 수 있어
-                                )
-                            }
-                        }
-                        animatedComposable(
-                            route = "surveyResultLite?contactId={contactId}",
-                            arguments = listOf(
-                                navArgument("contactId") {
-                                    type = NavType.StringType
-                                    nullable = false
-                                }
-                            )
-                        ) { backStackEntry ->
-                            val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(
-                                    "surveyFunnelLite/${
-                                        backStackEntry.arguments?.getString(
-                                            "contactId"
-                                        )
-                                    }"
-                                )
-                            }
-                            val viewModel = hiltViewModel<LiteSurveyViewModel>(parentEntry)
-
-                            SurveyResultLiteScreen(
-                                navController = navController,
-                                viewModel = viewModel
-                            )
-                        }
-
 
                         composable("calendar") {
                             CalendarScreen(
@@ -320,9 +266,28 @@ class MainActivity : ComponentActivity() {
                             val bundleId =
                                 backStackEntry.arguments?.getString("bundleId")?.toLongOrNull()
                             if (bundleId != null) {
+                                val myPageViewModel: MyPageViewModel = hiltViewModel(backStackEntry)
                                 GiftBundleDetailScreen(
                                     bundleId = bundleId,
-                                    navController = navController
+                                    navController = navController,
+                                    viewModel = myPageViewModel
+                                )
+                            }
+                        }
+                        animatedComposable(
+                            "eventDetail/{eventId}",
+                            arguments = listOf(navArgument("eventId") { type = NavType.LongType })
+                        ) { backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getLong("eventId")
+                            if (eventId != null) {
+                                val parentEntry = remember(backStackEntry) {
+                                    navController.getBackStackEntry("giftBundleDetail/{bundleId}")
+                                }
+                                val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
+                                EventDetailScreen(
+                                    eventId = eventId,
+                                    navController = navController,
+                                    viewModel = myPageViewModel
                                 )
                             }
                         }

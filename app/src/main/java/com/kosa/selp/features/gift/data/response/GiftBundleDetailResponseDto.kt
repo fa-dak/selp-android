@@ -10,7 +10,8 @@ data class GiftBundleDetailResponseDto(
     val receiverInfoId: Long,
     val receiverNickname: String?,
     val relationship: String,
-    val products: List<GiftItemDto>
+    val products: List<GiftItemDto>,
+    val userName: String = ""
 )
 
 data class GiftItemDto(

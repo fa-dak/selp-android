@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kosa.selp.features.survey.presentation.state.SurveyEvent
 import com.kosa.selp.features.survey.presentation.viewModel.SurveyViewModel
+import com.kosa.selp.shared.domain.model.Relationship
 import com.kosa.selp.shared.theme.AppColor
 
 @Composable
@@ -32,7 +33,7 @@ fun RelationshipFunnel(
     onNext: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    val options = listOf("부모님", "친구", "애인", "직장동료 / 상사", "그 외 관계")
+    val options = Relationship.entries
 
     Column(
         modifier = Modifier
@@ -52,7 +53,7 @@ fun RelationshipFunnel(
             verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()
         ) {
             options.forEach { option ->
-                val isSelected = state.relationship == option
+                val isSelected = state.relationship == option.displayName
 
                 val backgroundColor by animateColorAsState(
                     targetValue = if (isSelected) AppColor.primary.copy(alpha = 0.1f) else AppColor.white,
@@ -69,7 +70,7 @@ fun RelationshipFunnel(
 
                 OutlinedButton(
                     onClick = {
-                        viewModel.onEvent(SurveyEvent.RelationshipSelected(option))
+                        viewModel.onEvent(SurveyEvent.RelationshipSelected(option.displayName))
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -81,7 +82,7 @@ fun RelationshipFunnel(
                     border = BorderStroke(1.dp, borderColor)
                 ) {
                     Text(
-                        text = option, style = MaterialTheme.typography.bodyLarge.copy(
+                        text = option.displayName, style = MaterialTheme.typography.bodyLarge.copy(
                             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                         )
                     )

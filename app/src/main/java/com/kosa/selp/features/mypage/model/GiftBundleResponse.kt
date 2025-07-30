@@ -2,6 +2,7 @@ package com.kosa.selp.features.mypage.model
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.kosa.selp.features.pay.PayStatus
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -25,7 +26,9 @@ data class GiftBundleResponse(
     @SerializedName("relationship")
     val relationship: String,
     @SerializedName("products")
-    val products: List<Product>
+    val products: List<Product>,
+    @SerializedName("currentPayStatus")
+    val currentPayStatus: PayStatus
 ) : Parcelable {
     @Parcelize
     data class Product(

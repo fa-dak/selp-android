@@ -25,6 +25,7 @@ import coil3.request.crossfade
 import com.kosa.selp.R
 import com.kosa.selp.features.home.presentation.screen.GiftItem
 import com.kosa.selp.shared.theme.AppColor
+import java.text.DecimalFormat
 
 @Composable
 fun GiftCard(
@@ -68,7 +69,7 @@ fun GiftCard(
         )
 
         Text(
-            text = gift.price,
+            text = "${DecimalFormat("#,###").format(gift.price)}원",
             style = MaterialTheme.typography.bodyMedium.copy(
                 color = AppColor.textPrimary,
                 fontWeight = FontWeight.Bold

@@ -1,27 +1,14 @@
 package com.kosa.selp.features.home.presentation.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.kosa.selp.features.home.composable.AnniversaryList
 import com.kosa.selp.features.home.response.toGiftItem
 import com.kosa.selp.features.home.viewModel.HomeUiState
@@ -46,7 +34,7 @@ data class GiftItem(
     val title: String,
     val imageUrl: String,
     val detailPath: String,
-    val price: String
+    val price: Int
 )
 
 data class GiftPackage(
@@ -64,6 +52,12 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.homeState.collectAsState()
+    val unreadCount by viewModel.unreadCount.collectAsState()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    LaunchedEffect(navBackStackEntry) {
+        viewModel.loadUnreadCount()
+    }
 
     when (state) {
         is HomeUiState.Loading -> {
@@ -74,7 +68,7 @@ fun HomeScreen(
 
         is HomeUiState.Error -> {
             val message = (state as HomeUiState.Error).message
-            println("messagessage" + message)
+            println("messagessage $message")
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = "오류가 발생했습니다.",
@@ -94,7 +88,7 @@ fun HomeScreen(
                     id = bundle?.giftBundleId?.toString() ?: "",
                     title = "최근에 만든 선물꾸러미",
                     recipient = "",
-                    createdAt = "", // 필요 시 포맷팅
+                    createdAt = "",
                     gifts = bundle?.products?.map { it.toGiftItem() } ?: emptyList()
                 )
             )
@@ -117,10 +111,31 @@ fun HomeScreen(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
+
                         IconButton(onClick = {
                             navController.navigate("notification")
                         }) {
-                            Icon(Icons.Default.Notifications, contentDescription = "알림 보기")
+                            Box {
+                                Icon(
+                                    imageVector = Icons.Default.Notifications,
+                                    contentDescription = "알림 보기"
+                                )
+                                if (unreadCount > 0) {
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .offset(x = 2.dp, y = (-2).dp)
+                                            .background(Color.Red, shape = RoundedCornerShape(50))
+                                            .padding(horizontal = 4.dp, vertical = 1.dp)
+                                    ) {
+                                        Text(
+                                            text = if (unreadCount > 9) "9+" else unreadCount.toString(),
+                                            color = Color.White,
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -155,18 +170,19 @@ fun HomeScreen(
                     }
                 }
 
-
                 item { AnniversaryList(anniversaries = anniversaries) }
+
                 item {
                     Text("촤근에 만든 선물꾸러미", fontWeight = FontWeight.Medium)
                     Spacer(modifier = Modifier.height(8.dp))
                     GiftPackageRowList(
                         packages = recentGiftPackages,
-                        onClick = { recentGiftPackages ->
-                            if (recentGiftPackages.id.isNotBlank()) {
-                                navController.navigate("giftPackage/${recentGiftPackages.id}")
+                        onClick = { recentGiftPackage ->
+                            if (recentGiftPackage.id.isNotBlank()) {
+                                navController.navigate("giftPackage/${recentGiftPackage.id}")
                             }
-                        })
+                        }
+                    )
                 }
 
                 item {
@@ -174,7 +190,6 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     GiftCardGrid(items = recommendedGifts, navController = navController)
                 }
-
             }
         }
     }

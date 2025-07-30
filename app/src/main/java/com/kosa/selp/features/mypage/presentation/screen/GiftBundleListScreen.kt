@@ -46,6 +46,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.kosa.selp.features.mypage.model.GiftBundleResponse
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageViewModel
+import com.kosa.selp.features.pay.PayStatus
 import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.SelpTheme
 import java.text.DecimalFormat
@@ -156,7 +157,7 @@ fun GiftBundleItem(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "(${bundle.relationship})",
+                        text = "${bundle.relationship}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppColor.textDisabled
                     )
@@ -164,7 +165,7 @@ fun GiftBundleItem(
                 Spacer(modifier = Modifier.height(4.dp))
                 // 이벤트 정보
                 Text(
-                    text = "${bundle.eventName ?: "-"} (${bundle.eventDate})",
+                    text = "${bundle.eventName ?: "-"}  ${bundle.eventDate}",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(start = 4.dp)
                 )
@@ -191,13 +192,35 @@ fun GiftBundleItem(
                     }
                 }
             }
-            Text(
-                text = "총 ${formatter.format(totalPrice)}원",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                color = AppColor.primary,
-                modifier = Modifier.align(Alignment.TopEnd)
-            )
+            Column(
+                modifier = Modifier.align(Alignment.TopEnd),
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = "총 ${formatter.format(totalPrice)}원",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColor.primary,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                // 결제 상태 정보
+                val statusText = when (bundle.currentPayStatus) {
+                    PayStatus.NOT_STARTED -> "미결제"
+                    PayStatus.PAID -> "결제 완료"
+                    PayStatus.CANCEL -> "결제 취소"
+                }
+                val statusColor = when (bundle.currentPayStatus) {
+                    PayStatus.NOT_STARTED -> AppColor.textDisabled
+                    PayStatus.PAID -> AppColor.primary
+                    PayStatus.CANCEL -> AppColor.error
+                }
+                Text(
+                    text = statusText,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = statusColor,
+                )
+            }
         }
     }
 }
@@ -219,7 +242,8 @@ fun GiftBundleItemPreview() {
         receiverInfoId = 1,
         receiverNickname = "대학 동기(김민준)",
         relationship = "친구",
-        products = listOf(fakeProduct, fakeProduct, fakeProduct)
+        products = listOf(fakeProduct, fakeProduct, fakeProduct),
+        PayStatus.NOT_STARTED
     )
     SelpTheme {
         GiftBundleItem(

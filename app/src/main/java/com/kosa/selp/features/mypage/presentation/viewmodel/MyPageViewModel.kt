@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kosa.selp.features.mypage.data.repository.MyPageRepository
+import com.kosa.selp.features.mypage.model.Contact
+import com.kosa.selp.features.mypage.model.EventDetailResponse
+import com.kosa.selp.features.mypage.model.EventModifyRequest
 import com.kosa.selp.features.mypage.model.GiftBundleResponse
 import com.kosa.selp.shared.data.manager.AuthManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +20,8 @@ import javax.inject.Inject
 
 sealed class MyPageEvent {
     data object LogoutSuccess : MyPageEvent()
+    data class ModifySuccess(val message: String) : MyPageEvent()
+    data class ModifyFailed(val message: String) : MyPageEvent()
 }
 
 @HiltViewModel
@@ -35,6 +40,14 @@ class MyPageViewModel @Inject constructor(
     // 상세 꾸러미 정보를 담을 StateFlow
     private val _giftBundleDetail = MutableStateFlow<GiftBundleResponse?>(null)
     val giftBundleDetail = _giftBundleDetail.asStateFlow()
+
+    // 이벤트 상세 정보를 담을 StateFlow
+    private val _eventDetail = MutableStateFlow<EventDetailResponse?>(null)
+    val eventDetail = _eventDetail.asStateFlow()
+
+    // 주변인 목록 정보를 담을 StateFlow
+    private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
+    val contacts = _contacts.asStateFlow()
 
     fun fetchMyGiftBundles() {
         viewModelScope.launch {
@@ -65,9 +78,48 @@ class MyPageViewModel @Inject constructor(
         }
     }
 
+    fun fetchEventDetail(eventId: Long) {
+        viewModelScope.launch {
+            try {
+                val detail = myPageRepository.getEventDetail(eventId)
+                _eventDetail.value = detail
+                Log.d("MyPageViewModel", "이벤트 상세 정보 로드 성공: ${detail.eventName}")
+            } catch (e: Exception) {
+                Log.e("MyPageViewModel", "이벤트 상세 정보 로드 실패: ${e.message}")
+            }
+        }
+    }
+
+    fun fetchContacts() {
+        viewModelScope.launch {
+            try {
+                _contacts.value = myPageRepository.getMyReceiverInfoList()
+            } catch (e: Exception) {
+                Log.e("MyPageViewModel", "주변인 목록 로드 실패", e)
+            }
+        }
+    }
+
+    fun modifyEvent(request: EventModifyRequest) {
+        viewModelScope.launch {
+            try {
+                val eventId = _eventDetail.value?.eventId ?: throw IllegalStateException("Event ID is null")
+                myPageRepository.modifyEvent(eventId, request)
+                _event.send(MyPageEvent.ModifySuccess("이벤트가 성공적으로 수정되었습니다."))
+            } catch (e: Exception) {
+                Log.e("MyPageViewModel", "이벤트 수정 실패", e)
+                _event.send(MyPageEvent.ModifyFailed("이벤트 수정에 실패했습니다: ${e.message}"))
+            }
+        }
+    }
+
     // 화면이 사라질 때 상세 정보를 초기화하는 함수
     fun clearGiftBundleDetail() {
         _giftBundleDetail.value = null
+    }
+
+    fun clearEventDetail() {
+        _eventDetail.value = null
     }
 
     // 로그아웃
