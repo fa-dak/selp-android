@@ -46,6 +46,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.kosa.selp.features.mypage.model.GiftBundleResponse
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageViewModel
+import com.kosa.selp.features.pay.PayStatus
 import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.SelpTheme
 import java.text.DecimalFormat
@@ -219,7 +220,8 @@ fun GiftBundleItemPreview() {
         receiverInfoId = 1,
         receiverNickname = "대학 동기(김민준)",
         relationship = "친구",
-        products = listOf(fakeProduct, fakeProduct, fakeProduct)
+        products = listOf(fakeProduct, fakeProduct, fakeProduct),
+        PayStatus.NOT_STARTED
     )
     SelpTheme {
         GiftBundleItem(
