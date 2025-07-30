@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,12 +30,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kosa.selp.features.calendar.composable.AddEventDialog
 import com.kosa.selp.features.calendar.composable.BottomAddButton
+import com.kosa.selp.features.calendar.composable.CalendarEventDetailDialog
 import com.kosa.selp.features.calendar.composable.CalendarEventListItem
 import com.kosa.selp.features.calendar.composable.CalendarEventOverlay
 import com.kosa.selp.features.calendar.composable.CalendarHeader
 import com.kosa.selp.features.calendar.composable.CalendarMonthGrid
 import com.kosa.selp.features.calendar.composable.CalendarWeekDays
 import com.kosa.selp.features.calendar.config.CalendarConfig
+import com.kosa.selp.features.calendar.data.response.EventListResponseDto
 import com.kosa.selp.features.calendar.model.EventInputState
 import com.kosa.selp.features.calendar.presentation.viewModel.CalendarDataViewModel
 import com.kosa.selp.features.calendar.presentation.viewModel.CalendarUiViewModel
@@ -67,12 +70,15 @@ fun CalendarScreen(
 
     val showOverlay = remember { mutableStateOf(false) }
     val showAddOverlay = remember { mutableStateOf(false) }
+    val showDetailDialog = remember { mutableStateOf(false) }
+
     val eventInputState = remember { mutableStateOf(EventInputState()) }
 
     val selectedDateEvents = events.filter {
         val eventDate = DateUtils.parseDate(it.eventDate)
         DateUtils.isSameDay(eventDate, selectedDate)
     }
+    val selectedEvent = remember { mutableStateOf<EventListResponseDto?>(null) }
 
     val config = CalendarConfig(
         selectedDate = selectedDate,
@@ -138,7 +144,12 @@ fun CalendarScreen(
                 ) {
                     val list = selectedDateEvents.take(3)
                     itemsIndexed(list) { index, event ->
-                        Column {
+                        Column(
+                            modifier = Modifier.clickable {
+                                selectedEvent.value = event
+                                showDetailDialog.value = true
+                            }
+                        ) {
                             CalendarEventListItem(event)
                             if (index < list.lastIndex) {
                                 HorizontalDivider(
@@ -176,7 +187,25 @@ fun CalendarScreen(
         if (showOverlay.value) {
             CalendarEventOverlay(
                 events = selectedDateEvents,
-                onDismiss = { showOverlay.value = false }
+                onDismiss = { showOverlay.value = false },
+                onEventClick = { event ->
+                    selectedEvent.value = event
+                    showDetailDialog.value = true
+                }
+            )
+        }
+
+        if (showDetailDialog.value && selectedEvent.value != null) {
+
+            CalendarEventDetailDialog(
+                event = selectedEvent.value!!,
+                onDismiss = {
+                    showDetailDialog.value = false
+                    selectedEvent.value = null
+                },
+                onRecommendClick = {
+
+                }
             )
         }
 

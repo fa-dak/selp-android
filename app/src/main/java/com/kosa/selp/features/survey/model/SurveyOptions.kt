@@ -3,7 +3,7 @@ package com.kosa.selp.features.survey.model
 enum class AnniversaryType(val label: String, val code: String) {
     ANNIVERSARY("기념일", "ANNIVERSARY"),
     WEDDING_ANNIVERSARY("결혼기념일", "WEDDING_ANNIVERSARY"),
-    HOLIDAY("공휴일", "HOLIDAY"),
+    HOLIDAY("명절", "HOLIDAY"),
     MEETING("소개팅", "MEETING"),
     VACATION("휴가", "VACATION"),
     GRADUATION("졸업", "GRADUATION"),
