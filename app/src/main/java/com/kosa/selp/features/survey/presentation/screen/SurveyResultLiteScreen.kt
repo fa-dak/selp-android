@@ -39,6 +39,7 @@ import kotlinx.coroutines.delay
 fun SurveyResultLiteScreen(
     navController: NavController,
     viewModel: LiteSurveyViewModel,
+    eventId: Long?
 ) {
     val recommendedGifts by viewModel.recommendedGiftBundles.collectAsStateWithLifecycle()
     var showLottie by remember { mutableStateOf(false) }
@@ -132,7 +133,8 @@ fun SurveyResultLiteScreen(
                     SurveyLiteResultContent(
                         gifts = recommendedGifts!!,
                         navController = navController,
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        eventId = eventId
                     )
                 }
             }

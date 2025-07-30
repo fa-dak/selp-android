@@ -2,6 +2,7 @@ package com.kosa.selp.features.gift.data.repositoryImpl
 
 import com.kosa.selp.features.gift.data.remote.GiftApiService
 import com.kosa.selp.features.gift.data.request.GiftBundleRecommendRequestDto
+import com.kosa.selp.features.gift.data.request.GiftBundleSaveFromCalendarRequestDto
 import com.kosa.selp.features.gift.data.request.GiftBundleSaveRequestDto
 import com.kosa.selp.features.gift.data.request.GiftItemReplaceRequestDto
 import com.kosa.selp.features.gift.data.response.GiftBundleDetailResponseDto
@@ -38,4 +39,7 @@ class GiftRepositoryImpl @Inject constructor(
         api.saveGiftBundle(giftBundleSaveRequest)
     }
 
+    override suspend fun saveGiftBundleFromCalendar(giftBundleSaveFromCalendarRequest: GiftBundleSaveFromCalendarRequestDto) {
+        api.saveGiftBundleFromCalendar(giftBundleSaveFromCalendarRequest)
+    }
 }

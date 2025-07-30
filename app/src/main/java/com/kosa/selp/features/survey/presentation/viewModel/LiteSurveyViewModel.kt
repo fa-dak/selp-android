@@ -4,8 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kosa.selp.features.gift.data.request.GiftBundleRecommendRequestDto
+import com.kosa.selp.features.gift.data.request.GiftBundleSaveFromCalendarRequestDto
 import com.kosa.selp.features.gift.data.response.GiftBundleItemResponseDto
 import com.kosa.selp.features.gift.domain.usecase.RecommendGiftBundleUseCase
+import com.kosa.selp.features.gift.domain.usecase.SaveGiftBundleFromCalendarUseCase
 import com.kosa.selp.features.mypage.data.repository.MyPageRepository
 import com.kosa.selp.features.mypage.model.Contact
 import com.kosa.selp.features.survey.presentation.state.LiteSurveyEvent
@@ -23,6 +25,7 @@ import javax.inject.Inject
 class LiteSurveyViewModel @Inject constructor(
     private val repository: MyPageRepository,
     private val recommendGiftBundleUseCase: RecommendGiftBundleUseCase,
+    private val saveGiftBundleFromCalendarUseCase: SaveGiftBundleFromCalendarUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -32,6 +35,7 @@ class LiteSurveyViewModel @Inject constructor(
     val contactId: Long = savedStateHandle.get<String>("contactId")?.toLongOrNull()
         ?: error("contactId가 null이거나 Long으로 변환할 수 없습니다.")
     val anniversaryFromArgs: String? = savedStateHandle["anniversary"]
+    val eventId: Long? = savedStateHandle.get<String>("eventId")?.toLongOrNull()
 
 
     private val _uiState = MutableStateFlow(LiteSurveyState())
@@ -126,6 +130,30 @@ class LiteSurveyViewModel @Inject constructor(
         }
     }
 
+    fun saveGiftBundleFromCalendar(
+        onSuccess: () -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        val gifts = recommendedGiftBundles.value ?: return
+        val eventId = this.eventId ?: return
+
+        val request = GiftBundleSaveFromCalendarRequestDto(
+            giftIds = gifts.map { it.id },
+            eventId = eventId
+        )
+
+        viewModelScope.launch {
+            runCatching {
+                saveGiftBundleFromCalendarUseCase(request)
+            }.onSuccess {
+                onSuccess()
+            }.onFailure { e ->
+                println("📛 캘린더 기반 선물 저장 실패: ${e.localizedMessage}")
+                onFailure(e)
+            }
+        }
+    }
+
     fun onEvent(event: LiteSurveyEvent) {
         when (event) {
             is LiteSurveyEvent.BudgetEntered -> {
@@ -189,7 +217,7 @@ class LiteSurveyViewModel @Inject constructor(
     private fun getDynamicSteps(contact: Contact): List<SurveyStep> = buildList {
         add(SurveyStep.BUDGET)
         if (contact.age == null) add(SurveyStep.AGE)
-        if (contact.gender == null) add(SurveyStep.GENDER)
+        if (contact.gender.isNullOrBlank()) add(SurveyStep.GENDER)
         if (contact.relationship == null) add(SurveyStep.RELATIONSHIP)
         if (contact.preferences.isEmpty()) add(SurveyStep.CATEGORY)
         if (anniversaryFromArgs == null) add(SurveyStep.ANNIVERSARY)

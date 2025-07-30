@@ -19,6 +19,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,15 +33,18 @@ import com.kosa.selp.features.gift.data.response.GiftBundleItemResponseDto
 import com.kosa.selp.features.survey.presentation.viewModel.LiteSurveyViewModel
 import com.kosa.selp.shared.composable.gift.GiftCarouselMultiBrowse
 import com.kosa.selp.shared.theme.AppColor
+import kotlinx.coroutines.launch
 
 @Composable
 fun SurveyLiteResultContent(
     gifts: List<GiftBundleItemResponseDto>,
     navController: NavController,
-    viewModel: LiteSurveyViewModel
+    viewModel: LiteSurveyViewModel,
+    eventId: Long?
 ) {
     val isEmpty = gifts.isEmpty()
     var isSaving by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -77,25 +81,27 @@ fun SurveyLiteResultContent(
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
-//                    if (!isSaving) {
-//                        isSaving = true
-//                        viewModel.saveGiftBundle(
-//                            onSuccess = {
-//                                coroutineScope.launch {
-//                                    delay(300)
-//                                    isSaving = false
-//                                    navController.navigate("home")
-//                                }
-//                            },
-//                            onFailure = { error ->
-//                                coroutineScope.launch {
-//                                    delay(200)
-//                                    isSaving = false
-//                                    println("저장 실패: ${error.message}")
-//                                }
-//                            }
-//                        )
-//                    }
+                    if (!isSaving && eventId != null) {
+                        isSaving = true
+                        viewModel.saveGiftBundleFromCalendar(
+                            onSuccess = {
+                                coroutineScope.launch {
+                                    kotlinx.coroutines.delay(300)
+                                    isSaving = false
+                                    navController.navigate("home") {
+                                        popUpTo("surveyFunnelLite") { inclusive = true }
+                                    }
+                                }
+                            },
+                            onFailure = { error ->
+                                coroutineScope.launch {
+                                    kotlinx.coroutines.delay(200)
+                                    isSaving = false
+                                    println("❌ 저장 실패: ${error.message}")
+                                }
+                            }
+                        )
+                    }
                 },
                 enabled = !isSaving,
                 modifier = Modifier

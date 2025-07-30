@@ -34,13 +34,14 @@ class CalendarDataViewModel @Inject constructor(
         }
     }
 
-    fun registerEvent(request: EventRegisterRequestDto) {
+    fun registerEvent(request: EventRegisterRequestDto, currentMonth: Calendar) {
         viewModelScope.launch {
             runCatching {
                 registerEventUseCase(request)
             }.onSuccess {
-                val now = Calendar.getInstance()
-                getAllEvents(now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1)
+                val year = currentMonth.get(Calendar.YEAR)
+                val month = currentMonth.get(Calendar.MONTH) + 1
+                getAllEvents(year, month)
             }.onFailure {
             }
         }

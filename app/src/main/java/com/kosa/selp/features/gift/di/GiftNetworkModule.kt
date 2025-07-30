@@ -6,6 +6,7 @@ import com.kosa.selp.features.gift.domain.repository.GiftRepository
 import com.kosa.selp.features.gift.domain.usecase.GetGiftBundleDetailUseCase
 import com.kosa.selp.features.gift.domain.usecase.GetGiftBundleRecommendMessagesUseCase
 import com.kosa.selp.features.gift.domain.usecase.RecommendGiftBundleUseCase
+import com.kosa.selp.features.gift.domain.usecase.SaveGiftBundleFromCalendarUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,5 +54,13 @@ object GiftNetworkModule {
         repository: GiftRepository
     ): RecommendGiftBundleUseCase {
         return RecommendGiftBundleUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSaveGiftBundleFromCalendarUseCase(
+        repository: GiftRepository
+    ): SaveGiftBundleFromCalendarUseCase {
+        return SaveGiftBundleFromCalendarUseCase(repository)
     }
 }

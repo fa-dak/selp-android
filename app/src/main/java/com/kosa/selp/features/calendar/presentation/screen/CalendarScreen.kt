@@ -1,6 +1,7 @@
 package com.kosa.selp.features.calendar.presentation.screen
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -89,6 +90,8 @@ fun CalendarScreen(
     LaunchedEffect(currentMonth) {
         val year = currentMonth.get(Calendar.YEAR)
         val month = currentMonth.get(Calendar.MONTH) + 1
+        Log.d("CalendarScreen", "🎯 getAllEvents() 호출: ${year}년 ${month}월")
+
         dataViewModel.getAllEvents(year, month)
     }
 
@@ -207,9 +210,11 @@ fun CalendarScreen(
                 onRecommendClick = {
                     val contactId = event.receiverInfoId
                     val anniversaryType = event.eventType
+                    val eventId = event.eventId
+
                     showDetailDialog.value = false
                     selectedEvent.value = null
-                    navController.navigate("surveyFunnelLite/$contactId?anniversary=$anniversaryType")
+                    navController.navigate("surveyFunnelLite/$contactId?anniversary=$anniversaryType&eventId=$eventId")
                 }
             )
         }
@@ -231,7 +236,7 @@ fun CalendarScreen(
                         showAddOverlay.value = false
                     },
                     onAdd = { dto ->
-                        dataViewModel.registerEvent(dto)
+                        dataViewModel.registerEvent(dto, currentMonth)
                         eventInputState.value = EventInputState()
                         showAddOverlay.value = false
 

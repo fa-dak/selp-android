@@ -188,10 +188,15 @@ class MainActivity : ComponentActivity() {
                         }
 
                         animatedComposable(
-                            route = "surveyFunnelLite/{contactId}?anniversary={anniversary}",
+                            route = "surveyFunnelLite/{contactId}?anniversary={anniversary}&eventId={eventId}",
                             arguments = listOf(
                                 navArgument("contactId") { type = NavType.StringType },
                                 navArgument("anniversary") {
+                                    type = NavType.StringType
+                                    nullable = true
+                                    defaultValue = null
+                                },
+                                navArgument("eventId") {
                                     type = NavType.StringType
                                     nullable = true
                                     defaultValue = null
@@ -201,39 +206,47 @@ class MainActivity : ComponentActivity() {
                             val contactId =
                                 backStackEntry.arguments?.getString("contactId")?.toLongOrNull()
                             val anniversary = backStackEntry.arguments?.getString("anniversary")
+                            val eventId =
+                                backStackEntry.arguments?.getString("eventId")?.toLongOrNull()
 
                             contactId?.let {
                                 SurveyFunnelLiteScreen(
                                     navController = navController,
                                     contactId = it,
-                                    anniversary = anniversary
+                                    anniversary = anniversary,
+                                    eventId = eventId
                                 )
                             }
                         }
 
                         animatedComposable(
-                            route = "surveyResultLite?contactId={contactId}",
+                            route = "surveyResultLite?contactId={contactId}&eventId={eventId}",
                             arguments = listOf(
                                 navArgument("contactId") {
                                     type = NavType.StringType
                                     nullable = false
+                                },
+                                navArgument("eventId") {
+                                    type = NavType.StringType
+                                    nullable = true
+                                    defaultValue = null
                                 }
                             )
                         ) { backStackEntry ->
+                            val contactId = backStackEntry.arguments?.getString("contactId")
+                            val eventId =
+                                backStackEntry.arguments?.getString("eventId")?.toLongOrNull()
+
                             val parentEntry = remember(backStackEntry) {
-                                navController.getBackStackEntry(
-                                    "surveyFunnelLite/${
-                                        backStackEntry.arguments?.getString(
-                                            "contactId"
-                                        )
-                                    }"
-                                )
+                                navController.getBackStackEntry("surveyFunnelLite/$contactId")
                             }
+
                             val viewModel = hiltViewModel<LiteSurveyViewModel>(parentEntry)
 
                             SurveyResultLiteScreen(
                                 navController = navController,
-                                viewModel = viewModel
+                                viewModel = viewModel,
+                                eventId = eventId
                             )
                         }
 
