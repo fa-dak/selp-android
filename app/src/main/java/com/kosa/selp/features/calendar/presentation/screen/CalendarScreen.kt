@@ -196,15 +196,20 @@ fun CalendarScreen(
         }
 
         if (showDetailDialog.value && selectedEvent.value != null) {
+            val event = selectedEvent.value!!
 
             CalendarEventDetailDialog(
-                event = selectedEvent.value!!,
+                event = event,
                 onDismiss = {
                     showDetailDialog.value = false
                     selectedEvent.value = null
                 },
                 onRecommendClick = {
-
+                    val contactId = event.receiverInfoId
+                    val anniversaryType = event.eventType
+                    showDetailDialog.value = false
+                    selectedEvent.value = null
+                    navController.navigate("surveyFunnelLite/$contactId?anniversary=$anniversaryType")
                 }
             )
         }

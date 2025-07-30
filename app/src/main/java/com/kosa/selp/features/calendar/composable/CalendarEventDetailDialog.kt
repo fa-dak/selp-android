@@ -107,7 +107,7 @@ fun CalendarEventDetailDialog(
                             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                             color = AppColor.textPrimary
                         )
-                        TextButton(onClick = onDismiss) {
+                        TextButton(onClick = onRecommendClick) {
                             Text("선물 추천", color = AppColor.primary)
                         }
                     }
