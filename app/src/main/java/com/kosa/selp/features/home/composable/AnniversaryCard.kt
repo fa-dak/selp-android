@@ -35,7 +35,8 @@ fun AnniversaryCard(
             .width(130.dp)
             .aspectRatio(1f),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Box(
             modifier = Modifier
@@ -49,23 +50,22 @@ fun AnniversaryCard(
                     )
                 )
         ) {
-            Box(modifier = Modifier.matchParentSize()) {
-                Box(
-                    modifier = Modifier
-                        .size(72.dp)
-                        .align(Alignment.BottomEnd)
-                        .padding(8.dp)
-                        .background(Color.White.copy(alpha = 0.2f), shape = CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = dayName,
-                        style = MaterialTheme.typography.titleSmall.copy(
-                            fontWeight = FontWeight.ExtraBold
-                        ),
-                        color = Color.White
-                    )
-                }
+            // Day name 원형 영역
+            Box(
+                modifier = Modifier
+                    .size(72.dp)
+                    .align(Alignment.BottomEnd)
+                    .padding(8.dp)
+                    .background(Color.White.copy(alpha = 0.2f), shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = dayName,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.White
+                )
             }
 
             Text(
@@ -73,8 +73,10 @@ fun AnniversaryCard(
                     .align(Alignment.TopStart)
                     .padding(12.dp),
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.White.copy(alpha = 0.9f),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Medium
+                ),
+                color = Color.White.copy(alpha = 0.95f),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )

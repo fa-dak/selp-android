@@ -11,12 +11,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,10 +30,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -94,15 +102,18 @@ fun HomeScreen(
             val recommendedGifts = data.recommendProducts.map { it.toGiftItem() }
             val bundle = data.recentGiftBundleProducts
 
-            val recentGiftPackages = listOf(
-                GiftPackage(
-                    id = bundle?.giftBundleId?.toString() ?: "",
-                    title = "최근에 만든 선물꾸러미",
-                    recipient = "",
-                    createdAt = "",
-                    gifts = bundle?.products?.map { it.toGiftItem() } ?: emptyList()
+            val recentGiftPackages = bundle?.let {
+                listOf(
+                    GiftPackage(
+                        id = it.giftBundleId.toString(),
+                        title = "최근에 만든 선물꾸러미",
+                        recipient = "",
+                        createdAt = "",
+                        gifts = it.products.map { it.toGiftItem() }
+                    )
                 )
-            )
+            } ?: emptyList()
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -114,48 +125,124 @@ fun HomeScreen(
                     modifier = modifier
                         .fillMaxSize()
                         .background(AppColor.white)
-                        .padding(horizontal = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                        .padding(horizontal = 20.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "어떤 선물을 해야할지\n고민하시는 보라님을 위해 준비했어요!",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
+                    item { Spacer(modifier = Modifier.height(8.dp)) }
 
                     item {
-                        Button(
-                            onClick = { navController.navigate("surveyIntro") },
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(52.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                            contentPadding = PaddingValues()
+                                .shadow(
+                                    elevation = 8.dp,
+                                    shape = RoundedCornerShape(20.dp),
+                                    ambientColor = AppColor.primary.copy(alpha = 0.1f),
+                                    spotColor = AppColor.primary.copy(alpha = 0.1f)
+                                ),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = CardDefaults.cardColors(containerColor = AppColor.white)
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(
-                                        brush = Brush.horizontalGradient(
-                                            listOf(AppColor.primary, AppColor.secondary)
-                                        ),
-                                        shape = RoundedCornerShape(16.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    "선물 추천받기",
-                                    color = AppColor.white,
-                                    fontWeight = FontWeight.SemiBold
-                                )
+                            Column() {
+                                Row(
+                                    verticalAlignment = Alignment.Top
+                                ) {
+
+                                    Box(
+                                        modifier = Modifier
+                                            .size(56.dp)
+                                            .background(
+                                                brush = Brush.radialGradient(
+                                                    listOf(
+                                                        AppColor.primary.copy(alpha = 0.1f),
+                                                        AppColor.secondary.copy(alpha = 0.05f)
+                                                    )
+                                                ),
+                                                shape = RoundedCornerShape(16.dp)
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = "🎁",
+                                            fontSize = 28.sp
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                    Column(
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text(
+                                            text = "어떤 선물을 해야할지",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = AppColor.textPrimary,
+                                            lineHeight = 28.sp
+                                        )
+                                        Text(
+                                            text = "고민이신가요?",
+                                            fontSize = 20.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = AppColor.textPrimary,
+                                            lineHeight = 28.sp
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            text = "맞춤 추천을 받아보세요!",
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            color = AppColor.textSecondary,
+                                            lineHeight = 22.sp
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(24.dp))
+
+                                Button(
+                                    onClick = { navController.navigate("surveyIntro") },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(56.dp),
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                                    contentPadding = PaddingValues(),
+                                    elevation = ButtonDefaults.buttonElevation(
+                                        defaultElevation = 4.dp,
+                                        pressedElevation = 2.dp
+                                    )
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(
+                                                brush = Brush.horizontalGradient(
+                                                    listOf(AppColor.primary, AppColor.secondary)
+                                                ),
+                                                shape = RoundedCornerShape(16.dp)
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.AutoAwesome,
+                                                contentDescription = null,
+                                                tint = AppColor.white,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(
+                                                "선물 추천받기",
+                                                color = AppColor.white,
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
