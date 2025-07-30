@@ -10,4 +10,8 @@ class NotificationRepository @Inject constructor(
     suspend fun getNotifications(): List<NotificationFindResponseDto> {
         return api.getNotifications()
     }
+
+    suspend fun getUnreadCount(): Int {
+        return api.getUnreadCount()
+    }
 }

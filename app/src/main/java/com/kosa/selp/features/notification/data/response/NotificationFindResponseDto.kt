@@ -4,6 +4,5 @@ data class NotificationFindResponseDto(
     val id: Long,
     val title: String,
     val content: String,
-    val createdDate: String,
-    val isRead: Boolean
+    val createdDate: String
 )
