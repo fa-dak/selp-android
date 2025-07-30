@@ -54,12 +54,14 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.kosa.selp.features.mypage.model.GiftBundleResponse
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageViewModel
+import com.kosa.selp.features.pay.CustomResultDialog
 import com.kosa.selp.features.pay.PayStatus
 import com.kosa.selp.features.pay.PaymentApiEntryPoint
 import com.kosa.selp.features.pay.PaymentManager
 import com.kosa.selp.shared.theme.AppColor
 import com.kosa.selp.shared.theme.Primary
 import dagger.hilt.android.EntryPointAccessors
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.text.DecimalFormat
@@ -87,6 +89,18 @@ fun GiftBundleDetailScreen(
 
     var paymentStatus by remember { mutableStateOf<String?>(null) }
 
+    var showDialog by remember { mutableStateOf(false) }
+    var dialogMessage by remember { mutableStateOf("") }
+    var shouldReload by remember { mutableStateOf(false) }
+
+    LaunchedEffect(shouldReload) {
+        if (shouldReload) {
+            delay(3000)
+            viewModel.fetchGiftBundleDetail(bundleId) // ✅ 다시 불러오기
+            shouldReload = false
+        }
+    }
+
     fun startIamportPayment() {
         // 잏회용
         val paymentManager = PaymentManager(context, coroutineScope) { statusMessage ->
@@ -113,6 +127,9 @@ fun GiftBundleDetailScreen(
                 impUid,
                 paymentApi
             )
+            dialogMessage = "결제가 완료되었습니다 🎉"
+            showDialog = true
+            shouldReload = true
         }
     }
 
@@ -131,6 +148,13 @@ fun GiftBundleDetailScreen(
                 if (response.isSuccessful) {
                     // 취소 성공 처리
                     Log.d("CANCEL", "결제 취소 성공")
+
+                    if (response.isSuccessful) {
+                        Log.d("CANCEL", "결제 취소 성공")
+                        dialogMessage = "결제가 취소되었습니다 ❌"
+                        showDialog = true
+                        shouldReload = true
+                    }
                 } else {
                     // 실패 응답 처리
                     Log.w("CANCEL", "결제 취소 실패: ${response.code()}")
@@ -149,6 +173,13 @@ fun GiftBundleDetailScreen(
         onDispose {
             viewModel.clearGiftBundleDetail()
         }
+    }
+
+    if (showDialog) {
+        CustomResultDialog(
+            message = dialogMessage,
+            onDismiss = { showDialog = false }
+        )
     }
 
     Scaffold(

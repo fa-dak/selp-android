@@ -44,7 +44,7 @@ import com.kosa.selp.features.mypage.presentation.screen.MyContactsScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyPageScreen
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageViewModel
 import com.kosa.selp.features.notification.presentation.screen.NotificationScreen
-import com.kosa.selp.features.pay.PayExampleScreen
+//import com.kosa.selp.features.pay.PayExampleScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyIntroScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyResultScreen
@@ -154,9 +154,9 @@ class MainActivity : ComponentActivity() {
                                     .consumeWindowInsets(innerPadding)
                             )
                         }
-                        composable("payTest") {
-                            PayExampleScreen()
-                        }
+//                        composable("payTest") {
+//                            PayExampleScreen()
+//                        }
 
                         animatedComposable("surveyIntro") {
                             SurveyIntroScreen(

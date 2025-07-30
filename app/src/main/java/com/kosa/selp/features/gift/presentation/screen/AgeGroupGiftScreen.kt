@@ -59,14 +59,6 @@ fun AgeGroupGiftScreen(
         contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 100.dp)
     ) {
         item {
-            Button(
-                onClick = { navController.navigate("payTest") }
-            ) {
-                Text("결제 테스트")
-            }
-        }
-        
-        item {
             Text(
                 "연령대별 추천 선물",
                 style = MaterialTheme.typography.titleMedium,
