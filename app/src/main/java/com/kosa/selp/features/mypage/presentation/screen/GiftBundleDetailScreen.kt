@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,6 +49,7 @@ import coil3.compose.AsyncImage
 import com.kosa.selp.features.mypage.model.GiftBundleResponse
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageViewModel
 import com.kosa.selp.shared.theme.AppColor
+import com.kosa.selp.shared.theme.Primary
 import java.net.URLEncoder
 import java.text.DecimalFormat
 
@@ -86,6 +89,25 @@ fun GiftBundleDetailScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = AppColor.white)
             )
+        },
+        bottomBar = {
+            if (giftBundleDetail != null) {
+                Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 60.dp, top = 12.dp)) {
+                    Button(
+                        onClick = { /*TODO GiftBundleResponse 정보 be dto와 맞추기~ */ },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Primary,
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("결제하기", style = MaterialTheme.typography.bodyLarge)
+                    }
+                }
+            }
         },
         containerColor = AppColor.background
     ) { innerPadding ->
