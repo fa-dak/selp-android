@@ -50,19 +50,6 @@ class GiftBundleDataViewModel @Inject constructor(
     private val _recommendedMessages = MutableStateFlow<List<String>>(emptyList())
     val recommendedMessages: StateFlow<List<String>> = _recommendedMessages.asStateFlow()
 
-
-//    init {
-//        viewModelScope.launch {
-//            sessionManager.currentUser.collect { userInfo ->
-//                userInfo?.let {
-//                    _giftBundleData.update { current ->
-//                        current?.copy(userName = it.nickname)
-//                    }
-//                }
-//            }
-//        }
-//    }
-
     fun loadGiftBundle(giftBundleId: String) {
         viewModelScope.launch {
             val result = getGiftBundleDetailUseCase(giftBundleId)
