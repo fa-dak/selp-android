@@ -1,6 +1,7 @@
 package com.kosa.selp.features.gift.data.remote
 
 import com.kosa.selp.features.gift.data.request.GiftBundleRecommendRequestDto
+import com.kosa.selp.features.gift.data.request.GiftBundleSaveFromCalendarRequestDto
 import com.kosa.selp.features.gift.data.request.GiftBundleSaveRequestDto
 import com.kosa.selp.features.gift.data.request.GiftItemReplaceRequestDto
 import com.kosa.selp.features.gift.data.response.GiftBundleDetailResponseDto
@@ -34,4 +35,7 @@ interface GiftApiService {
 
     @GET("gifts/{giftId}")
     suspend fun getGiftInfo(@Path("giftId") giftId: Long): GiftInfoResponseDto
+
+    @POST("gift-bundle/calendar")
+    suspend fun saveGiftBundleFromCalendar(@Body request: GiftBundleSaveFromCalendarRequestDto)
 }

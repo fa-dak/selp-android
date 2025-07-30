@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,11 +29,15 @@ import androidx.navigation.NavController
 import com.kosa.selp.R
 
 @Composable
-fun HeaderBar(navController: NavController,
-              unreadCount: Int) {
+fun HeaderBar(
+    navController: NavController,
+    unreadCount: Int
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .statusBarsPadding()
+            .height(56.dp)
             .padding(horizontal = 24.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -43,7 +48,7 @@ fun HeaderBar(navController: NavController,
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "SelP 로고",
-                modifier = Modifier.height(30.dp)
+                modifier = Modifier.height(24.dp)
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -51,7 +56,7 @@ fun HeaderBar(navController: NavController,
             Image(
                 painter = painterResource(id = R.drawable.selp_slogan),
                 contentDescription = "슬로건",
-                modifier = Modifier.height(30.dp)
+                modifier = Modifier.height(24.dp)
             )
         }
 

@@ -196,7 +196,7 @@ fun AddEventDialog(
                         }
 
                         IosPopupSelector(
-                            title = "주변안",
+                            title = "주변인",
                             selectedValue = selectedReceiverName,
                             isExpanded = expandedReceiver,
                             onToggle = {

@@ -110,6 +110,9 @@ fun CalendarScreen(
                     onPreviousMonth = {
                         uiViewModel.moveToPreviousMonth()
                         val updated = currentMonth.clone() as Calendar
+                        updated.add(Calendar.MONTH, -1)
+                        updated.set(Calendar.DAY_OF_MONTH, 1)
+                        uiViewModel.updateSelectedDate(updated.time)
                         dataViewModel.getAllEvents(
                             updated.get(Calendar.YEAR),
                             updated.get(Calendar.MONTH) + 1
@@ -118,6 +121,9 @@ fun CalendarScreen(
                     onNextMonth = {
                         uiViewModel.moveToNextMonth()
                         val updated = currentMonth.clone() as Calendar
+                        updated.add(Calendar.MONTH, 1)
+                        updated.set(Calendar.DAY_OF_MONTH, 1)
+                        uiViewModel.updateSelectedDate(updated.time)
                         dataViewModel.getAllEvents(
                             updated.get(Calendar.YEAR),
                             updated.get(Calendar.MONTH) + 1
@@ -207,9 +213,11 @@ fun CalendarScreen(
                 onRecommendClick = {
                     val contactId = event.receiverInfoId
                     val anniversaryType = event.eventType
+                    val eventId = event.eventId
+
                     showDetailDialog.value = false
                     selectedEvent.value = null
-                    navController.navigate("surveyFunnelLite/$contactId?anniversary=$anniversaryType")
+                    navController.navigate("surveyFunnelLite/$contactId?anniversary=$anniversaryType&eventId=$eventId")
                 }
             )
         }
@@ -231,7 +239,7 @@ fun CalendarScreen(
                         showAddOverlay.value = false
                     },
                     onAdd = { dto ->
-                        dataViewModel.registerEvent(dto)
+                        dataViewModel.registerEvent(dto, currentMonth)
                         eventInputState.value = EventInputState()
                         showAddOverlay.value = false
 

@@ -57,6 +57,7 @@ fun SurveyFunnelLiteScreen(
     navController: NavController,
     contactId: Long,
     anniversary: String? = null,
+    eventId: Long? = null,
     viewModel: LiteSurveyViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -193,7 +194,9 @@ fun SurveyFunnelLiteScreen(
                     SurveyStep.COMPLETE -> {
                         LaunchedEffect(Unit) {
                             viewModel.onEvent(LiteSurveyEvent.SubmitClicked)
-                            navController.navigate("surveyResultLite?contactId=${viewModel.contactId}") {
+                            navController.navigate(
+                                "surveyResultLite?contactId=${viewModel.contactId}&eventId=${viewModel.eventId}"
+                            ) {
                                 popUpTo("surveyFunnelLite") { inclusive = false }
                             }
                         }
