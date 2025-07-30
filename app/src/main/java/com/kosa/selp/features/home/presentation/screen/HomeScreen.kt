@@ -3,6 +3,7 @@ package com.kosa.selp.features.home.presentation.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,15 +11,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -99,82 +97,91 @@ fun HomeScreen(
                 )
             )
 
-            LazyColumn(
-                modifier = modifier
+            Column(
+                modifier = Modifier
                     .fillMaxSize()
                     .background(AppColor.white)
                     .systemBarsPadding()
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "어떤 선물을 해야할지\n고민하시는 보라님을 위해 준비했어요!",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        IconButton(onClick = {
-                            navController.navigate("notification")
-                        }) {
-                            Icon(Icons.Default.Notifications, contentDescription = "알림 보기")
-                        }
-                    }
-                }
+                HeaderBar(navController = navController)
 
-                item {
-                    Button(
-                        onClick = { navController.navigate("surveyIntro") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        contentPadding = PaddingValues()
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    brush = Brush.horizontalGradient(
-                                        listOf(AppColor.primary, AppColor.secondary)
-                                    ),
-                                    shape = RoundedCornerShape(16.dp)
-                                ),
-                            contentAlignment = Alignment.Center
+
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .background(AppColor.white)
+                        .padding(horizontal = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                "선물 추천받기",
-                                color = AppColor.white,
-                                fontWeight = FontWeight.SemiBold
+                                text = "어떤 선물을 해야할지\n고민하시는 보라님을 위해 준비했어요!",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
                             )
+//                            IconButton(onClick = {
+//                                navController.navigate("notification")
+//                            }) {
+//                                Icon(Icons.Default.Notifications, contentDescription = "알림 보기")
+//                            }
                         }
                     }
-                }
 
-
-                item { AnniversaryList(anniversaries = anniversaries) }
-                item {
-                    Text("촤근에 만든 선물꾸러미", fontWeight = FontWeight.Medium)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    GiftPackageRowList(
-                        packages = recentGiftPackages,
-                        onClick = { recentGiftPackages ->
-                            if (recentGiftPackages.id.isNotBlank()) {
-                                navController.navigate("giftPackage/${recentGiftPackages.id}")
+                    item {
+                        Button(
+                            onClick = { navController.navigate("surveyIntro") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                            contentPadding = PaddingValues()
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        brush = Brush.horizontalGradient(
+                                            listOf(AppColor.primary, AppColor.secondary)
+                                        ),
+                                        shape = RoundedCornerShape(16.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    "선물 추천받기",
+                                    color = AppColor.white,
+                                    fontWeight = FontWeight.SemiBold
+                                )
                             }
-                        })
-                }
+                        }
+                    }
 
-                item {
-                    Text("이런 선물은 어때요?", fontWeight = FontWeight.Medium)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    GiftCardGrid(items = recommendedGifts, navController = navController)
-                }
 
+                    item { AnniversaryList(anniversaries = anniversaries) }
+                    item {
+                        Text("최근에 만든 선물꾸러미", fontWeight = FontWeight.Medium)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        GiftPackageRowList(
+                            packages = recentGiftPackages,
+                            onClick = { recentGiftPackages ->
+                                if (recentGiftPackages.id.isNotBlank()) {
+                                    navController.navigate("giftPackage/${recentGiftPackages.id}")
+                                }
+                            })
+                    }
+
+                    item {
+                        Text("이런 선물은 어때요?", fontWeight = FontWeight.Medium)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        GiftCardGrid(items = recommendedGifts, navController = navController)
+                    }
+
+                }
             }
         }
     }
