@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.kosa.selp.features.calendar.data.response.EventListResponseDto
+import com.kosa.selp.features.survey.model.AnniversaryType
 import com.kosa.selp.shared.theme.AppColor
 
 @Composable
@@ -33,6 +34,7 @@ fun CalendarEventListItem(
     val title = event.eventName?.takeIf { it.isNotBlank() } ?: "제목없음"
     val relationTag = event.receiverNickname?.takeIf { it.isNotBlank() }
     val typeTag = event.eventType?.takeIf { it.isNotBlank() }
+    val typeLabel = AnniversaryType.fromCode(event.eventType ?: "")?.label
 
     Column(
         modifier = modifier
@@ -73,7 +75,7 @@ fun CalendarEventListItem(
                             )
                         }
 
-                        typeTag?.let {
+                        typeLabel?.let {
                             Tag(
                                 text = it,
                                 backgroundColor = Color(0xFFFFECB3),

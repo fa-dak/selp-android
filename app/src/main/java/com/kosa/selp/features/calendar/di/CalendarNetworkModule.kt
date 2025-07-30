@@ -4,6 +4,7 @@ import com.kosa.selp.features.calendar.data.remote.CalendarApiService
 import com.kosa.selp.features.calendar.data.repositoryImpl.CalendarRepositoryImpl
 import com.kosa.selp.features.calendar.domain.repository.CalendarRepository
 import com.kosa.selp.features.calendar.domain.usecase.GetAllEventListUseCase
+import com.kosa.selp.features.calendar.domain.usecase.RegisterEventUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,4 +37,14 @@ object CalendarNetworkModule {
     ): GetAllEventListUseCase {
         return GetAllEventListUseCase(repository)
     }
+
+    @Provides
+    @Singleton
+    fun provideRegisterEventUseCase(
+        repository: CalendarRepository
+    ): RegisterEventUseCase {
+        return RegisterEventUseCase(repository)
+    }
+
+
 }

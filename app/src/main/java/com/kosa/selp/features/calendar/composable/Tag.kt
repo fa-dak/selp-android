@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.kosa.selp.features.survey.model.AnniversaryType
 
 @Composable
 fun Tag(
@@ -19,6 +20,12 @@ fun Tag(
     backgroundColor: Color,
     textColor: Color
 ) {
+    val displayText = when (text) {
+        is AnniversaryType -> text.label
+        is String -> text
+        else -> text.toString()
+    }
+
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
@@ -26,7 +33,7 @@ fun Tag(
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Text(
-            text = text,
+            text = displayText,
             style = MaterialTheme.typography.bodySmall.copy(
                 color = textColor,
                 fontWeight = FontWeight.SemiBold
