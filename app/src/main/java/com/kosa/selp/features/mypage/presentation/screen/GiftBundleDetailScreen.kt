@@ -228,12 +228,15 @@ fun GiftBundleDetailScreen(
             ) {
                 item {
                     Text(
-                        text = "'${bundle.receiverNickname ?: "-"}'님을 위한",
-                        style = MaterialTheme.typography.titleMedium
+                        text = "'${bundle.receiverNickname ?: "-" }' 님을 위한",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.clickable {
+                            navController.navigate("myContactDetail/${bundle.receiverInfoId}")
+                        }
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "'${bundle.eventName ?: "-"}' 꾸러미",
+                        text = "'${bundle.eventName ?: "-"}' 을 위한 꾸러미",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
