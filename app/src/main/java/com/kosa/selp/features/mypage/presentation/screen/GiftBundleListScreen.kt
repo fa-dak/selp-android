@@ -192,13 +192,35 @@ fun GiftBundleItem(
                     }
                 }
             }
-            Text(
-                text = "총 ${formatter.format(totalPrice)}원",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                color = AppColor.primary,
-                modifier = Modifier.align(Alignment.TopEnd)
-            )
+            Column(
+                modifier = Modifier.align(Alignment.TopEnd),
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = "총 ${formatter.format(totalPrice)}원",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColor.primary,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                // 결제 상태 정보
+                val statusText = when (bundle.currentPayStatus) {
+                    PayStatus.NOT_STARTED -> "미결제"
+                    PayStatus.PAID -> "결제 완료"
+                    PayStatus.CANCEL -> "결제 취소"
+                }
+                val statusColor = when (bundle.currentPayStatus) {
+                    PayStatus.NOT_STARTED -> AppColor.textDisabled
+                    PayStatus.PAID -> AppColor.primary
+                    PayStatus.CANCEL -> AppColor.error
+                }
+                Text(
+                    text = statusText,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = statusColor,
+                )
+            }
         }
     }
 }
