@@ -26,6 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.iamport.sdk.domain.core.Iamport
 import com.kosa.selp.features.calendar.presentation.screen.CalendarScreen
 import com.kosa.selp.features.gift.presentation.screen.AgeGroupGiftScreen
 import com.kosa.selp.features.gift.presentation.screen.GiftBundleDetailScreen
@@ -41,6 +42,7 @@ import com.kosa.selp.features.mypage.presentation.screen.MyContactsDetailScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyContactsScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyPageScreen
 import com.kosa.selp.features.notification.presentation.screen.NotificationScreen
+import com.kosa.selp.features.pay.PayExampleScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyIntroScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyResultScreen
@@ -58,6 +60,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        Iamport.init(this)
         setContent {
             val navController = rememberNavController()
             val context = LocalContext.current
@@ -148,6 +151,9 @@ class MainActivity : ComponentActivity() {
                                     .padding(innerPadding)
                                     .consumeWindowInsets(innerPadding)
                             )
+                        }
+                        composable("payTest") {
+                            PayExampleScreen()
                         }
 
                         animatedComposable("surveyIntro") {
@@ -266,6 +272,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Iamport.close()
     }
 }
 

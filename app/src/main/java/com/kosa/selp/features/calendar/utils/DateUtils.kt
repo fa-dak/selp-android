@@ -8,10 +8,13 @@ import java.util.Locale
 
 object DateUtils {
     @SuppressLint("ConstantLocale")
-    private val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+    fun formatDate(date: Date): String = formatter.format(date)
+
 
     fun parseDate(str: String?): Date {
-        return format.parse(str) ?: Date()
+        return formatter.parse(str) ?: Date()
     }
 
     fun isSameDay(date1: Date, date2: Date): Boolean {
@@ -22,39 +25,4 @@ object DateUtils {
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
     }
 
-    fun getTomorrow(date: Date): Date {
-        val calendar = Calendar.getInstance().apply {
-            time = date
-            add(Calendar.DAY_OF_MONTH, 1)
-        }
-        return calendar.time
-    }
-
-    fun getYesterday(date: Date): Date {
-        val calendar = Calendar.getInstance().apply {
-            time = date
-            add(Calendar.DAY_OF_MONTH, -1)
-        }
-        return calendar.time
-    }
-
-    fun getDayStart(date: Date): Date {
-        return Calendar.getInstance().apply {
-            time = date
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.time
-    }
-
-    fun getDayEnd(date: Date): Date {
-        return Calendar.getInstance().apply {
-            time = date
-            set(Calendar.HOUR_OF_DAY, 23)
-            set(Calendar.MINUTE, 59)
-            set(Calendar.SECOND, 59)
-            set(Calendar.MILLISECOND, 999)
-        }.time
-    }
 }

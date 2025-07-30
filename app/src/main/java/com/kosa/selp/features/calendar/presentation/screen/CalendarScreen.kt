@@ -1,17 +1,10 @@
 package com.kosa.selp.features.calendar.presentation.screen
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,7 +12,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,20 +19,25 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.kosa.selp.features.calendar.composable.AddEventDialog
 import com.kosa.selp.features.calendar.composable.BottomAddButton
 import com.kosa.selp.features.calendar.composable.CalendarEventListItem
+import com.kosa.selp.features.calendar.composable.CalendarEventOverlay
 import com.kosa.selp.features.calendar.composable.CalendarHeader
 import com.kosa.selp.features.calendar.composable.CalendarMonthGrid
 import com.kosa.selp.features.calendar.composable.CalendarWeekDays
 import com.kosa.selp.features.calendar.config.CalendarConfig
+import com.kosa.selp.features.calendar.model.EventInputState
 import com.kosa.selp.features.calendar.presentation.viewModel.CalendarDataViewModel
 import com.kosa.selp.features.calendar.presentation.viewModel.CalendarUiViewModel
 import com.kosa.selp.features.calendar.utils.DateUtils
+import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsViewModel
 import com.kosa.selp.shared.theme.AppColor
 import java.util.Calendar
 
@@ -50,14 +47,15 @@ fun CalendarScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     uiViewModel: CalendarUiViewModel = hiltViewModel(),
-    dataViewModel: CalendarDataViewModel = hiltViewModel()
+    dataViewModel: CalendarDataViewModel = hiltViewModel(),
+    contactsViewModel: MyContactsViewModel = hiltViewModel()
 ) {
     val selectedDate = uiViewModel.selectedDate.collectAsState().value
+    val currentMonth = uiViewModel.currentMonth.collectAsState().value
     val events = dataViewModel.eventList.collectAsState().value
     val showOverlay = remember { mutableStateOf(false) }
-    val showAddDialog = remember { mutableStateOf(false) }
-
-    val calendar = remember { Calendar.getInstance() }
+    val showAddOverlay = remember { mutableStateOf(false) }
+    val eventInputState = remember { mutableStateOf(EventInputState()) }
 
     val selectedDateEvents = events.filter {
         val eventDate = DateUtils.parseDate(it.eventDate)
@@ -70,9 +68,10 @@ fun CalendarScreen(
         events = events
     )
 
-    LaunchedEffect(Unit) {
-        val today = Calendar.getInstance()
-        dataViewModel.getAllEvents(today.get(Calendar.YEAR), today.get(Calendar.MONTH) + 1)
+    LaunchedEffect(currentMonth) {
+        val year = currentMonth.get(Calendar.YEAR)
+        val month = currentMonth.get(Calendar.MONTH) + 1
+        dataViewModel.getAllEvents(year, month)
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -89,13 +88,27 @@ fun CalendarScreen(
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 CalendarHeader(
-                    calendar = calendar,
-                    onPreviousMonth = { calendar.add(Calendar.MONTH, -1) },
-                    onNextMonth = { calendar.add(Calendar.MONTH, 1) }
+                    calendar = currentMonth,
+                    onPreviousMonth = {
+                        uiViewModel.moveToPreviousMonth()
+                        val updated = currentMonth.clone() as Calendar
+                        dataViewModel.getAllEvents(
+                            updated.get(Calendar.YEAR),
+                            updated.get(Calendar.MONTH) + 1
+                        )
+                    },
+                    onNextMonth = {
+                        uiViewModel.moveToNextMonth()
+                        val updated = currentMonth.clone() as Calendar
+                        dataViewModel.getAllEvents(
+                            updated.get(Calendar.YEAR),
+                            updated.get(Calendar.MONTH) + 1
+                        )
+                    }
                 )
 
                 CalendarWeekDays()
-                CalendarMonthGrid(month = calendar.time, config = config)
+                CalendarMonthGrid(month = currentMonth.time, config = config)
             }
 
             Column(
@@ -103,12 +116,12 @@ fun CalendarScreen(
                     .fillMaxWidth()
                     .weight(1f),
                 verticalArrangement = Arrangement.SpaceBetween
-            )
-            {
+            ) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
+                        .weight(1f)
+                        .padding(horizontal = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     val list = selectedDateEvents.take(3)
@@ -140,7 +153,7 @@ fun CalendarScreen(
                 }
 
                 BottomAddButton(
-                    onAddSchedule = { showAddDialog.value = true },
+                    onAddSchedule = { showAddOverlay.value = true },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
@@ -148,61 +161,37 @@ fun CalendarScreen(
             }
         }
 
-        AnimatedVisibility(
-            visible = showOverlay.value,
-            enter = slideInVertically(
-                initialOffsetY = { it }
-            ) + fadeIn(),
-            exit = slideOutVertically(
-                targetOffsetY = { it }
-            ) + fadeOut()
-        ) {
-            BackHandler { showOverlay.value = false }
+        if (showOverlay.value) {
+            CalendarEventOverlay(
+                events = selectedDateEvents,
+                onDismiss = { showOverlay.value = false }
+            )
+        }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(AppColor.white)
-                    .padding(horizontal = 24.dp, vertical = 16.dp)
+        if (showAddOverlay.value) {
+            Dialog(
+                onDismissRequest = { showAddOverlay.value = false },
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false,
+                    decorFitsSystemWindows = false
+                )
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "전체 일정",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    TextButton(onClick = { showOverlay.value = false }) {
-                        Text("닫기", color = AppColor.primary)
+                AddEventDialog(
+                    selectedDate = selectedDate,
+                    eventInputState = eventInputState,
+                    contactsViewModel = contactsViewModel,
+                    onDismiss = {
+                        eventInputState.value = EventInputState()
+                        showAddOverlay.value = false
+                    },
+                    onAdd = { dto ->
+                        dataViewModel.registerEvent(dto)
+                        eventInputState.value = EventInputState()
+                        showAddOverlay.value = false
                     }
-                }
+                )
 
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    itemsIndexed(selectedDateEvents) { index, event ->
-                        Column {
-                            CalendarEventListItem(event)
-                            if (index < selectedDateEvents.lastIndex) {
-                                HorizontalDivider(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    thickness = 1.dp,
-                                    color = AppColor.divider
-                                )
-                            }
-                        }
-                    }
-                }
             }
-
-
-            // 추가 정보 입력하는 오버레이
         }
     }
 }
-
-

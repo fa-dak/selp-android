@@ -38,8 +38,7 @@ fun GiftBundleScaffold(
     giftBundle: GiftBundleDetailResponseDto,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    val (userName, ageGroup, relation) = giftBundle
-
+    val userName = giftBundle.userName?.takeIf { it.isNotBlank() }?.plus("님") ?: "당신"
     Scaffold(
         topBar = {
             TopAppBar(
@@ -75,9 +74,10 @@ fun GiftBundleScaffold(
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 text = buildAnnotatedString {
-                    append("${userName}님의 ")
+                    append("${userName}의 ")
                     withStyle(style = SpanStyle(color = AppColor.primary)) {
-                        append("${ageGroup} ${relation}를\n")
+                        val nickname = giftBundle.receiverNickname ?: "이름 없음"
+                        append("${nickname} (${giftBundle.relationship})을\n")
                     }
                     append("위한 추천 선물 결과입니다")
                 },

@@ -39,7 +39,7 @@ fun GiftItemDto.toGiftItem(): GiftItem {
     return GiftItem(
         id = this.productId.toString(),
         title = this.name,
-        price = this.price.toString(),
+        price = this.price,
         imageUrl = this.imagePath,
         detailPath = this.detailPath,
     )

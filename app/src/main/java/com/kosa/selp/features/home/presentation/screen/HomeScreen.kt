@@ -34,7 +34,7 @@ data class GiftItem(
     val title: String,
     val imageUrl: String,
     val detailPath: String,
-    val price: String
+    val price: Int
 )
 
 data class GiftPackage(
