@@ -1,5 +1,7 @@
 package com.kosa.selp.features.calendar.presentation.screen
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,11 +38,16 @@ import com.kosa.selp.features.calendar.config.CalendarConfig
 import com.kosa.selp.features.calendar.model.EventInputState
 import com.kosa.selp.features.calendar.presentation.viewModel.CalendarDataViewModel
 import com.kosa.selp.features.calendar.presentation.viewModel.CalendarUiViewModel
+import com.kosa.selp.features.calendar.presentation.viewModel.CalendarUserViewModel
 import com.kosa.selp.features.calendar.utils.DateUtils
+import com.kosa.selp.features.fcm.presentation.viewModel.FcmViewModel
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsViewModel
 import com.kosa.selp.shared.theme.AppColor
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun CalendarScreen(
@@ -48,11 +55,16 @@ fun CalendarScreen(
     modifier: Modifier = Modifier,
     uiViewModel: CalendarUiViewModel = hiltViewModel(),
     dataViewModel: CalendarDataViewModel = hiltViewModel(),
-    contactsViewModel: MyContactsViewModel = hiltViewModel()
+    contactsViewModel: MyContactsViewModel = hiltViewModel(),
+    calendarUserViewModel: CalendarUserViewModel = hiltViewModel(),
+    fcmViewModel: FcmViewModel = hiltViewModel(),
 ) {
     val selectedDate = uiViewModel.selectedDate.collectAsState().value
     val currentMonth = uiViewModel.currentMonth.collectAsState().value
     val events = dataViewModel.eventList.collectAsState().value
+    val memberId = calendarUserViewModel.memberId.collectAsState().value
+
+
     val showOverlay = remember { mutableStateOf(false) }
     val showAddOverlay = remember { mutableStateOf(false) }
     val eventInputState = remember { mutableStateOf(EventInputState()) }
@@ -188,6 +200,19 @@ fun CalendarScreen(
                         dataViewModel.registerEvent(dto)
                         eventInputState.value = EventInputState()
                         showAddOverlay.value = false
+
+                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        val eventDate = LocalDate.parse(dto.eventDate, formatter)
+                        val daysBefore = dto.notificationDaysBefore ?: 0
+                        val sendDate = eventDate.minusDays(daysBefore.toLong()).format(formatter)
+
+                        fcmViewModel.registerNotification(
+                            memberId = memberId!!,
+                            eventId = 116L, // 실제 Id 들어오면 대체
+                            title = dto.eventName ?: "",
+                            content = "${dto.eventName} 일정이 곧 다가와요!",
+                            sendDate = sendDate
+                        )
                     }
                 )
 

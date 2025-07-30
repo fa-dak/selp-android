@@ -29,6 +29,7 @@ class FcmViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun registerNotification(
         memberId: Long,
+        eventId: Long,
         title: String,
         content: String,
         sendDate: String
@@ -43,6 +44,7 @@ class FcmViewModel @Inject constructor(
             runCatching {
                 val request = NotificationRequestDto(
                     memberId = memberId,
+                    eventId = eventId,
                     title = title,
                     content = content,
                     sendDate = sendDate
