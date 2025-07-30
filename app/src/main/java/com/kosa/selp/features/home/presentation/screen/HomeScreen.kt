@@ -140,35 +140,35 @@ fun HomeScreen(
                     }
                 }
 
-                item {
-                    Button(
-                        onClick = { navController.navigate("surveyIntro") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        contentPadding = PaddingValues()
-                    ) {
-                        Box(
+                    item {
+                        Button(
+                            onClick = { navController.navigate("surveyIntro") },
                             modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    brush = Brush.horizontalGradient(
-                                        listOf(AppColor.primary, AppColor.secondary)
-                                    ),
-                                    shape = RoundedCornerShape(16.dp)
-                                ),
-                            contentAlignment = Alignment.Center
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                            contentPadding = PaddingValues()
                         ) {
-                            Text(
-                                "선물 추천받기",
-                                color = AppColor.white,
-                                fontWeight = FontWeight.SemiBold
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        brush = Brush.horizontalGradient(
+                                            listOf(AppColor.primary, AppColor.secondary)
+                                        ),
+                                        shape = RoundedCornerShape(16.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    "선물 추천받기",
+                                    color = AppColor.white,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
                         }
                     }
-                }
 
                 item { AnniversaryList(anniversaries = anniversaries) }
 
