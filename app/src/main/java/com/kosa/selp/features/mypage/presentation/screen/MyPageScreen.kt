@@ -49,6 +49,9 @@ fun MyPageScreen(
                 is MyPageEvent.LogoutSuccess -> {
                     onLogout()
                 }
+                else -> {
+                    // MyPageScreen에서는 처리하지 않는 이벤트
+                }
             }
         }
     }
