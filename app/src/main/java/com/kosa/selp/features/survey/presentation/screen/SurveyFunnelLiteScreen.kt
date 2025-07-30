@@ -6,6 +6,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +19,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -29,7 +30,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,6 +48,7 @@ import com.kosa.selp.features.survey.presentation.state.LiteSurveyEvent
 import com.kosa.selp.features.survey.presentation.state.SurveyProgress
 import com.kosa.selp.features.survey.presentation.state.SurveyStep
 import com.kosa.selp.features.survey.presentation.viewModel.LiteSurveyViewModel
+import com.kosa.selp.shared.composable.loading.DotsLoadingIndicator
 import com.kosa.selp.shared.theme.AppColor
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
@@ -60,12 +64,18 @@ fun SurveyFunnelLiteScreen(
     var showExitSheet by remember { mutableStateOf(false) }
 
     if (state.isLoading) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {})
+                },
+            contentAlignment = Alignment.Center
         ) {
-            Text(text = "데이터 불러오는 중...", style = MaterialTheme.typography.bodyLarge)
+            DotsLoadingIndicator(
+                message = "화면을 구성중에요. \n잠시만 기다려주세요.",
+                textColor = AppColor.textPrimary
+            )
         }
         return
     }
