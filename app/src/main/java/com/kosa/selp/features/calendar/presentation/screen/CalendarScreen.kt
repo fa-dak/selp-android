@@ -51,17 +51,16 @@ fun CalendarScreen(
     contactsViewModel: MyContactsViewModel = hiltViewModel()
 ) {
     val selectedDate = uiViewModel.selectedDate.collectAsState().value
+    val currentMonth = uiViewModel.currentMonth.collectAsState().value
     val events = dataViewModel.eventList.collectAsState().value
     val showOverlay = remember { mutableStateOf(false) }
     val showAddOverlay = remember { mutableStateOf(false) }
-    val calendar = remember { Calendar.getInstance() }
+    val eventInputState = remember { mutableStateOf(EventInputState()) }
 
     val selectedDateEvents = events.filter {
         val eventDate = DateUtils.parseDate(it.eventDate)
         DateUtils.isSameDay(eventDate, selectedDate)
     }
-
-    val eventInputState = remember { mutableStateOf(EventInputState()) }
 
     val config = CalendarConfig(
         selectedDate = selectedDate,
@@ -69,9 +68,10 @@ fun CalendarScreen(
         events = events
     )
 
-    LaunchedEffect(Unit) {
-        val today = Calendar.getInstance()
-        dataViewModel.getAllEvents(today.get(Calendar.YEAR), today.get(Calendar.MONTH) + 1)
+    LaunchedEffect(currentMonth) {
+        val year = currentMonth.get(Calendar.YEAR)
+        val month = currentMonth.get(Calendar.MONTH) + 1
+        dataViewModel.getAllEvents(year, month)
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -88,13 +88,27 @@ fun CalendarScreen(
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 CalendarHeader(
-                    calendar = calendar,
-                    onPreviousMonth = { calendar.add(Calendar.MONTH, -1) },
-                    onNextMonth = { calendar.add(Calendar.MONTH, 1) }
+                    calendar = currentMonth,
+                    onPreviousMonth = {
+                        uiViewModel.moveToPreviousMonth()
+                        val updated = currentMonth.clone() as Calendar
+                        dataViewModel.getAllEvents(
+                            updated.get(Calendar.YEAR),
+                            updated.get(Calendar.MONTH) + 1
+                        )
+                    },
+                    onNextMonth = {
+                        uiViewModel.moveToNextMonth()
+                        val updated = currentMonth.clone() as Calendar
+                        dataViewModel.getAllEvents(
+                            updated.get(Calendar.YEAR),
+                            updated.get(Calendar.MONTH) + 1
+                        )
+                    }
                 )
 
                 CalendarWeekDays()
-                CalendarMonthGrid(month = calendar.time, config = config)
+                CalendarMonthGrid(month = currentMonth.time, config = config)
             }
 
             Column(

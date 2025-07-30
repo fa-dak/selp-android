@@ -111,7 +111,7 @@ fun AddEventDialog(
                         Text("취소", color = AppColor.primary)
                     }
                     Text(
-                        "일정 추가",
+                        "이벤트 추가",
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                         color = AppColor.textPrimary
                     )
@@ -196,7 +196,7 @@ fun AddEventDialog(
                         }
 
                         IosPopupSelector(
-                            title = "대상",
+                            title = "주변안",
                             selectedValue = selectedReceiverName,
                             isExpanded = expandedReceiver,
                             onToggle = {
