@@ -1,7 +1,6 @@
 package com.kosa.selp.features.calendar.presentation.screen
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -90,8 +89,6 @@ fun CalendarScreen(
     LaunchedEffect(currentMonth) {
         val year = currentMonth.get(Calendar.YEAR)
         val month = currentMonth.get(Calendar.MONTH) + 1
-        Log.d("CalendarScreen", "🎯 getAllEvents() 호출: ${year}년 ${month}월")
-
         dataViewModel.getAllEvents(year, month)
     }
 
@@ -113,6 +110,9 @@ fun CalendarScreen(
                     onPreviousMonth = {
                         uiViewModel.moveToPreviousMonth()
                         val updated = currentMonth.clone() as Calendar
+                        updated.add(Calendar.MONTH, -1)
+                        updated.set(Calendar.DAY_OF_MONTH, 1)
+                        uiViewModel.updateSelectedDate(updated.time)
                         dataViewModel.getAllEvents(
                             updated.get(Calendar.YEAR),
                             updated.get(Calendar.MONTH) + 1
@@ -121,6 +121,9 @@ fun CalendarScreen(
                     onNextMonth = {
                         uiViewModel.moveToNextMonth()
                         val updated = currentMonth.clone() as Calendar
+                        updated.add(Calendar.MONTH, 1)
+                        updated.set(Calendar.DAY_OF_MONTH, 1)
+                        uiViewModel.updateSelectedDate(updated.time)
                         dataViewModel.getAllEvents(
                             updated.get(Calendar.YEAR),
                             updated.get(Calendar.MONTH) + 1
