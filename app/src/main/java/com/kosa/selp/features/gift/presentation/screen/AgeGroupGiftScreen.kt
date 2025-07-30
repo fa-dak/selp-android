@@ -41,7 +41,7 @@ fun AgeGroupGiftScreen(
 
     val converted = gifts.map { gift ->
         GiftItem(
-            id = gift.id,
+            id = gift.id.toString(),
             title = gift.name,
             imageUrl = gift.imageUrl,
             price = gift.price,

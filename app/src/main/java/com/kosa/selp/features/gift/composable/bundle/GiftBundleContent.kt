@@ -27,7 +27,7 @@ fun GiftBundleContent(
     ) {
         item {
             GiftCardGrid(
-                items = giftBundle.giftList.map { it.toGiftItem() },
+                items = giftBundle.products.map { it.toGiftItem() },
                 navController = navController,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -37,10 +37,10 @@ fun GiftBundleContent(
 
 fun GiftItemDto.toGiftItem(): GiftItem {
     return GiftItem(
-        id = this.id,
+        id = this.productId.toString(),
         title = this.name,
-        price = this.price,
-        imageUrl = this.imageUrl,
+        price = this.price.toString(),
+        imageUrl = this.imagePath,
         detailPath = this.detailPath,
     )
 }

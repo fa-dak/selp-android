@@ -1,7 +1,7 @@
 package com.kosa.selp.features.gift.model
 
 data class AgeGroupGift(
-    val id: String,
+    val id: Long,
     val name: String,
     val ageGroup: String,
     val imageUrl: String,

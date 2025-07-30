@@ -117,8 +117,10 @@ fun HomeScreen(
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
-                        IconButton(onClick = {}) {
-                            Icon(Icons.Default.Notifications, contentDescription = null)
+                        IconButton(onClick = {
+                            navController.navigate("notification")
+                        }) {
+                            Icon(Icons.Default.Notifications, contentDescription = "알림 보기")
                         }
                     }
                 }
@@ -160,9 +162,9 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     GiftPackageRowList(
                         packages = recentGiftPackages,
-                        onClick = { giftPackage ->
-                            if (giftPackage.id.isNotBlank()) {
-                                navController.navigate("giftPackage/${giftPackage.id}")
+                        onClick = { recentGiftPackages ->
+                            if (recentGiftPackages.id.isNotBlank()) {
+                                navController.navigate("giftPackage/${recentGiftPackages.id}")
                             }
                         })
                 }
@@ -177,5 +179,3 @@ fun HomeScreen(
         }
     }
 }
-
-

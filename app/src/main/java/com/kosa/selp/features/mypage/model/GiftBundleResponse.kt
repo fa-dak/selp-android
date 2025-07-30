@@ -1,6 +1,5 @@
 package com.kosa.selp.features.mypage.model
 
-import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
@@ -18,11 +17,11 @@ data class GiftBundleResponse(
     @SerializedName("eventDate")
     val eventDate: String, // LocalDate는 String으로 받습니다.
     @SerializedName("eventName")
-    val eventName: String,
+    val eventName: String?,
     @SerializedName("receiverInfoId")
     val receiverInfoId: Long,
     @SerializedName("receiverNickname")
-    val receiverNickname: String,
+    val receiverNickname: String?,
     @SerializedName("relationship")
     val relationship: String,
     @SerializedName("products")
@@ -33,7 +32,7 @@ data class GiftBundleResponse(
         @SerializedName("productId")
         val productId: Long,
         @SerializedName("category")
-        val category: String, // ProductCategory는 String으로 받습니다.
+        val category: String?, // ProductCategory는 String으로 받습니다.
         @SerializedName("name")
         val name: String,
         @SerializedName("price")

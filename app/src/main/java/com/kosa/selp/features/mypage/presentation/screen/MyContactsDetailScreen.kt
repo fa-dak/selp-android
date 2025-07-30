@@ -96,11 +96,12 @@ fun MyContactsDetailScreen(
 
     // ContactDetailContent에서 사용할 상태들을 여기서 미리 선언
     val state = uiState
-    var nickname by remember(state) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.nickname else "") }
-    var age by remember(state) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.age.toString() else "0") }
-    var gender by remember(state) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.gender ?: "NONE" else "NONE") }
-    var relationship by remember(state) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.relationship else "") }
-    var detail by remember(state) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.detail ?: "" else "") }
+    val contactId = (state as? MyContactsDetailUiState.Success)?.contact?.id
+    var nickname by remember(contactId) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.nickname ?: "" else "") }
+    var age by remember(contactId) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.age?.toString() ?: "" else "") }
+    var gender by remember(contactId) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.gender ?: "NONE" else "NONE") }
+    var relationship by remember(contactId) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.relationship ?: "" else "") }
+    var detail by remember(contactId) { mutableStateOf(if (state is MyContactsDetailUiState.Success) state.contact.detail ?: "" else "") }
 
 
     Scaffold(

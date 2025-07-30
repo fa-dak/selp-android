@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,14 +46,10 @@ import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsUiState
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsViewModel
 import com.kosa.selp.shared.theme.AppColor
 
-import androidx.compose.runtime.LaunchedEffect
-
-// ... (other code)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyContactsScreen(
-    navController: NavController, // NavController 추가
+    navController: NavController,
     viewModel: MyContactsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -74,7 +72,7 @@ fun MyContactsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "내 주변인", // 제목 변경
+                        "내 주변인",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -98,7 +96,7 @@ fun MyContactsScreen(
                 Icon(Icons.Default.Add, contentDescription = "주변인 추가")
             }
         },
-        containerColor = AppColor.background // 배경색 적용
+        containerColor = AppColor.background
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -130,12 +128,22 @@ fun ContactList(navController: NavController, contacts: List<Contact>) {
             Text("저장된 연락처가 없습니다.")
         }
     } else {
-        LazyColumn(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(contacts) { contact ->
-                ContactItem(navController = navController, contact = contact)
+        Column(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = "친구 ${contacts.size}",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = AppColor.textSecondary,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)
+            )
+            LazyColumn(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                items(contacts) { contact ->
+                    ContactItem(navController = navController, contact = contact)
+                }
             }
         }
     }
@@ -147,45 +155,47 @@ fun ContactItem(navController: NavController, contact: Contact) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { navController.navigate("myContactDetail/${contact.id}") },
-        shape = RoundedCornerShape(16.dp), // 모서리 둥글게
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp), // 그림자 제거
-        colors = CardDefaults.cardColors(containerColor = AppColor.white) // 카드 배경색
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        colors = CardDefaults.cardColors(containerColor = AppColor.white)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 이모지 아이콘
             Text(
-                text = getEmojiForRelationship(contact.relationship),
-                style = MaterialTheme.typography.headlineSmall // 이모지 크기 조절
+                text = getEmojiForRelationship(contact.relationship ?: "-"),
+                style = MaterialTheme.typography.headlineSmall
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                // 닉네임과 관계
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
-                        text = contact.nickname,
+                        text = contact.nickname ?: "-",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "(${contact.relationship})",
+                        text = "(${contact.relationship ?: "-"})",
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppColor.textDisabled
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
-                // 나이와 성별
+                val genderText = when (contact.gender) {
+                    "MALE" -> "남성"
+                    "FEMALE" -> "여성"
+                    "NONE" -> "없음"
+                    else -> "-"
+                }
                 Text(
-                    text = "${contact.age}세, ${if (contact.gender == "MALE") "남성" else "여성"}",
+                    text = "${contact.age?.toString() ?: "-"}세, $genderText",
                     style = MaterialTheme.typography.bodyMedium,
                     color = AppColor.textSecondary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                // 선호도
-                if (contact.preferences.isNotEmpty()) {
+                if (contact.preferences?.isNotEmpty() == true) {
                     Text(
                         text = "선호도: ${contact.preferences.joinToString(", ")}",
                         style = MaterialTheme.typography.bodyMedium,

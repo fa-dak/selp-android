@@ -46,7 +46,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        Log.d("NetworkModule", "BASE_URL: $BASE_URL")
+        Log.d("com.kosa.selp.features.notification.di.NetworkModule", "BASE_URL: $BASE_URL")
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
