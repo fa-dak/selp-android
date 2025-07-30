@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -40,15 +40,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kosa.selp.features.mypage.model.Contact
 import com.kosa.selp.features.mypage.model.EventModifyRequest
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageEvent
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageViewModel
 import com.kosa.selp.shared.domain.model.EventType
+import com.kosa.selp.shared.domain.model.Relationship
 import com.kosa.selp.shared.theme.AppColor
 import java.util.Calendar
 
@@ -61,10 +62,11 @@ fun EventDetailScreen(
 ) {
     val context = LocalContext.current
     val eventDetail by viewModel.eventDetail.collectAsState()
+    val contacts by viewModel.contacts.collectAsState()
 
     // --- UI State ---
     var eventName by remember { mutableStateOf("") }
-    var receiverNickname by remember { mutableStateOf("") }
+    var selectedReceiver by remember { mutableStateOf<Contact?>(null) }
     var selectedEventType by remember { mutableStateOf<EventType?>(null) }
 
     val calendar = Calendar.getInstance()
@@ -75,12 +77,14 @@ fun EventDetailScreen(
     // --- Side Effects ---
     LaunchedEffect(eventId) {
         viewModel.fetchEventDetail(eventId)
+        viewModel.fetchContacts()
     }
 
-    LaunchedEffect(eventDetail) {
-        eventDetail?.let { detail ->
+    LaunchedEffect(eventDetail, contacts) {
+        if (eventDetail != null && contacts.isNotEmpty()) {
+            val detail = eventDetail!!
             eventName = detail.eventName ?: ""
-            receiverNickname = detail.receiverNickname ?: ""
+            selectedReceiver = contacts.find { it.id == detail.receiverId }
             selectedEventType = EventType.fromName(detail.eventType)
 
             try {
@@ -147,11 +151,16 @@ fun EventDetailScreen(
                 }
                 Button(
                     onClick = {
+                        val receiverId = selectedReceiver?.id
+                        if (receiverId == null) {
+                            Toast.makeText(context, "받는 사람을 선택해주세요.", Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
                         val request = EventModifyRequest(
                             eventDate = "%d-%02d-%02d".format(selectedYear, selectedMonth, selectedDay),
                             eventName = eventName,
                             eventType = selectedEventType ?: EventType.ETC,
-                            receiverInfoId = eventDetail?.receiverId ?: 0,
+                            receiverInfoId = receiverId,
                             notificationDaysBefore = eventDetail?.notificationDaysBefore
                         )
                         viewModel.modifyEvent(request)
@@ -198,11 +207,17 @@ fun EventDetailScreen(
                 )
 
                 // 받는 사람
-                OutlinedTextField(
-                    value = receiverNickname,
-                    onValueChange = { receiverNickname = it },
-                    label = { Text("받는 사람") },
-                    modifier = Modifier.fillMaxWidth()
+                Dropdown(
+                    label = "받는 사람",
+                    options = contacts,
+                    selectedValue = selectedReceiver,
+                    onValueChange = { selectedReceiver = it },
+                    displayTransform = { contact ->
+                        (if (contact.nickname.isNullOrBlank()) "-" else contact.nickname!!)
+                    },
+                    itemContent = { contact ->
+                        ReceiverDropdownItem(contact = contact)
+                    }
                 )
 
                 // 이벤트 종류
@@ -212,6 +227,26 @@ fun EventDetailScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ReceiverDropdownItem(contact: Contact) {
+    val relationshipInKorean = contact.relationship?.let { Relationship.fromDisplayName(it)?.displayName }
+        ?: contact.relationship
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = if (contact.nickname.isNullOrBlank()) "-" else contact.nickname!!,
+            style = MaterialTheme.typography.bodyLarge,
+            color = AppColor.textPrimary
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = "($relationshipInKorean)",
+            style = MaterialTheme.typography.bodyMedium,
+            color = AppColor.textSecondary
+        )
     }
 }
 
@@ -274,7 +309,8 @@ private fun <T> Dropdown(
     selectedValue: T?,
     onValueChange: (T) -> Unit,
     modifier: Modifier = Modifier,
-    displayTransform: (T) -> String = { it.toString() }
+    displayTransform: (T) -> String = { it.toString() },
+    itemContent: (@Composable (T) -> Unit)? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -297,7 +333,13 @@ private fun <T> Dropdown(
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(displayTransform(option)) },
+                    text = {
+                        if (itemContent != null) {
+                            itemContent(option)
+                        } else {
+                            Text(displayTransform(option))
+                        }
+                    },
                     onClick = {
                         onValueChange(option)
                         expanded = false
