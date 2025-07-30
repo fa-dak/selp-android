@@ -69,6 +69,7 @@ import com.kosa.selp.R
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsDetailEvent
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsDetailUiState
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsDetailViewModel
+import com.kosa.selp.shared.domain.model.Relationship
 import com.kosa.selp.shared.theme.AppColor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -377,18 +378,7 @@ fun GenderInputItem(selectedValue: String, onValueChange: (String) -> Unit) {
 @Composable
 fun RelationshipInputItem(selectedValue: String, onValueChange: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    val relationshipOptions = listOf(
-        "연인" to "연인",
-        "부모님" to "부모님",
-        "자식" to "자식",
-        "형제" to "형제",
-        "친인척" to "친인척",
-        "친구" to "친구",
-        "직장동료" to "직장동료",
-        "직장상사" to "직장상사",
-        "지인" to "지인"
-    )
-    val currentDisplayValue = relationshipOptions.find { it.second == selectedValue }?.first ?: selectedValue
+    val relationshipOptions = Relationship.entries
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -416,7 +406,7 @@ fun RelationshipInputItem(selectedValue: String, onValueChange: (String) -> Unit
                 modifier = Modifier.fillMaxWidth()
             ) {
                 TextField(
-                    value = currentDisplayValue,
+                    value = selectedValue,
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -434,11 +424,11 @@ fun RelationshipInputItem(selectedValue: String, onValueChange: (String) -> Unit
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    relationshipOptions.forEach { (text, value) ->
+                    relationshipOptions.forEach { relationship ->
                         DropdownMenuItem(
-                            text = { Text(text) },
+                            text = { Text(relationship.displayName) },
                             onClick = {
-                                onValueChange(value)
+                                onValueChange(relationship.displayName)
                                 expanded = false
                             }
                         )

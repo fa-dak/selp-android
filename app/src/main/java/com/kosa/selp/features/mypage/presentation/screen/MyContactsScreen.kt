@@ -44,6 +44,7 @@ import androidx.navigation.NavController
 import com.kosa.selp.features.mypage.model.Contact
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsUiState
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsViewModel
+import com.kosa.selp.shared.domain.model.Relationship
 import com.kosa.selp.shared.theme.AppColor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -164,7 +165,7 @@ fun ContactItem(navController: NavController, contact: Contact) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = getEmojiForRelationship(contact.relationship ?: "-"),
+                text = Relationship.fromDisplayName(contact.relationship ?: "👤").emoji,
                 style = MaterialTheme.typography.headlineSmall
             )
             Spacer(modifier = Modifier.width(16.dp))
@@ -177,7 +178,7 @@ fun ContactItem(navController: NavController, contact: Contact) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "(${contact.relationship ?: "-"})",
+                        text = "${contact.relationship ?: "-"}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppColor.textDisabled
                     )
@@ -204,21 +205,5 @@ fun ContactItem(navController: NavController, contact: Contact) {
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun getEmojiForRelationship(relationship: String): String {
-    return when (relationship.trim()) {
-        "연인" -> "❤️"
-        "부모님" -> "👨‍👩‍👧‍👦"
-        "자식" -> "👨‍👩‍👧‍👦"
-        "형제" -> "👧‍👦"
-        "친인척" -> "👨‍👩‍👧"
-        "친구" -> "🧑‍🤝‍🧑"
-        "직장동료" -> "💼"
-        "직장상사" -> "👔"
-        "지인" -> "👋"
-        else -> "👤"
     }
 }
