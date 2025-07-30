@@ -238,7 +238,10 @@ fun GiftBundleDetailScreen(
                     Text(
                         text = "'${bundle.eventName ?: "-"}' 을 위한 꾸러미",
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable {
+                            navController.navigate("eventDetail/${bundle.eventId}")
+                        }
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                 }

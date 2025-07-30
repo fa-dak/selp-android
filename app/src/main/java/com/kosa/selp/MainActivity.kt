@@ -36,11 +36,13 @@ import com.kosa.selp.features.home.presentation.screen.HomeScreen
 import com.kosa.selp.features.login.presentation.screen.LoginScreen
 import com.kosa.selp.features.login.presentation.viewModel.LoginEvent
 import com.kosa.selp.features.login.presentation.viewModel.LoginViewModel
+import com.kosa.selp.features.mypage.presentation.screen.EventDetailScreen
 import com.kosa.selp.features.mypage.presentation.screen.GiftBundleDetailScreen
 import com.kosa.selp.features.mypage.presentation.screen.GiftBundleListScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyContactsDetailScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyContactsScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyPageScreen
+import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageViewModel
 import com.kosa.selp.features.notification.presentation.screen.NotificationScreen
 import com.kosa.selp.features.pay.PayExampleScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
@@ -262,9 +264,28 @@ class MainActivity : ComponentActivity() {
                             val bundleId =
                                 backStackEntry.arguments?.getString("bundleId")?.toLongOrNull()
                             if (bundleId != null) {
+                                val myPageViewModel: MyPageViewModel = hiltViewModel(backStackEntry)
                                 GiftBundleDetailScreen(
                                     bundleId = bundleId,
-                                    navController = navController
+                                    navController = navController,
+                                    viewModel = myPageViewModel
+                                )
+                            }
+                        }
+                        animatedComposable(
+                            "eventDetail/{eventId}",
+                            arguments = listOf(navArgument("eventId") { type = NavType.LongType })
+                        ) { backStackEntry ->
+                            val eventId = backStackEntry.arguments?.getLong("eventId")
+                            if (eventId != null) {
+                                val parentEntry = remember(backStackEntry) {
+                                    navController.getBackStackEntry("giftBundleDetail/{bundleId}")
+                                }
+                                val myPageViewModel: MyPageViewModel = hiltViewModel(parentEntry)
+                                EventDetailScreen(
+                                    eventId = eventId,
+                                    navController = navController,
+                                    viewModel = myPageViewModel
                                 )
                             }
                         }

@@ -1,6 +1,8 @@
 package com.kosa.selp.features.mypage.data.service
 
 import com.kosa.selp.features.mypage.model.Contact
+import com.kosa.selp.features.mypage.model.EventDetailResponse
+import com.kosa.selp.features.mypage.model.EventModifyRequest
 import com.kosa.selp.features.mypage.model.GiftBundleResponse
 import com.kosa.selp.features.mypage.model.ReceiverModifyRequest
 import com.kosa.selp.features.mypage.model.ReceiverRegisterRequest
@@ -51,4 +53,15 @@ interface MyPageApiService {
 
     @GET("/productCategories")
     suspend fun getProductCategories(): List<ProductCategory>
+
+    @GET("/events/{event-id}")
+    suspend fun getEventDetail(
+        @Path("event-id") eventId: Long
+    ): EventDetailResponse
+
+    @PUT("/events/{event-id}")
+    suspend fun modifyEvent(
+        @Path("event-id") eventId: Long,
+        @Body request: EventModifyRequest
+    )
 }
