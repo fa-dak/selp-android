@@ -1,4 +1,4 @@
-package com.kosa.selp.features.calendar.composable
+import com.kosa.selp.features.survey.model.AnniversaryType
 
 data class EventRegisterRequestDto(
     val eventDate: String,
