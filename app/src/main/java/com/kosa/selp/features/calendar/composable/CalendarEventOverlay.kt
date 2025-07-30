@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,20 +24,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.kosa.selp.features.calendar.data.response.EventListResponseDto
 import com.kosa.selp.shared.theme.AppColor
 
 @Composable
 fun CalendarEventOverlay(
     events: List<EventListResponseDto>,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onEventClick: (EventListResponseDto) -> Unit
 ) {
     BackHandler(onBack = onDismiss)
 
     AnimatedVisibility(
         visible = true,
         enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+        modifier = Modifier
+            .zIndex(1f)
     ) {
         Column(
             modifier = Modifier
@@ -60,11 +65,16 @@ fun CalendarEventOverlay(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
+
                     .padding(horizontal = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 itemsIndexed(events) { index, event ->
-                    Column {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onEventClick(event) }
+                    ) {
                         CalendarEventListItem(event)
                         if (index < events.lastIndex) {
                             HorizontalDivider(

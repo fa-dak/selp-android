@@ -1,7 +1,10 @@
 package com.kosa.selp.features.calendar.presentation.screen
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,20 +30,27 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.kosa.selp.features.calendar.composable.AddEventDialog
 import com.kosa.selp.features.calendar.composable.BottomAddButton
+import com.kosa.selp.features.calendar.composable.CalendarEventDetailDialog
 import com.kosa.selp.features.calendar.composable.CalendarEventListItem
 import com.kosa.selp.features.calendar.composable.CalendarEventOverlay
 import com.kosa.selp.features.calendar.composable.CalendarHeader
 import com.kosa.selp.features.calendar.composable.CalendarMonthGrid
 import com.kosa.selp.features.calendar.composable.CalendarWeekDays
 import com.kosa.selp.features.calendar.config.CalendarConfig
+import com.kosa.selp.features.calendar.data.response.EventListResponseDto
 import com.kosa.selp.features.calendar.model.EventInputState
 import com.kosa.selp.features.calendar.presentation.viewModel.CalendarDataViewModel
 import com.kosa.selp.features.calendar.presentation.viewModel.CalendarUiViewModel
+import com.kosa.selp.features.calendar.presentation.viewModel.CalendarUserViewModel
 import com.kosa.selp.features.calendar.utils.DateUtils
+import com.kosa.selp.features.fcm.presentation.viewModel.FcmViewModel
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyContactsViewModel
 import com.kosa.selp.shared.theme.AppColor
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun CalendarScreen(
@@ -48,19 +58,27 @@ fun CalendarScreen(
     modifier: Modifier = Modifier,
     uiViewModel: CalendarUiViewModel = hiltViewModel(),
     dataViewModel: CalendarDataViewModel = hiltViewModel(),
-    contactsViewModel: MyContactsViewModel = hiltViewModel()
+    contactsViewModel: MyContactsViewModel = hiltViewModel(),
+    calendarUserViewModel: CalendarUserViewModel = hiltViewModel(),
+    fcmViewModel: FcmViewModel = hiltViewModel(),
 ) {
     val selectedDate = uiViewModel.selectedDate.collectAsState().value
     val currentMonth = uiViewModel.currentMonth.collectAsState().value
     val events = dataViewModel.eventList.collectAsState().value
+    val memberId = calendarUserViewModel.memberId.collectAsState().value
+
+
     val showOverlay = remember { mutableStateOf(false) }
     val showAddOverlay = remember { mutableStateOf(false) }
+    val showDetailDialog = remember { mutableStateOf(false) }
+
     val eventInputState = remember { mutableStateOf(EventInputState()) }
 
     val selectedDateEvents = events.filter {
         val eventDate = DateUtils.parseDate(it.eventDate)
         DateUtils.isSameDay(eventDate, selectedDate)
     }
+    val selectedEvent = remember { mutableStateOf<EventListResponseDto?>(null) }
 
     val config = CalendarConfig(
         selectedDate = selectedDate,
@@ -126,7 +144,12 @@ fun CalendarScreen(
                 ) {
                     val list = selectedDateEvents.take(3)
                     itemsIndexed(list) { index, event ->
-                        Column {
+                        Column(
+                            modifier = Modifier.clickable {
+                                selectedEvent.value = event
+                                showDetailDialog.value = true
+                            }
+                        ) {
                             CalendarEventListItem(event)
                             if (index < list.lastIndex) {
                                 HorizontalDivider(
@@ -164,7 +187,30 @@ fun CalendarScreen(
         if (showOverlay.value) {
             CalendarEventOverlay(
                 events = selectedDateEvents,
-                onDismiss = { showOverlay.value = false }
+                onDismiss = { showOverlay.value = false },
+                onEventClick = { event ->
+                    selectedEvent.value = event
+                    showDetailDialog.value = true
+                }
+            )
+        }
+
+        if (showDetailDialog.value && selectedEvent.value != null) {
+            val event = selectedEvent.value!!
+
+            CalendarEventDetailDialog(
+                event = event,
+                onDismiss = {
+                    showDetailDialog.value = false
+                    selectedEvent.value = null
+                },
+                onRecommendClick = {
+                    val contactId = event.receiverInfoId
+                    val anniversaryType = event.eventType
+                    showDetailDialog.value = false
+                    selectedEvent.value = null
+                    navController.navigate("surveyFunnelLite/$contactId?anniversary=$anniversaryType")
+                }
             )
         }
 
@@ -188,6 +234,19 @@ fun CalendarScreen(
                         dataViewModel.registerEvent(dto)
                         eventInputState.value = EventInputState()
                         showAddOverlay.value = false
+
+                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        val eventDate = LocalDate.parse(dto.eventDate, formatter)
+                        val daysBefore = dto.notificationDaysBefore ?: 0
+                        val sendDate = eventDate.minusDays(daysBefore.toLong()).format(formatter)
+
+                        fcmViewModel.registerNotification(
+                            memberId = memberId!!,
+                            eventId = 116L, // 실제 Id 들어오면 대체
+                            title = dto.eventName ?: "",
+                            content = "${dto.eventName} 일정이 곧 다가와요!",
+                            sendDate = sendDate
+                        )
                     }
                 )
 

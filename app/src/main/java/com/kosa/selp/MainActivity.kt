@@ -1,10 +1,12 @@
 package com.kosa.selp
 
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,10 +46,12 @@ import com.kosa.selp.features.mypage.presentation.screen.MyContactsScreen
 import com.kosa.selp.features.mypage.presentation.screen.MyPageScreen
 import com.kosa.selp.features.mypage.presentation.viewmodel.MyPageViewModel
 import com.kosa.selp.features.notification.presentation.screen.NotificationScreen
-//import com.kosa.selp.features.pay.PayExampleScreen
+import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelLiteScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyFunnelScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyIntroScreen
+import com.kosa.selp.features.survey.presentation.screen.SurveyResultLiteScreen
 import com.kosa.selp.features.survey.presentation.screen.SurveyResultScreen
+import com.kosa.selp.features.survey.presentation.viewModel.LiteSurveyViewModel
 import com.kosa.selp.features.survey.presentation.viewModel.SurveyViewModel
 import com.kosa.selp.shared.composable.navigation.BottomNavBar
 import com.kosa.selp.shared.navigation.BottomBarRoute
@@ -59,6 +63,7 @@ import java.net.URLDecoder
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -177,6 +182,56 @@ class MainActivity : ComponentActivity() {
                             val viewModel = hiltViewModel<SurveyViewModel>(parentEntry)
 
                             SurveyResultScreen(
+                                navController = navController,
+                                viewModel = viewModel
+                            )
+                        }
+
+                        animatedComposable(
+                            route = "surveyFunnelLite/{contactId}?anniversary={anniversary}",
+                            arguments = listOf(
+                                navArgument("contactId") { type = NavType.StringType },
+                                navArgument("anniversary") {
+                                    type = NavType.StringType
+                                    nullable = true
+                                    defaultValue = null
+                                }
+                            )
+                        ) { backStackEntry ->
+                            val contactId =
+                                backStackEntry.arguments?.getString("contactId")?.toLongOrNull()
+                            val anniversary = backStackEntry.arguments?.getString("anniversary")
+
+                            contactId?.let {
+                                SurveyFunnelLiteScreen(
+                                    navController = navController,
+                                    contactId = it,
+                                    anniversary = anniversary
+                                )
+                            }
+                        }
+
+                        animatedComposable(
+                            route = "surveyResultLite?contactId={contactId}",
+                            arguments = listOf(
+                                navArgument("contactId") {
+                                    type = NavType.StringType
+                                    nullable = false
+                                }
+                            )
+                        ) { backStackEntry ->
+                            val parentEntry = remember(backStackEntry) {
+                                navController.getBackStackEntry(
+                                    "surveyFunnelLite/${
+                                        backStackEntry.arguments?.getString(
+                                            "contactId"
+                                        )
+                                    }"
+                                )
+                            }
+                            val viewModel = hiltViewModel<LiteSurveyViewModel>(parentEntry)
+
+                            SurveyResultLiteScreen(
                                 navController = navController,
                                 viewModel = viewModel
                             )
