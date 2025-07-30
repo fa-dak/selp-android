@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -78,6 +79,7 @@ class MainActivity : ComponentActivity() {
             SelpTheme {
                 Scaffold(
                     containerColor = AppColor.white,
+                    contentWindowInsets = WindowInsets(0),
                     bottomBar = {
                         if (BottomBarRoute.shouldShow(currentRoute)) {
                             BottomNavBar(
@@ -154,9 +156,6 @@ class MainActivity : ComponentActivity() {
                         composable("home") {
                             HomeScreen(
                                 navController = navController,
-                                modifier = Modifier
-                                    .padding(innerPadding)
-                                    .consumeWindowInsets(innerPadding)
                             )
                         }
 //                        composable("payTest") {
