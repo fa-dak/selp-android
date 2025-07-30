@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kosa.selp.features.mypage.data.repository.MyPageRepository
+import com.kosa.selp.features.mypage.model.Contact
 import com.kosa.selp.features.mypage.model.EventDetailResponse
 import com.kosa.selp.features.mypage.model.EventModifyRequest
 import com.kosa.selp.features.mypage.model.GiftBundleResponse
@@ -44,6 +45,10 @@ class MyPageViewModel @Inject constructor(
     private val _eventDetail = MutableStateFlow<EventDetailResponse?>(null)
     val eventDetail = _eventDetail.asStateFlow()
 
+    // 주변인 목록 정보를 담을 StateFlow
+    private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
+    val contacts = _contacts.asStateFlow()
+
     fun fetchMyGiftBundles() {
         viewModelScope.launch {
             try {
@@ -81,6 +86,16 @@ class MyPageViewModel @Inject constructor(
                 Log.d("MyPageViewModel", "이벤트 상세 정보 로드 성공: ${detail.eventName}")
             } catch (e: Exception) {
                 Log.e("MyPageViewModel", "이벤트 상세 정보 로드 실패: ${e.message}")
+            }
+        }
+    }
+
+    fun fetchContacts() {
+        viewModelScope.launch {
+            try {
+                _contacts.value = myPageRepository.getMyReceiverInfoList()
+            } catch (e: Exception) {
+                Log.e("MyPageViewModel", "주변인 목록 로드 실패", e)
             }
         }
     }
