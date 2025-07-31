@@ -115,14 +115,13 @@ fun HomeScreen(
             } ?: emptyList()
 
             Column(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxSize()
                     .background(AppColor.white)
-                    .systemBarsPadding()
             ) {
                 HeaderBar(navController, unreadCount)
                 LazyColumn(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxSize()
                         .background(AppColor.white)
                         .padding(horizontal = 20.dp),
