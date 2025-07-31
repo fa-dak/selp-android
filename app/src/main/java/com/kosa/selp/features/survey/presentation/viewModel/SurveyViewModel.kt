@@ -110,7 +110,7 @@ class SurveyViewModel @Inject constructor(
             categories = state.categories,
             relation = state.relationship.orEmpty(),
             gender = state.gender.orEmpty(),
-            budget = state.budget ?: 10000,
+            budget = state.budget ?: 1000000,
             userMessage = state.userMessage.orEmpty()
         )
 
@@ -177,7 +177,6 @@ class SurveyViewModel @Inject constructor(
             detail = state.userMessage.orEmpty()
         )
 
-        println("request : " + request)
         viewModelScope.launch {
             runCatching {
                 saveGiftBundleUseCase(request)

@@ -126,7 +126,7 @@ fun HomeScreen(
                         .fillMaxSize()
                         .background(AppColor.white)
                         .padding(horizontal = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
                     item { Spacer(modifier = Modifier.height(8.dp)) }
 
