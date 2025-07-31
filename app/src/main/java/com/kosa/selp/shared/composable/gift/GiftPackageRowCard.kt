@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil3.compose.AsyncImage
@@ -47,8 +46,8 @@ fun GiftPackageRowCard(
 
     Surface(
         modifier = modifier
-            .width(200.dp)
-            .height(280.dp)
+            .width(220.dp)
+            .height(250.dp)
             .clip(RoundedCornerShape(20.dp)),
         onClick = onClick,
         color = AppColor.white,
@@ -62,7 +61,7 @@ fun GiftPackageRowCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.dp)
+                    .height(170.dp)
                     .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
             ) {
                 mainGift?.let { gift ->
@@ -164,36 +163,6 @@ fun GiftPackageRowCard(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                // 받는 사람
-                Text(
-                    text = giftPackage.recipient,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = AppColor.primary
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // 제목
-                Text(
-                    text = giftPackage.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = AppColor.textPrimary,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // 생성일
-                Text(
-                    text = giftPackage.createdAt,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = AppColor.textSecondary
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // 하단 선물 미리보기와 가격 정보
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -208,7 +177,8 @@ fun GiftPackageRowCard(
                                 model = gift.imageUrl,
                                 contentDescription = gift.title,
                                 modifier = Modifier
-                                    .size(24.dp)
+                                    .size(48.dp)
+                                    .aspectRatio(1f)
                                     .clip(CircleShape)
                                     .border(1.5.dp, AppColor.white, CircleShape)
                                     .zIndex((4 - index).toFloat()),

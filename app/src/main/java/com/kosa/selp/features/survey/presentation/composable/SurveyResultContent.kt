@@ -56,11 +56,11 @@ fun SurveyResultContent(
                     append("추천 선물을 찾지 못했어요 😢\n")
                     append("다음엔 더 좋은 선물을 찾아드릴게요!")
                 } else {
-                    append("보라님의 ")
+                    append("받는 분을 위한\n")
                     withStyle(style = SpanStyle(color = AppColor.primary)) {
-                        append("20대 친구를\n")
+                        append("추천 선물 결과")
                     }
-                    append("위한 추천 선물 결과입니다")
+                    append("입니다")
                 }
             },
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),

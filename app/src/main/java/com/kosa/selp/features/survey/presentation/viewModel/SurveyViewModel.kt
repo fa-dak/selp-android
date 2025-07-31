@@ -170,13 +170,14 @@ class SurveyViewModel @Inject constructor(
         val request = GiftBundleSaveRequestDto(
             giftIds = gifts.map { it.id },
             ageRange = state.ageRange ?: 20,
-            anniversaryType = state.anniversary.orEmpty(),
+            anniversaryType = state.anniversary.takeIf { !it.isNullOrBlank() } ?: "GRADUATION",
             categories = state.categories,
             relation = state.relationship.orEmpty(),
             gender = state.gender.orEmpty(),
             detail = state.userMessage.orEmpty()
         )
 
+        println("request : " + request)
         viewModelScope.launch {
             runCatching {
                 saveGiftBundleUseCase(request)

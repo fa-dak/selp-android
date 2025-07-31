@@ -106,7 +106,7 @@ fun HomeScreen(
                 listOf(
                     GiftPackage(
                         id = it.giftBundleId.toString(),
-                        title = "최근에 만든 선물꾸러미",
+                        title = "",
                         recipient = "",
                         createdAt = "",
                         gifts = it.products.map { it.toGiftItem() }
