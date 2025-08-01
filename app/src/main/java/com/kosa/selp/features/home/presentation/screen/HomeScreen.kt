@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,7 +52,7 @@ data class GiftItem(
     val title: String,
     val imageUrl: String,
     val detailPath: String,
-    val price: Int
+    val price: Int,
 )
 
 data class GiftPackage(
@@ -61,14 +60,14 @@ data class GiftPackage(
     val title: String,
     val recipient: String,
     val createdAt: String,
-    val gifts: List<GiftItem>
+    val gifts: List<GiftItem>,
 )
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.homeState.collectAsState()
     val unreadCount by viewModel.unreadCount.collectAsState()
@@ -249,7 +248,7 @@ fun HomeScreen(
                     item { AnniversaryList(anniversaries = anniversaries) }
 
                     item {
-                        Text("촤근에 만든 선물꾸러미", fontWeight = FontWeight.Medium)
+                        Text("최근에 만든 선물꾸러미", fontWeight = FontWeight.Medium)
                         Spacer(modifier = Modifier.height(8.dp))
                         GiftPackageRowList(
                             packages = recentGiftPackages,
