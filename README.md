@@ -1,7 +1,7 @@
 <div align="center">
 
 
-[<img src="https://img.shields.io/badge/프로젝트 기간-2025.07.25~2025.08.01-fab2ac?style=flat&logo=&logoColor=white" />]()
+[<img src="https://img.shields.io/badge/프로젝트 기간-2025.07.25~2025.07.31-fab2ac?style=flat&logo=&logoColor=white" />]()
 
 <!-- logo -->
 ![screenshot](https://github.com/user-attachments/assets/f69214cd-5088-486d-bb5e-1e789b59c627)
@@ -17,10 +17,6 @@
 
 ### 화면 구성
 
-|                                                            메인 페이지                                                            |
-| :----------------------------------------------------------------------------------------------------------------------------: |
-| <img width="300" alt="main" src="https://github.com/user-attachments/assets/05e69742-21dd-456c-bbe2-763d7bd60416" /> |
-| 메인 화면 |
 
 | 설문 추천 | 설문 추천 | 추천 결과 |
 | ------- | ------- | ------- |
@@ -78,20 +74,18 @@
 
 <br />
 
-## 🤔 기술적 이슈와 해결 과정
-
-- CORS 이슈
-  - [Axios message: 'Network Error'(CORS 오류)](https://leeseong010.tistory.com/117)
-- api 호출 시 중복되는 헤더 작업 간소화하기
-  - [axios interceptor 적용하기](https://leeseong010.tistory.com/133)
-- axios 요청하기
-  - [axios delete 요청 시 body에 data 넣는 방법](https://leeseong010.tistory.com/111)
+## 인프라 아키텍쳐
+<img width="1024" alt="Chat_GPT" src="https://github.com/user-attachments/assets/9be4d07c-bcdf-4943-a8d0-db6d8b2b0eb7" />
 
 <br />
 
 ## 💁‍♂️ 프로젝트 팀원
 
-|                    Backend                     |                    Frontend                    |
-| :--------------------------------------------: | :--------------------------------------------: |
-| ![](https://github.com/yewon-Noh.png?size=120) | ![](https://github.com/SeongHo-C.png?size=120) |
-|     [노예원](https://github.com/yewon-Noh)     |     [이성호](https://github.com/SeongHo-C)     |
+| 이름 | GitHub | 역할 |
+|------|--------|------|
+| 한상준 | [sangzun-han](https://github.com/sangzun-han) | Fullstack |
+| 박찬혁 | [pch8349](https://github.com/pch8349) | Fullstack |
+| 정재영 | [JaeY0ung](https://github.com/JaeY0ung) | Fullstack · 인프라 |
+| 이지연 | [ljy6712](https://github.com/ljy6712) | Fullstack |
+| 원승현 | [hyeon8571](https://github.com/hyeon8571) | Fullstack |
+
