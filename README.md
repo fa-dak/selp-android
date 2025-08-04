@@ -17,15 +17,20 @@
 
 ### 화면 구성
 
-|                                                            화면 명                                                             |
+|                                                            메인 페이지                                                            |
 | :----------------------------------------------------------------------------------------------------------------------------: |
-| <img src="https://user-images.githubusercontent.com/80824750/208456048-acbf44a8-cd71-4132-b35a-500047adbe1c.gif" width="450"/> |
-|                                                 화면에 대한 설명을 입력합니다.                                                 |
+| <img width="300" alt="main" src="https://github.com/user-attachments/assets/05e69742-21dd-456c-bbe2-763d7bd60416" /> |
+| 메인 화면 |
 
-|                                                            화면 명                                                             |
-| :----------------------------------------------------------------------------------------------------------------------------: |
-| <img src="https://user-images.githubusercontent.com/80824750/208456234-fb5fe434-aa65-4d7a-b955-89098d5bbe0b.gif" width="450"/> |
-|                                                 화면에 대한 설명을 입력합니다.                                                 |
+| 설문 추천 | 설문 추천 | 추천 결과 |
+| ------- | ------- | ------- |
+| <img width="300" alt="선물추천" src="https://github.com/user-attachments/assets/8382fc0e-6df7-48b9-94bd-7eb83284fb01" /> | <img width="300" alt="선물추천1" src="https://github.com/user-attachments/assets/b1eaad91-d9ee-4955-90d3-eb901d2a3af4" />  | <img width="300" alt="선물추천결과" src="https://github.com/user-attachments/assets/a736585e-1041-48bb-bd76-54c7041807e3" />
+| 선물 추천을 시작하는 첫 화면 | 관계, 예산 등 질문에 답하는 설문 화면 | 설문 결과로 맞춤 선물 꾸러미를 보여주는 화면 |
+
+| 메시지 추천 | 추천 결과 |
+| ------- | ------- |
+| <img width="300" alt="메시지추천" src="https://github.com/user-attachments/assets/c26d632c-5069-498a-8bdb-9388c1b206c5" /> | <img width="300" alt="메시지추천 결과" src="https://github.com/user-attachments/assets/de9df99b-9420-4ec0-b02a-d5c2cc920643" />
+| 선물에 담을 메시지 톤 선택 | 선택한 톤에 맞춘 추천 메시지 표시 |
 
 <br />
 
@@ -46,6 +51,7 @@
 <img width="80" alt="kibana" src="https://github.com/user-attachments/assets/3edbd1ad-3366-4f08-845f-763fbbd7238c" />
 <img width="80" alt="mysql" src="https://github.com/user-attachments/assets/ea75f72a-8e79-47f7-ac27-c6102d880a7c" />
 <img width="80" alt="elasticsearch" src="https://github.com/user-attachments/assets/7900d7b7-27c2-45a9-bfa3-ca9a8ab5e953" />
+<img width="80: alt="springsecurity" src="https://github.com/user-attachments/assets/a3523750-3215-4dbf-8c9a-9abcca54c87f" />
 
 </div>
 
