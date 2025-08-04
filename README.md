@@ -74,7 +74,7 @@
 
 <br />
 
-## 인프라 아키텍쳐
+### 인프라 아키텍쳐
 <img width="1024" alt="Chat_GPT" src="https://github.com/user-attachments/assets/9be4d07c-bcdf-4943-a8d0-db6d8b2b0eb7" />
 
 <br />
